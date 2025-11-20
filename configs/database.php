@@ -15,5 +15,6 @@ class Database
             echo 'Lỗi không kết nối được tới database';
             die();
         }
+        return self::$connect;
     }
 }

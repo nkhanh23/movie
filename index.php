@@ -11,27 +11,34 @@ foreach (glob(__DIR__ . '/core/*php') as $filename) {
     require_once $filename;
 }
 
+require_once './core/mailer/Exception.php';
+require_once './core/mailer/PHPMailer.php';
+require_once './core/mailer/SMTP.php';
+
 $router = new Router();
 
 foreach (glob(__DIR__ . '/router/*php') as $filename) {
     require_once $filename;
 }
 
-
-foreach (glob(__DIR__ . '/app/Controller/*php') as $filename) {
+foreach (glob(__DIR__ . '/app/Models/*php') as $filename) {
     require_once $filename;
 }
 
-foreach (glob(__DIR__ . '/app/Controller/admin/*php') as $filename) {
+foreach (glob(__DIR__ . '/app/Controllers/*php') as $filename) {
     require_once $filename;
 }
 
-foreach (glob(__DIR__ . '/app/Controller/clients/*php') as $filename) {
+foreach (glob(__DIR__ . '/app/Controllers/admin/*php') as $filename) {
     require_once $filename;
 }
 
+foreach (glob(__DIR__ . '/app/Controllers/clients/*php') as $filename) {
+    require_once $filename;
+}
 
+$projectName = '/movie';
 $method = $_SERVER['REQUEST_METHOD'];
-$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$url = str_replace($projectName, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
 $router->handlePath($method, $url);

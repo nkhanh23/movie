@@ -39,6 +39,7 @@ class Router
 
     public function handlePath($method, $url)
     {
+
         $url = $url ?: '/';
         //Kiểm tra trong router có phương thức và url được truyền vào không
         if (isset($this->routers[$method][$url])) {
@@ -46,9 +47,9 @@ class Router
             // Tách action ra thành 2 biến controller và func
             //VD : HomeControllerController@clientDashboard thành $controller=HomeControllerController và $function=clientDashboard
             [$controller, $func] = explode('@', $action);
-            require_once './app/Controller/' . $contrller . '.php';
+            // require_once './app/Controller/' . $controller . '.php';
             $controllerOne = new $controller;
-            $controllerOne->$func;
+            $controllerOne->$func();
         }
     }
 }

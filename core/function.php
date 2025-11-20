@@ -9,8 +9,6 @@ function sendMail($emailTo, $subject, $content)
 
     //Import PHPMailer classes into the global namespace
     //These must be at the top of your script, not inside a function
-
-
     //Create an instance; passing `true` enables exceptions
     $mail = new PHPMailer(true);
 
@@ -92,9 +90,9 @@ function filterData($method = '')
                     $key = strip_tags($key);
                     //Kiểm tra người dùng nhập vào giá trị hay mảng
                     if (is_array($value)) {
-                        $filterArray[$key] = filter_var(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+                        $filterArray[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
                     } else {
-                        $filterArray[$key] = filter_var(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+                        $filterArray[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
                     }
                 }
             }
@@ -118,14 +116,15 @@ function filterData($method = '')
                     $key = strip_tags($key);
                     //Kiểm tra người dùng nhập vào giá trị hay mảng
                     if (is_array($value)) {
-                        $filterArray[$key] = filter_var(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+                        $filterArray[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
                     } else {
-                        $filterArray[$key] = filter_var(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+                        $filterArray[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
                     }
                 }
             }
         }
     }
+    return $filterArray;
 }
 
 //Hàm validate email
@@ -134,6 +133,7 @@ function validateEmail($email)
     if (!empty($email)) {
         $checkEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
     }
+    return $checkEmail;
 }
 
 //Hàm validate int
@@ -142,6 +142,7 @@ function validateInt($number)
     if (!empty($number)) {
         $checkInt = filter_var($number, FILTER_SANITIZE_NUMBER_INT);
     }
+    return $checkInt;
 }
 
 //Hàm check phone
@@ -174,7 +175,7 @@ function reload($path, $full = false)
         header("Location: $path");
         exit();
     } else {
-        $url = _HOST . $path;
+        $url = _HOST_URL . $path;
         header("Location: $url");
         exit();
     }
@@ -184,7 +185,39 @@ function reload($path, $full = false)
 function layout($viewName, $data = [])
 {
     extract($data);
-    if (file_exists('/app/Views/part' . $viewName . '.php')) {
-        require_once '/app/Views/part' . $viewName . '.php';
+    if (file_exists('./app/Views/part/' . $viewName . '.php')) {
+        require_once './app/Views/part/' . $viewName . '.php';
     }
+}
+
+//Hàm layout
+function layoutPart($viewName, $data = [])
+{
+    extract($data);
+    if (file_exists('./app/Views/layout-part/' . $viewName . '.php')) {
+        require_once './app/Views/layout-part/' . $viewName . '.php';
+    }
+}
+
+//hàm thông báo lỗi
+// <div class="annouce-message alert alert-danger">Thong bao loi hoac thanh cong</div> 
+function getMsg($msg, $msg_type)
+{
+    echo ' <div class = "announce-message alert alert-' . $msg_type . '">';
+    echo $msg;
+    echo '</div>';
+}
+
+//hiển thị lỗi
+function formError($errors, $fieldName)
+{
+    if (!empty($errors[$fieldName])) {
+        echo '<div class="error">' . reset($errors[$fieldName]) . '</div>';
+    }
+}
+
+//Hàm hiển thị lại giá trị cũ nếu lỡ bấm f5 hoặc nhập sai
+function oldData($oldData, $fieldName)
+{
+    return (!empty($oldData[$fieldName])) ? $oldData[$fieldName] : NULL;
 }
