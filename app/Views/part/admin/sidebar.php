@@ -17,7 +17,7 @@ if (!defined('_nkhanhh')) {
             <i class="fa-solid fa-film"></i>
             <span>Phim</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/episode" class="nav-item">
             <i class="fa-solid fa-layer-group"></i>
             <span>Tập Phim</span>
         </a>

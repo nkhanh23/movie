@@ -8,6 +8,8 @@ layout('admin/sidebar');
 // (print_r($getMovies));
 // echo '</pre>';
 // die();
+$msg = getSessionFlash('msg');
+$msg_type = getSessionFlash('msg_type');
 ?>
 <section id="movies-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
@@ -65,6 +67,7 @@ layout('admin/sidebar');
                     <th>Tên Phim</th>
                     <th>Thể loại</th>
                     <th>Quốc Gia</th>
+                    <th>Loại phim</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
@@ -82,12 +85,18 @@ layout('admin/sidebar');
                         <td><?php echo $item['tittle']; ?></td>
                         <td><?php echo $item['genres']; ?></td>
                         <td><?php echo $item['country_name']; ?></td>
+                        <td><?php echo $item['type_name']; ?></td>
                         <td><span class="badge success"><?php echo $item['movie_status']; ?></span></td>
                         <td class="actions">
                             <div class="action-buttons">
-                                <button class="btn-icon-sm" title="Chi tiết"><i class="fa-solid fa-eye"></i></button>
-                                <button class="btn-icon-sm" title="Sửa"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-icon-sm delete-btn" data-id="1" title="Xóa"><i
+                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/add'"
+                                    class="btn-icon-sm" title="Chi tiết"><i class="fa-solid fa-eye"></i></button>
+                                <button
+                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/edit?id=<?php echo $item['id'] ?>'"
+                                    class="btn-icon-sm" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+                                <button
+                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/delete?id=<?php echo $item['id'] ?>'"
+                                    class="btn-icon-sm delete-btn" data-id="1" title="Xóa"><i
                                         class="fa-solid fa-trash"></i></button>
                             </div>
 

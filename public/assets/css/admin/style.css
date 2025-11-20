@@ -304,8 +304,32 @@ body {
 /* --- TOOLBAR & FILTERS --- */
 .toolbar {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
     gap: 16px;
     margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.filters-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filters-group select {
+    padding: 10px 16px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    outline: none;
+    min-height: 40px;
+}
+
+.filters-group select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .search-box {
@@ -496,6 +520,70 @@ td.actions {
     border-top: 1px solid var(--border-color);
 }
 
+/* --- CUSTOM DROPDOWN (Multi-select) --- */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-btn {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.dropdown-btn:hover {
+    border-color: var(--text-secondary);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-top: 5px;
+    padding: 10px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.checkbox-item:hover {
+    color: var(--text-primary);
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-blue);
+    cursor: pointer;
+}
+
 /* --- FOOTER --- */
 .footer {
     grid-area: footer;
@@ -506,12 +594,6 @@ td.actions {
     color: var(--text-secondary);
     background-color: var(--bg-card);
     font-size: 0.85rem;
-}
-
-.error{
-    padding: 5px;
-    font-style: italic;
-    color: red ;
 }
 
 /* --- RESPONSIVE --- */
@@ -555,5 +637,4 @@ td.actions {
     .form-actions.full-width {
         grid-column: span 1;
     }
-
 }

@@ -42,58 +42,8 @@
     <?php layoutPart('admin/movies/list'); ?>
 
     <!-- EPISODES VIEW -->
-    <section id="episodes-view" class="content-section">
-        <div class="page-header">
-            <h2>Quản lý Tập Phim</h2>
-            <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Tập Mới</button>
-        </div>
-        <div class="toolbar">
-            <div class="search-box">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" placeholder="Tìm tên tập hoặc tên phim...">
-            </div>
-        </div>
-        <div class="card table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Tập</th>
-                        <th>Thuộc Phim</th>
-                        <th>Mùa / Tập</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>101</td>
-                        <td>Winter Is Coming</td>
-                        <td>Game of Thrones</td>
-                        <td>S01 E01</td>
-                        <td><span class="badge success">Published</span></td>
-                        <td class="actions">
-                            <button class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-icon-sm delete-btn" data-id="101"><i
-                                    class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>102</td>
-                        <td>The Kingsroad</td>
-                        <td>Game of Thrones</td>
-                        <td>S01 E02</td>
-                        <td><span class="badge success">Published</span></td>
-                        <td class="actions">
-                            <button class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-icon-sm delete-btn" data-id="102"><i
-                                    class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <?php layoutPart('admin/episode'); ?>
+
 
     <!-- GENRES VIEW -->
     <section id="genres-view" class="content-section">

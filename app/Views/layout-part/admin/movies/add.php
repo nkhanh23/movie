@@ -10,14 +10,15 @@ $oldData = getSessionFlash('oldData');
 $errors = getSessionFlash('errors');
 
 // echo '<pre>';
-// (print_r($errors));
+// (print_r($getAllGenres));
 // echo '</pre>';
-
+// die();
 ?>
 <section id="add-movie-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
         <h2><i class="fa-solid fa-plus-circle"></i> Thêm Phim Mới</h2>
-        <button id="btn-cancel-movie" class="btn"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
+        <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/list'" id="btn-cancel-movie"
+            class="btn"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
     </div>
 
     <div class="card">
@@ -96,30 +97,76 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
+                <label for="duration">Tổng views</label>
+                <input type="number" name="total_views" id="duration" placeholder="120" value="<?php
+                                                                                                if (!empty($oldData)) {
+                                                                                                    echo oldData($oldData, 'total_views');
+                                                                                                } ?>">
+                <?php
+                if (!empty($errors)) {
+                    echo formError($errors, 'total_views');
+                }
+                ?>
+            </div>
+
+            <div class="form-group">
                 <label for="country_id">Quốc gia (country_id)</label>
                 <select name="country_id" id="country_id">
                     <option value="">-- Chọn quốc gia --</option>
-                    <option value="1">Việt Nam</option>
+                    <?php foreach ($getAllCountries as $item): ?>
+                        <option value="<?php echo $item['id']; ?>"><?php echo $item['name']; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
             <!-- Cột 2 -->
             <div class="form-group">
-                <label for="type_id">Loại phim (type_id)</label>
-                <select name="type_id" id="type_id">
-                    <option value="1">Phim lẻ (Movie)</option>
-                    <option value="2">Phim bộ (Series)</option>
+                <label>Loại phim</label>
+                <div class="custom-dropdown" id="dropdown-genres">
+                    <div class="dropdown-btn" onclick="toggleDropdown('dropdown-genres')">
+                        <span>-- Chọn loại phim (Nhiều) --</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+
+                    <div class="dropdown-content">
+                        <?php foreach ($getAllGenres as $item): ?>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="genre_id[]" value="<?php echo $item['id']; ?>" <?php
+                                                                                                            echo (isset($oldData['genre_id']) && is_array($oldData['genre_id']) && in_array($item['id'], $oldData['genre_id'])) ? 'checked' : '';
+                                                                                                            ?>>
+                                <span><?php echo $item['name']; ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php if (!empty($errors['genre_id'])): ?>
+                    <span class="required" style="font-size: 0.85rem; margin-top: 5px;">
+                        <?php echo is_array($errors['genre_id']) ? reset($errors['genre_id']) : $errors['type_id']; ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="status_id">Trạng thái</label>
+                <select name="status_id" id="genre_id">
+                    <option value="">-- Chọn trạng thái --</option>
+                    <?php foreach ($getAllStatus as $item): ?>
+                        <option value="<?php echo $item['id']; ?>"><?php echo $item['name']; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="status_id">Trạng thái (status_id)</label>
-                <select name="status_id" id="status_id">
-                    <option value="1">Xuất bản (Published)</option>
-                    <option value="0">Bản nháp (Draft)</option>
-                    <option value="2">Sắp chiếu (Coming Soon)</option>
+                <label for="country_id">Loại phim</label>
+                <select name="status_id" id="genre_id">
+                    <option value="">-- Chọn loại phim --</option>
+                    <?php foreach ($getAllType as $item): ?>
+                        <option value="<?php echo $item['id']; ?>"><?php echo $item['name']; ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
+
 
             <!-- URLs -->
             <div class="form-group">
@@ -197,5 +244,45 @@ $errors = getSessionFlash('errors');
         </form>
     </div>
 </section>
+
+<script>
+    // Hàm giúp chuyển text thành slug
+    function createSlug(string) {
+        return strig.toLowerCase()
+            .normalize('NFD') // chuyển ký tự có dấu thành tổ hợp: é -> e + '
+            .replace(/[\u0300-\u036f]/g, '') // xoá dấu
+            .replace(/đ/g, 'd') // thay đ -> d
+            .replace(/[^a-z0-9\s-]/g, '') // xoá ký tự đặc biệt
+            .trim() // bỏ khoảng trắng đầu/cuối
+            .replace(/\s+/g, '-') // thay khoảng trắng -> -
+            .replace(/-+/g, '-'); // bỏ trùng dấu -
+    }
+
+    document.getElementById('tittle').addEventListener('input', function() {
+        const getValue = this.value;
+        document.getElementById('slug').value = createSlug(getValue);
+    });
+</script>
+<script>
+    // Hàm bật tắt dropdown
+    function toggleDropdown(id) {
+        var content = document.querySelector('#' + id + ' .dropdown-content');
+        content.classList.toggle('show');
+    }
+
+    // Sự kiện: Bấm ra ngoài thì đóng tất cả dropdown
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-btn') && !event.target.matches('.dropdown-btn *')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
 <?php
 layout('admin/footer');

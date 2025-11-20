@@ -97,14 +97,15 @@ class MoviesController extends baseController
 
 
         $getAllGenres = $this->moviesModel->getAllGenres();
-        $getCountries = $this->moviesModel->getAllCoutries();
+        $getCountries = $this->moviesModel->getAllCountries();
         $getStatus = $this->moviesModel->getAllMoviesStatus();
-        $getMovies = $this->moviesModel->getAllMovies("SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ',') as genres, ms.name as movie_status, c.name as country_name
+        $getMovies = $this->moviesModel->getAllMovies("SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ',') as genres, ms.name as movie_status, c.name as country_name, mt.name as type_name
         FROM movies as m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_status ms ON ms.id = m.status_id 
         LEFT JOIN countries c ON c.id = m.country_id
+        LEFT JOIN movie_types mt ON mt.id = m.type_id
         $chuoiWhere
         GROUP BY m.id
         ORDER BY m.created_at DESC
@@ -133,7 +134,18 @@ class MoviesController extends baseController
 
     public function showAdd()
     {
-        $this->renderView('/layout-part/admin/movies/add');
+        $getAllGenres = $this->moviesModel->getAllGenres();
+        $getAllStatus = $this->moviesModel->getAllStatus();
+        $getAllCountries = $this->moviesModel->getAllCountries();
+        $getAllType = $this->moviesModel->getAllType();
+
+        $data = [
+            'getAllGenres' => $getAllGenres,
+            'getAllStatus' => $getAllStatus,
+            'getAllCoutries' => $getAllCountries,
+            'getAllType' => $getAllType
+        ];
+        $this->renderView('/layout-part/admin/movies/add', $data);
     }
 
     public function add()
@@ -147,7 +159,7 @@ class MoviesController extends baseController
             }
 
             //validate original_tittle
-            if (empty(trim($filter['original_tittle']))) {
+            if (empty(trim($filter['original_title']))) {
                 $errors['original_tittle']['required'] = ' Tên gốc bắt buộc phải nhập';
             }
 
@@ -167,6 +179,55 @@ class MoviesController extends baseController
             }
 
             if (empty($errors)) {
+                $data = [
+                    'tittle' => $filter['tittle'],
+                    'original_tittle' => $filter['original_title'],
+                    'slug' => $filter['slug'],
+                    'release_year' => $filter['release_year'],
+                    'duration' => $filter['duration'],
+                    'country_id' => $filter['country_id'],
+                    'type_id' => $filter['type_id'],
+                    'status_id' => $filter['status_id'],
+                    'poster_url' => $filter['poster_url'],
+                    'thumbnail' => $filter['thumbnail'],
+                    'img' => $filter['img'],
+                    'trailer_url' => $filter['trailer_url'],
+                    'description' => $filter['description'],
+                    'total_views' => $filter['total_views'],
+                    'created_at' => date('Y:m:d H:i:s')
+                ];
+                $checkInsert = $this->moviesModel->insertMovies('movies', $data);
+                if ($checkInsert) {
+                    $movie_id = $this->moviesModel->getLastIdMovies();
+                    $genre_id = $filter['genre_id'];
+                    if (!empty($genre_id)) {
+                        foreach ($genre_id as $item) {
+                            $data = [
+                                'movie_id' => $movie_id,
+                                'genre_id' => $item
+                            ];
+                            $checkInsertMovie_Genres = $this->moviesModel->insertMoviesGenres($data);
+                            if ($checkInsertMovie_Genres) {
+                                setSessionFlash('msg', 'Thêm phim mới thành công');
+                                setSessionFlash('msg_type', 'success');
+                            } else {
+                                setSessionFlash('msg', 'Thêm phim mới thất bại');
+                                setSessionFlash('msg_type', 'danger');
+                                setSessionFlash('oldData', $filter);
+                                setSessionFlash('errors', $errors);
+                            }
+                        }
+                    }
+                    setSessionFlash('msg', 'Thêm phim mới thành công');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/film/list');
+                } else {
+                    setSessionFlash('msg', 'Thêm phim mới thất bại');
+                    setSessionFlash('msg_type', 'danger');
+                    setSessionFlash('oldData', $filter);
+                    setSessionFlash('errors', $errors);
+                    reload('/admin/film/add');
+                }
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
                 setSessionFlash('msg_type', 'danger');
@@ -174,6 +235,142 @@ class MoviesController extends baseController
                 setSessionFlash('errors', $errors);
                 reload('/admin/film/add');
             }
+        }
+    }
+
+    public function showEdit()
+    {
+        $filter = filterData('get');
+        $idMovie = $filter['id'];
+        $condition = 'id=' . $idMovie;
+        $result = $this->moviesModel->getOneMovie($condition);
+        $listAllGenres = $this->moviesModel->getAllGenres();
+        $getAllCountries = $this->moviesModel->getAllCountries();
+        $getAllStatus = $this->moviesModel->getAllStatus();
+        $getAllType = $this->moviesModel->getAllType();
+        $condition2 = 'movie_id=' . $idMovie;
+        $movieGenresData = $this->moviesModel->getAllMoviesGenres("SELECT * FROM movie_genres WHERE $condition2");
+        //Chuyen doi thanh mang 1 chieu chua cac id
+        $selectedGenresId = [];
+
+        // Kiểm tra biến $movieGenresData (dữ liệu từ DB) chứ không phải $selectedGenresId
+        if (!empty($movieGenresData)) {
+            $selectedGenresId = array_column($movieGenresData, 'genre_id');
+        }
+        $data = [
+            'idMovie' => $idMovie,
+            'oldData' => $result,
+            'listAllGenres' => $listAllGenres,
+            'selectedGenresId' => $selectedGenresId,
+            'getAllCountries' => $getAllCountries,
+            'getAllStatus' => $getAllStatus,
+            'getAllType' => $getAllType
+        ];
+        $this->renderView('/layout-part/admin/movies/edit', $data);
+    }
+
+    public function edit()
+    {
+        if (isPost()) {
+            $filter = filterData();
+            // echo '<pre>';
+            // print_r($filter);
+            // echo '</pre>';
+            // die();
+            $errors = [];
+            //validate tittle
+            if (empty(trim($filter['tittle']))) {
+                $errors['tittle']['required'] = ' Tên phim bắt buộc phải nhập';
+            }
+
+            //validate original_tittle
+            if (empty(trim($filter['original_title']))) {
+                $errors['original_tittle']['required'] = ' Tên gốc bắt buộc phải nhập';
+            }
+
+            //validate slug
+            if (empty(trim($filter['slug']))) {
+                $errors['slug']['required'] = ' Đường dẫn bắt buộc phải nhập';
+            }
+
+            //validate release_year
+            if (empty(trim($filter['release_year']))) {
+                $errors['release_year']['required'] = ' Năm phát hành bắt buộc phải nhập';
+            }
+
+            //validate duration
+            if (empty(trim($filter['duration']))) {
+                $errors['duration']['required'] = ' Thời lượng bắt buộc phải nhập';
+            }
+            if (empty($errors)) {
+                $dataUpdate = [
+                    'tittle' => $filter['tittle'],
+                    'original_tittle' => $filter['original_title'],
+                    'slug' => $filter['slug'],
+                    'release_year' => $filter['release_year'],
+                    'duration' => $filter['duration'],
+                    'country_id' => $filter['country_id'],
+                    'type_id' => $filter['type_id'],
+                    'status_id' => $filter['status_id'],
+                    'poster_url' => $filter['poster_url'],
+                    'thumbnail' => $filter['thumbnail'],
+                    'img' => $filter['img'],
+                    'trailer_url' => $filter['trailer_url'],
+                    'description' => $filter['description'],
+                    'total_views' => $filter['total_views'],
+                    'updated_at' => date('Y:m:d H:i:s')
+                ];
+                $conditionUpdate = 'id=' . $filter['idMovie'];
+                $checkUpdate = $this->moviesModel->updateMovies($dataUpdate, $conditionUpdate);
+                if ($checkUpdate) {
+                    setSessionFlash('msg', 'Cập nhật thành công');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/film/list');
+                } else {
+                    setSessionFlash('msg', 'Cập nhật thất bại');
+                    setSessionFlash('msg_type', 'danger');
+                    reload('/admin/film/edit');
+                }
+            } else {
+                setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
+                setSessionFlash('msg_type', 'danger');
+                setSessionFlash('errors', $errors);
+                reload('/admin/film/edit');
+            }
+        }
+    }
+
+    public function delete()
+    {
+        $filter = filterData('get');
+        if (!empty($filter)) {
+            $movie_id = $filter['id'];
+            $condition = 'id=' . $movie_id;
+            $checkID = $this->moviesModel->getOneMovie($condition);
+            if (!empty($checkID)) {
+                $conditionDeleteMovieGenres = 'movie_id=' . $movie_id;
+                $deleteMovieGenres = $this->moviesModel->deleteMovieGenres($conditionDeleteMovieGenres);
+                if ($deleteMovieGenres) {
+                    $condionDeleteMovie = 'id=' . $movie_id;
+                    $deleteMovie = $this->moviesModel->deleteMovie($condionDeleteMovie);
+                    if ($deleteMovie) {
+                        setSessionFlash('msg', 'Xoá bài viết thành công.');
+                        setSessionFlash('msg_type', 'success');
+                        reload('/admin/film/list');
+                    }
+                } else {
+                    setSessionFlash('msg', 'Xoá bài viết thất bại.');
+                    setSessionFlash('msg_type', 'danger');
+                    reload('/admin/film/list');
+                }
+            } else {
+                setSessionFlash('msg', 'Bài viết không tồn tại.');
+                setSessionFlash('msg_type', 'danger');
+                reload('/admin/film/list');
+            }
+        } else {
+            setSessionFlash('msg', 'Xoá bài viết thất bại.');
+            setSessionFlash('msg_type', 'danger');
         }
     }
 }
