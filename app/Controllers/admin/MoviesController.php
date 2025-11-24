@@ -76,9 +76,10 @@ class MoviesController extends baseController
         LEFT JOIN movie_status ms ON ms.id = m.status_id 
         LEFT JOIN countries c ON c.id = m.country_id
         $chuoiWhere";
+        $countMovies = $this->moviesModel->getRowMovies($sqlCount);
         $countResult = $this->moviesModel->getAllMovies($sqlCount);
         $maxData = $countResult[0]['total'];
-        $perPage = 3;
+        $perPage = 5;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;
@@ -87,8 +88,11 @@ class MoviesController extends baseController
             $page = $filter['page'];
         }
 
-        if ($page > $maxPage || $page < 1) {
+        if ($page < 1) {
             $page = 1;
+        }
+        if ($page > $maxPage) {
+            $page = $maxPage;
         }
 
         if (isset($page)) {
@@ -127,7 +131,8 @@ class MoviesController extends baseController
             'queryString' => $queryString,
             'countries' => $countries,
             'genres' => $genres,
-            'status' => $status
+            'status' => $status,
+            'countMovies' => $countMovies
         ];
         $this->renderView('/layout-part/admin/movies/list', $data);
     }

@@ -302,73 +302,102 @@ body {
 }
 
 /* --- TOOLBAR & FILTERS --- */
+/* --- TOOLBAR & FILTERS --- */
 .toolbar {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping */
-    gap: 16px;
-    margin-bottom: 20px;
-    justify-content: space-between;
+    flex-direction: column; /* Xếp dọc: Filter trên, Search dưới */
+    gap: 15px;
+    margin-bottom: 30px; /* Tăng khoảng cách đáy để bảng không bị dính vào */
+    width: 100%;
 }
 
+/* --- HÀNG 1: Nhóm lọc (Phim, Mùa, Nút) --- */
 .filters-group {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
     align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: wrap; /* Cho phép xuống dòng nếu màn hình quá nhỏ */
 }
 
+/* Ô Chọn Phim (Custom Select) */
+#filter-movie-select-container {
+    width: 350px;       /* Độ rộng cố định vừa phải */
+    max-width: 100%;    
+}
+
+/* --- Style chung cho thẻ Select --- */
 .filters-group select {
-    padding: 10px 16px;
-    background-color: var(--bg-card);
+    padding: 10px 30px 10px 16px; /* Padding phải rộng hơn để chứa mũi tên */
+    background-color: var(--bg-card); /* Nền tối */
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: var(--text-primary);
+    color: var(--text-primary);       /* Chữ sáng */
     outline: none;
     min-height: 40px;
+    min-width: 150px;
+    
+    /* Xóa mũi tên mặc định của trình duyệt để tự custom */
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    /* Thêm mũi tên màu trắng bằng SVG */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+    background-size: 10px auto;
 }
 
+/* --- KHẮC PHỤC LỖI SELECT DISABLED BỊ TRẮNG --- */
 .filters-group select:disabled {
-    opacity: 0.5;
+    background-color: var(--bg-card) !important; /* Ép buộc nền tối */
+    color: var(--text-secondary) !important;     /* Chữ màu xám nhạt */
+    border-color: var(--border-color);
+    opacity: 0.6; /* Làm mờ nhẹ để biết đang khóa */
     cursor: not-allowed;
 }
 
+/* --- HÀNG 2: Ô Tìm kiếm --- */
 .search-box {
     position: relative;
-    flex: 1;
-    max-width: 400px;
+    width: 100%;        
+    max-width: 400px;   /* Giới hạn chiều dài */
+    display: flex;      /* Flex giúp giữ cấu trúc icon và input */
+    align-items: center;
 }
 
-.search-box i {
+/* Căn chỉnh Icon (Hỗ trợ cả thẻ i và svg của FontAwesome JS) */
+.search-box i,
+.search-box svg {
     position: absolute;
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
+    pointer-events: none; /* Cho phép click xuyên qua icon */
+    z-index: 10;          /* Nổi lên trên input */
 }
 
 .search-box input {
     width: 100%;
-    padding: 10px 10px 10px 36px;
+    padding: 10px 10px 10px 40px; /* Padding trái chừa chỗ cho icon */
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
     outline: none;
+    height: 40px;
 }
 
 .search-box input:focus {
     border-color: var(--accent-blue);
 }
 
+/* Dọn dẹp CSS cũ nếu có */
 .filters select {
-    padding: 10px 16px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-primary);
-    outline: none;
+    display: none; /* Ẩn class cũ để tránh xung đột nếu không dùng */
 }
-
 /* --- TABLES --- */
 .table-container {
     padding: 0;
@@ -583,6 +612,97 @@ td.actions {
     accent-color: var(--accent-blue);
     cursor: pointer;
 }
+
+/* --- SEARCHABLE SELECT (NEW - For Single Select with Search) --- */
+.searchable-select {
+    position: relative;
+    width: 100%;
+    min-width: 200px; /* Đảm bảo độ rộng tối thiểu */
+}
+
+.select-trigger {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text-secondary); /* Màu mặc định khi chưa chọn */
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.select-trigger.has-value {
+    color: var(--text-primary);
+}
+
+.select-trigger:hover {
+    border-color: var(--text-secondary);
+}
+
+.select-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-top: 5px;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.searchable-select.active .select-dropdown {
+    display: block;
+}
+
+.select-search-box {
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-card);
+    border-radius: 8px 8px 0 0;
+}
+
+.select-search-box input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.select-options-list {
+    list-style: none;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 5px 0;
+}
+
+.select-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.2s;
+}
+
+.select-option:hover, .select-option.selected {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.select-option.hidden {
+    display: none;
+}
+
 
 /* --- FOOTER --- */
 .footer {

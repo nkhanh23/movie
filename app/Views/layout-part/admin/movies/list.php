@@ -106,7 +106,7 @@ $msg_type = getSessionFlash('msg_type');
             </tbody>
         </table>
         <div class="pagination">
-            <span>Hiển thị 1-3 trên 50 kết quả</span>
+            <span>Hiển thị 1-5 trên <?php echo $countMovies ?> kết quả</span>
             <div class="page-controls">
                 <?php if ($page > 1): ?>
                     <button
