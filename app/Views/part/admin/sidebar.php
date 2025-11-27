@@ -21,6 +21,10 @@ if (!defined('_nkhanhh')) {
             <i class="fa-solid fa-layer-group"></i>
             <span>Tập Phim</span>
         </a>
+        <a href="<?php echo _HOST_URL; ?>/admin/season" class="nav-item">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Mùa phim</span>
+        </a>
         <a href="#" class="nav-item">
             <i class="fa-solid fa-tags"></i>
             <span>Thể loại</span>

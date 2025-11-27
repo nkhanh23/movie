@@ -18,6 +18,17 @@ $router->post('/admin/film/add', 'MoviesController@add');
 
 $router->get('/admin/film/delete', 'MoviesController@delete');
 
+//ADMIN SEASON
+$router->get('/admin/season', 'SeasonController@list');
+
+$router->get('//admin/season/edit', 'SeasonController@showEdit');
+$router->post('//admin/season/edit', 'SeasonController@edit');
+
+$router->get('//admin/season/add', 'SeasonController@showAdd');
+$router->post('//admin/season/add', 'SeasonController@add');
+
+$router->get('//admin/season/delete', 'SeasonController@delete');
+
 //ADMIN EPISODE
 $router->get('/admin/episode', 'EpisodeController@list');
 

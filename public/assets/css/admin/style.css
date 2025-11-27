@@ -613,96 +613,118 @@ td.actions {
     cursor: pointer;
 }
 
-/* --- SEARCHABLE SELECT (NEW - For Single Select with Search) --- */
+/* --- SEARCHABLE SELECT (Custom Dropdown - Unified Version) --- */
+
+/* 1. Container chính */
 .searchable-select {
     position: relative;
     width: 100%;
-    min-width: 200px; /* Đảm bảo độ rộng tối thiểu */
+    min-width: 200px;
+    font-family: inherit;
 }
 
+/* 2. Nút bấm hiển thị (Trigger) */
 .select-trigger {
-    background-color: var(--bg-dark);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 12px;
-    color: var(--text-secondary); /* Màu mặc định khi chưa chọn */
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #1f2937; /* Nền tối */
+    border: 1px solid #374151; /* Viền xám tối */
+    border-radius: 5px;
+    color: #fff; /* Chữ trắng */
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.select-trigger.has-value {
-    color: var(--text-primary);
+    user-select: none;
+    transition: border-color 0.2s;
 }
 
 .select-trigger:hover {
-    border-color: var(--text-secondary);
+    border-color: #3b82f6; /* Hover viền xanh */
 }
 
+/* 3. Phần danh sách thả xuống (Mặc định ẩn) */
 .select-dropdown {
-    display: none;
+    display: none; /* QUAN TRỌNG: Ẩn mặc định */
     position: absolute;
-    top: 100%;
+    top: 105%; /* Cách nút bấm 1 chút */
     left: 0;
     right: 0;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 5px;
+    z-index: 9999; /* Đảm bảo nổi lên trên cùng, không bị che bởi input bên dưới */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
     margin-top: 5px;
-    z-index: 200;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* 4. Class kích hoạt hiển thị (Được JS thêm vào) */
 .searchable-select.active .select-dropdown {
     display: block;
 }
 
+/* 5. Ô tìm kiếm bên trong */
 .select-search-box {
-    padding: 8px;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    background-color: var(--bg-card);
-    border-radius: 8px 8px 0 0;
+    padding: 10px;
+    border-bottom: 1px solid #374151;
+    background-color: #1f2937;
+    border-radius: 5px 5px 0 0;
 }
 
 .select-search-box input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    background-color: #111827; /* Nền input đậm hơn */
+    border: 1px solid #4b5563;
     border-radius: 4px;
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
+    color: #fff;
+    outline: none;
     font-size: 0.9rem;
 }
 
+/* 6. Danh sách tùy chọn */
 .select-options-list {
     list-style: none;
-    max-height: 220px;
-    overflow-y: auto;
-    padding: 5px 0;
+    padding: 0;
+    margin: 0;
+    max-height: 250px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cho phép cuộn dọc */
 }
 
+/* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Safari) */
+.select-options-list::-webkit-scrollbar {
+    width: 6px;
+}
+.select-options-list::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+.select-options-list::-webkit-scrollbar-thumb {
+    background: #4b5563; 
+    border-radius: 3px;
+}
+
+/* 7. Từng dòng tùy chọn */
 .select-option {
-    padding: 8px 12px;
+    padding: 10px 15px;
     cursor: pointer;
-    color: var(--text-secondary);
+    border-bottom: 1px solid #374151;
+    color: #d1d5db; /* Màu chữ hơi xám */
     transition: background 0.2s;
 }
 
-.select-option:hover, .select-option.selected {
-    background-color: var(--bg-hover);
-    color: var(--text-primary);
+.select-option:last-child {
+    border-bottom: none;
 }
 
+.select-option:hover, .select-option.selected {
+    background-color: #374151; /* Màu nền khi hover */
+    color: #fff; /* Màu chữ sáng lên */
+}
+
+/* Class ẩn khi tìm kiếm không khớp */
 .select-option.hidden {
     display: none;
 }
-
 
 /* --- FOOTER --- */
 .footer {

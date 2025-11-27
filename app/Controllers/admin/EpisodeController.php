@@ -124,4 +124,17 @@ class EpisodeController extends baseController
         ];
         $this->renderView('/layout-part/admin/episode/list', $data);
     }
+
+    public function showAdd()
+    {
+        $getAllSeasons = $this->seasonsModel->getAllSeasons();
+        $getAllMovies = $this->moviesModel->getAllMovies();
+        $data = [
+            'getAllMovies' => $getAllMovies,
+            'getAllSeasons' => $getAllSeasons
+        ];
+        $this->renderView('/layout-part/admin/episode/add', $data);
+    }
+
+    public function add() {}
 }

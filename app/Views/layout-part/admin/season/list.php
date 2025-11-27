@@ -5,10 +5,10 @@ if (!defined('_nkhanhh')) {
 layout('admin/header');
 layout('admin/sidebar');
 
-// echo '<pre>';
-// (print_r($getAllSeasons));
-// echo '</pre>';
-// die();
+echo '<pre>';
+(print_r($getAllSeason));
+echo '</pre>';
+die();
 $msg = getSessionFlash('msg');
 $msg_type = getSessionFlash('msg_type');
 ?>
@@ -93,24 +93,24 @@ $msg_type = getSessionFlash('msg_type');
             <thead>
                 <tr>
                     <th>STT</th>
-                    <th>Tên Tập</th>
+                    <th>Tên Mùa</th>
                     <th>Thuộc Phim</th>
-                    <th>Mùa (Season)</th>
+                    <th>Chi tiết</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 $count = 1;
-                foreach ($getAllEpisode as $item):
+                foreach ($getAllSeason as $item):
                 ?>
                     <tr>
 
                         <td><?php echo $count;
                             $count++ ?></td>
-                        <td><?php echo $item['episode_name'] ?></td>
+                        <td><?php echo $item['name'] ?></td>
                         <td><?php echo $item['movie_name'] ?></td>
-                        <td><?php echo $item['season_name'] ?></td>
+                        <td><?php echo $item['description'] ?></td>
                         <td class="actions">
                             <div class="action-buttons">
                                 <button class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
