@@ -5,10 +5,10 @@ if (!defined('_nkhanhh')) {
 layout('admin/header');
 layout('admin/sidebar');
 
-echo '<pre>';
-(print_r($getAllSeason));
-echo '</pre>';
-die();
+// echo '<pre>';
+// (print_r($getAllSeason));
+// echo '</pre>';
+// die();
 $msg = getSessionFlash('msg');
 $msg_type = getSessionFlash('msg_type');
 ?>
@@ -72,10 +72,6 @@ $msg_type = getSessionFlash('msg_type');
                     </div>
                 </div>
 
-                <select name="season_id" id="filter-season-select" style="min-width: 150px;" disabled>
-                    <option value="">-- Chọn Mùa --</option>
-                    <!-- Sẽ được load bằng JS -->
-                </select>
 
                 <button class="btn btn-primary"><i class="fa-solid fa-filter"></i> Lọc</button>
             </div>
@@ -93,6 +89,7 @@ $msg_type = getSessionFlash('msg_type');
             <thead>
                 <tr>
                     <th>STT</th>
+                    <th>Poster</th>
                     <th>Tên Mùa</th>
                     <th>Thuộc Phim</th>
                     <th>Chi tiết</th>
@@ -108,6 +105,8 @@ $msg_type = getSessionFlash('msg_type');
 
                         <td><?php echo $count;
                             $count++ ?></td>
+                        <td><img width="180px" src="<?php echo $item['poster_url']; ?>" alt="" referrerpolicy="no-referrer">
+                        </td>
                         <td><?php echo $item['name'] ?></td>
                         <td><?php echo $item['movie_name'] ?></td>
                         <td><?php echo $item['description'] ?></td>

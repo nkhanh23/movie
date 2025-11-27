@@ -8,7 +8,7 @@ class EpisodeController extends baseController
     {
         $this->episodeModel = new Episode;
         $this->moviesModel = new Movies;
-        $this->seasonsModel = new Seasons;
+        $this->seasonsModel = new Season;
     }
 
     public function list()
@@ -110,7 +110,7 @@ class EpisodeController extends baseController
         $queryString = trim($queryString, '&');
 
 
-        $getAllSeasons = $this->seasonsModel->getAllSeasons();
+        $getAllSeasons = $this->seasonsModel->getAllSeason();
         $getAllMovies = $this->moviesModel->getAllMovies();
         $data = [
             'getAllMovies' => $getAllMovies,
@@ -127,7 +127,7 @@ class EpisodeController extends baseController
 
     public function showAdd()
     {
-        $getAllSeasons = $this->seasonsModel->getAllSeasons();
+        $getAllSeasons = $this->seasonsModel->getAllSeason();
         $getAllMovies = $this->moviesModel->getAllMovies();
         $data = [
             'getAllMovies' => $getAllMovies,

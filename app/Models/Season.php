@@ -9,9 +9,9 @@ class Season extends CoreModel
     public function getAllSeason($sql = '')
     {
         if (!empty($sql)) {
-            $this->getAll($sql);
+            return $this->getAll($sql);
         } else {
-            $this->getAll("SELECT * FROM seasons");
+            return $this->getAll("SELECT * FROM seasons");
         }
     }
 }
