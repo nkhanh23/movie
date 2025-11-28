@@ -12,13 +12,6 @@ layout('admin/sidebar');
 $msg = getSessionFlash('msg');
 $msg_type = getSessionFlash('msg_type');
 ?>
-<script>
-    // Chuyển đổi dữ liệu PHP sang JSON để JS sử dụng
-    // Lưu ý: Xóa đoạn debug print_r($getAllSeasons) cũ của bạn đi nhé
-    const allSeasonsData = <?php echo json_encode($getAllSeasons); ?>;
-
-    console.log("Dữ liệu Seasons đã tải:", allSeasonsData); // F12 để kiểm tra
-</script>
 <section id="episodes-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
         <h2>Quản lý Tập Phim</h2>
@@ -62,11 +55,11 @@ $msg_type = getSessionFlash('msg_type');
                             <li class="select-option" data-value="">-- Chọn Phim --</li>
 
                             <?php foreach ($getAllMovies as $item): ?>
-                                <li class="select-option" data-value="<?php echo $item['id']; ?>"
-                                    data-type-id="<?php echo $item['type_id']; ?>">
+                            <li class="select-option" data-value="<?php echo $item['id']; ?>"
+                                data-type-id="<?php echo $item['type_id']; ?>">
 
-                                    <?php echo $item['tittle']; ?> (<?php echo $item['original_tittle']; ?>)
-                                </li>
+                                <?php echo $item['tittle']; ?> (<?php echo $item['original_tittle']; ?>)
+                            </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
@@ -104,21 +97,21 @@ $msg_type = getSessionFlash('msg_type');
                 $count = 1;
                 foreach ($getAllEpisode as $item):
                 ?>
-                    <tr>
+                <tr>
 
-                        <td><?php echo $count;
+                    <td><?php echo $count;
                             $count++ ?></td>
-                        <td><?php echo $item['episode_name'] ?></td>
-                        <td><?php echo $item['movie_name'] ?></td>
-                        <td><?php echo $item['season_name'] ?></td>
-                        <td class="actions">
-                            <div class="action-buttons">
-                                <button class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-icon-sm delete-btn" data-id="101"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    <td><?php echo $item['episode_name'] ?></td>
+                    <td><?php echo $item['movie_name'] ?></td>
+                    <td><?php echo $item['season_name'] ?></td>
+                    <td class="actions">
+                        <div class="action-buttons">
+                            <button class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-icon-sm delete-btn" data-id="101"><i
+                                    class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -130,9 +123,9 @@ $msg_type = getSessionFlash('msg_type');
                 $prefixLink = !empty($queryString) ? "?$queryString&page=" : "?page=";
                 ?>
                 <?php if ($page > 1): ?>
-                    <button onclick="window.location.href='<?php echo $prefixLink . ($page - 1) ?>'">Trước</button>
+                <button onclick="window.location.href='<?php echo $prefixLink . ($page - 1) ?>'">Trước</button>
                 <?php elseif ($page == 1): ?>
-                    <button disabled onclick="window.location.href='<?php echo $prefixLink . ($page - 1) ?>">Trước</button>
+                <button disabled onclick="window.location.href='<?php echo $prefixLink . ($page - 1) ?>">Trước</button>
                 <?php endif; ?>
                 <?php
                 $start = $page - 1;
@@ -145,15 +138,15 @@ $msg_type = getSessionFlash('msg_type');
                 }
                 for ($i = $start; $i <= $end; $i++):
                 ?>
-                    <button onclick="window.location.href='<?php echo $prefixLink . $i ?>'"
-                        class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
-                        <?php echo $i ?>
-                    </button>
+                <button onclick="window.location.href='<?php echo $prefixLink . $i ?>'"
+                    class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
+                    <?php echo $i ?>
+                </button>
                 <?php endfor; ?>
                 <?php if ($page < $maxPage): ?>
-                    <button onclick="window.location.href='<?php echo $prefixLink . ($page + 1) ?>'">Sau</button>
+                <button onclick="window.location.href='<?php echo $prefixLink . ($page + 1) ?>'">Sau</button>
                 <?php elseif ($page == $maxPage): ?>
-                    <button disabled>Sau</button>
+                <button disabled>Sau</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -164,77 +157,157 @@ $msg_type = getSessionFlash('msg_type');
 
 <!-- Khi click chọn phim -> Lấy data-type-id -> Kiểm tra -> Mở/Khóa ô Season. -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- KHAI BÁO BIẾN ---
-        const movieOptions = document.querySelectorAll('#filter-movie-select-container .select-option');
-        const seasonSelect = document.getElementById('filter-season-select');
-        const hiddenMovieInput = document.getElementById('filter-movie-select');
-        const triggerText = document.querySelector('.select-trigger');
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 1. KHAI BÁO ---
+    const selectContainer = document.getElementById('filter-movie-select-container');
+    const trigger = selectContainer.querySelector('.select-trigger');
+    const triggerText = trigger;
 
-        // Lấy dữ liệu cũ từ PHP in ra (nếu có)
-        const oldSeasonId = "<?php echo !empty($oldData['season_id']) ? $oldData['season_id'] : ''; ?>";
-        // Lấy Type ID của phim đang chọn (được tính toán ở Bước 1 PHP)
-        const currentMovieTypeId = "<?php echo $selectedMovieTypeId; ?>";
+    // Menu dropdown gốc nằm trong selectContainer
+    const dropdown = selectContainer.querySelector('.select-dropdown');
 
-        // --- HÀM XỬ LÝ LOAD MÙA (Tách ra để tái sử dụng) ---
-        function loadSeasonsForMovie(movieId, typeId) {
-            // Reset ô chọn mùa
-            seasonSelect.innerHTML = '<option value="">-- Chọn Mùa --</option>';
-            seasonSelect.value = "";
+    // Các input khác
+    const seasonSelect = document.getElementById('filter-season-select');
+    const hiddenMovieInput = document.getElementById('filter-movie-select');
 
-            if (typeId == '2') { // Phim bộ
-                seasonSelect.disabled = false;
+    // Data PHP
+    // allSeasonsData đã được khai báo ở <script> trên đầu file:
+    // const allSeasonsData = <?php echo json_encode($getAllSeasons); ?>;
+    const oldSeasonId = "<?php echo !empty($oldData['season_id']) ? $oldData['season_id'] : ''; ?>";
+    const currentMovieTypeId = "<?php echo $selectedMovieTypeId; ?>";
 
-                // Lọc dữ liệu từ biến JSON allSeasonsData (đã khai báo ở đầu file)
-                const filteredSeasons = allSeasonsData.filter(function(item) {
-                    return item.movie_id == movieId;
-                });
+    // --- 2. SETUP PORTAL (Chuyển menu ra body) ---
+    dropdown.classList.add('global-dropdown-portal');
+    dropdown.classList.remove('select-dropdown'); // tránh xung đột CSS
+    document.body.appendChild(dropdown); // di chuyển ra body
 
-                if (filteredSeasons.length > 0) {
-                    filteredSeasons.forEach(function(season) {
-                        const opt = document.createElement('option');
-                        opt.value = season.id;
-                        opt.textContent = season.name;
-                        seasonSelect.appendChild(opt);
-                    });
-                } else {
-                    const opt = document.createElement('option');
-                    opt.textContent = "Chưa có dữ liệu mùa";
-                    seasonSelect.appendChild(opt);
-                }
-            } else { // Phim lẻ
-                seasonSelect.disabled = true;
-            }
-        }
+    // Lấy lại element con sau khi di chuyển
+    const searchInput = dropdown.querySelector('.select-search-box input');
+    const movieOptions = dropdown.querySelectorAll('.select-option');
 
-        // --- SỰ KIỆN CLICK CHỌN PHIM (Code cũ của bạn, đã tối ưu gọi hàm) ---
-        movieOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const movieId = this.getAttribute('data-value');
-                const typeId = this.getAttribute('data-type-id');
-                const movieName = this.textContent;
+    // Hàm tính toán vị trí dropdown theo nút trigger
+    function updatePosition() {
+        const rect = trigger.getBoundingClientRect();
 
-                // Cập nhật UI
-                hiddenMovieInput.value = movieId;
-                triggerText.innerHTML = movieName + ' <i class="fa-solid fa-chevron-down"></i>';
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
-                // Gọi hàm load mùa
-                loadSeasonsForMovie(movieId, typeId);
-            });
-        });
+        dropdown.style.top = (rect.bottom + scrollTop + 5) + 'px';
+        dropdown.style.left = (rect.left + scrollLeft) + 'px';
+        dropdown.style.width = rect.width + 'px'; // bằng đúng chiều rộng trigger
+    }
 
-        // --- QUAN TRỌNG: TỰ ĐỘNG CHẠY KHI RELOAD TRANG ---
-        // Nếu input hidden đang có giá trị (tức là vừa bấm lọc xong)
-        if (hiddenMovieInput.value !== "") {
-            // 1. Load lại danh sách mùa dựa trên ID phim đang có
-            loadSeasonsForMovie(hiddenMovieInput.value, currentMovieTypeId);
+    // --- 3. SỰ KIỆN CLICK MỞ / ĐÓNG MENU ---
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
 
-            // 2. Nếu trước đó có chọn mùa, thì gán lại giá trị cho ô select
-            if (oldSeasonId !== "") {
-                seasonSelect.value = oldSeasonId;
-            }
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        } else {
+            updatePosition();
+            dropdown.classList.add('show');
+            searchInput.focus();
         }
     });
+
+    // Cập nhật vị trí khi scroll / resize
+    window.addEventListener('scroll', function() {
+        if (dropdown.classList.contains('show')) updatePosition();
+    });
+    window.addEventListener('resize', function() {
+        if (dropdown.classList.contains('show')) updatePosition();
+    });
+
+    // Đóng khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        if (!selectContainer.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // --- 4. SEARCH MOVIE TRONG DROPDOWN ---
+    searchInput.addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase();
+
+        movieOptions.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(keyword) || option.getAttribute('data-value') === "") {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+
+    // --- 5. LOAD SEASON THEO MOVIE ---
+    function loadSeasonsForMovie(movieId, typeId) {
+        seasonSelect.innerHTML = '<option value="">-- Chọn Mùa --</option>';
+        seasonSelect.value = "";
+
+        // Không chọn phim => disable luôn
+        if (!movieId) {
+            seasonSelect.disabled = true;
+            return;
+        }
+
+        if (typeId == '2') { // Phim bộ
+            seasonSelect.disabled = false;
+
+            const filteredSeasons = allSeasonsData.filter(item => item.movie_id == movieId);
+
+            if (filteredSeasons.length > 0) {
+                filteredSeasons.forEach(season => {
+                    const opt = document.createElement('option');
+                    opt.value = season.id;
+                    opt.textContent = season.name;
+                    seasonSelect.appendChild(opt);
+                });
+            } else {
+                const opt = document.createElement('option');
+                opt.textContent = "Chưa có dữ liệu mùa";
+                seasonSelect.appendChild(opt);
+            }
+        } else { // Phim lẻ
+            seasonSelect.disabled = true;
+        }
+    }
+
+    // --- 6. CLICK CHỌN PHIM ---
+    movieOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const movieId = this.getAttribute('data-value');
+            const typeId = this.getAttribute('data-type-id');
+            const movieName = this.textContent.trim();
+
+            // Gán vào input hidden để gửi lên server khi submit form
+            hiddenMovieInput.value = movieId;
+
+            // Cập nhật text cho nút trigger
+            triggerText.innerHTML = `${movieName} <i class="fa-solid fa-chevron-down"></i>`;
+
+            // Đóng menu
+            dropdown.classList.remove('show');
+
+            // Load season tương ứng
+            loadSeasonsForMovie(movieId, typeId);
+        });
+    });
+
+    // --- 7. AUTO RUN KHI RELOAD TRANG (ĐÃ LỌC TRƯỚC ĐÓ) ---
+    if (hiddenMovieInput.value !== "") {
+        // Load lại season theo movie đang được chọn
+        loadSeasonsForMovie(hiddenMovieInput.value, currentMovieTypeId);
+
+        // Nếu trước đó có chọn season thì gán lại
+        if (oldSeasonId !== "") {
+            seasonSelect.value = oldSeasonId;
+        }
+    } else {
+        // Chưa chọn phim => disable season
+        seasonSelect.disabled = true;
+    }
+});
 </script>
+
 <?php
 layout('admin/footer');

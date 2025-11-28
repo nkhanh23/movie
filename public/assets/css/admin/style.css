@@ -613,24 +613,24 @@ td.actions {
     cursor: pointer;
 }
 
-/* --- SEARCHABLE SELECT (Custom Dropdown - Unified Version) --- */
+/* --- SEARCHABLE SELECT (Final Fixed Version) --- */
 
-/* 1. Container chính */
+/* --- SEARCHABLE SELECT (PORTAL VERSION) --- */
+
+/* 1. Trigger (Nút bấm) */
 .searchable-select {
     position: relative;
     width: 100%;
     min-width: 200px;
     font-family: inherit;
 }
-
-/* 2. Nút bấm hiển thị (Trigger) */
 .select-trigger {
     width: 100%;
     padding: 10px 15px;
-    background-color: #1f2937; /* Nền tối */
-    border: 1px solid #374151; /* Viền xám tối */
+    background-color: #1f2937;
+    border: 1px solid #374151;
     border-radius: 5px;
-    color: #fff; /* Chữ trắng */
+    color: #fff;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -638,92 +638,81 @@ td.actions {
     user-select: none;
     transition: border-color 0.2s;
 }
-
 .select-trigger:hover {
-    border-color: #3b82f6; /* Hover viền xanh */
+    border-color: #3b82f6;
 }
 
-/* 3. Phần danh sách thả xuống (Mặc định ẩn) */
-.select-dropdown {
-    display: none; /* QUAN TRỌNG: Ẩn mặc định */
+/* 2. MENU PORTAL (Khi đã bay ra ngoài Body) */
+.global-dropdown-portal {
+    /* Cho phép JS set top/left động */
     position: absolute;
-    top: 105%; /* Cách nút bấm 1 chút */
+    top: 0;      /* Giá trị khởi tạo, sẽ bị ghi đè bởi JS */
     left: 0;
-    right: 0;
+
+    /* Giao diện */
     background-color: #1f2937;
-    border: 1px solid #374151;
+    border: 1px solid #4b5563;
     border-radius: 5px;
-    z-index: 9999; /* Đảm bảo nổi lên trên cùng, không bị che bởi input bên dưới */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-    margin-top: 5px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 999999; /* Có thể giữ !important ở đây nếu cần */
+
+    display: none;
+    overflow: hidden;
+    min-width: 200px;
+    font-family: inherit;
+
+    /* Sửa lỗi width 100% bị to bằng màn hình */
+    width: auto;
+    box-sizing: border-box;
 }
 
-/* 4. Class kích hoạt hiển thị (Được JS thêm vào) */
-.searchable-select.active .select-dropdown {
+.global-dropdown-portal.show {
     display: block;
 }
 
-/* 5. Ô tìm kiếm bên trong */
-.select-search-box {
-    padding: 10px;
-    border-bottom: 1px solid #374151;
-    background-color: #1f2937;
-    border-radius: 5px 5px 0 0;
-}
 
-.select-search-box input {
+/* 3. Ô tìm kiếm */
+.global-dropdown-portal .select-search-box {
+    padding: 10px;
+    background-color: #1f2937;
+    border-bottom: 1px solid #374151;
+}
+.global-dropdown-portal .select-search-box input {
     width: 100%;
     padding: 8px 12px;
-    background-color: #111827; /* Nền input đậm hơn */
+    background-color: #111827;
     border: 1px solid #4b5563;
     border-radius: 4px;
     color: #fff;
     outline: none;
     font-size: 0.9rem;
+    box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
 }
 
-/* 6. Danh sách tùy chọn */
-.select-options-list {
+/* 4. Danh sách cuộn */
+.global-dropdown-portal .select-options-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 250px; /* Giới hạn chiều cao */
-    overflow-y: auto; /* Cho phép cuộn dọc */
+    max-height: 250px;
+    overflow-y: auto;
 }
-
-/* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Safari) */
-.select-options-list::-webkit-scrollbar {
-    width: 6px;
-}
-.select-options-list::-webkit-scrollbar-track {
-    background: #1f2937;
-}
-.select-options-list::-webkit-scrollbar-thumb {
-    background: #4b5563; 
-    border-radius: 3px;
-}
-
-/* 7. Từng dòng tùy chọn */
-.select-option {
+.global-dropdown-portal .select-option {
     padding: 10px 15px;
     cursor: pointer;
     border-bottom: 1px solid #374151;
-    color: #d1d5db; /* Màu chữ hơi xám */
-    transition: background 0.2s;
+    color: #d1d5db;
+}
+.global-dropdown-portal .select-option:hover {
+    background-color: #374151;
+    color: #fff;
 }
 
-.select-option:last-child {
-    border-bottom: none;
-}
-
-.select-option:hover, .select-option.selected {
-    background-color: #374151; /* Màu nền khi hover */
-    color: #fff; /* Màu chữ sáng lên */
-}
-
-/* Class ẩn khi tìm kiếm không khớp */
-.select-option.hidden {
-    display: none;
+/* FORM ERROR */
+.error{
+    padding: 5px;
+    font-style: italic;
+    color: red ;
 }
 
 /* --- FOOTER --- */

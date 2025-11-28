@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- CSS Tùy chỉnh -->
     <link rel="stylesheet" href="<?php echo _HOST_URL_PUBLIC; ?>/assets/css/admin/style.css">
-    <script type="importmap">
-    </script>
 </head>
 
 <body>

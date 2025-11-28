@@ -93,6 +93,8 @@ class SeasonController extends baseController
 
         $getAllMovies = $this->moviesModel->getAllMovies();
 
+        $filterGet = filterData('get');
+
         $data = [
             'getAllMovies' => $getAllMovies,
             'getAllSeason' => $getAllSeason,
@@ -100,8 +102,176 @@ class SeasonController extends baseController
             'maxPage' => $maxPage,
             'page' => $page,
             'countResult' => $countResult,
-            'queryString' => $queryString
+            'queryString' => $queryString,
+            'filterGet' => $filterGet
         ];
         $this->renderView('/layout-part/admin/season/list', $data);
+    }
+
+    public function showAdd()
+    {
+
+        $getAllStatus = $this->moviesModel->getAllStatus();
+        $data = [
+            'getAllStatus' => $getAllStatus
+        ];
+        $this->renderView('/layout-part/admin/season/add', $data);
+    }
+
+    public function add()
+    {
+        $idMovie = filterData('get');
+        if (isPost()) {
+            $filter = filterData();
+            $errors = [];
+
+            if (empty(trim($filter['name']))) {
+                $errors['name']['required'] = ' Tên mùa bắt buộc phải nhập';
+            }
+
+            if (empty(trim($filter['description']))) {
+                $errors['description']['required'] = ' Chi tiết bắt buộc phải nhập';
+            }
+
+            if (empty(trim($filter['poster_url']))) {
+                $errors['poster_url']['required'] = ' Poster URL bắt buộc phải nhập';
+            }
+
+
+            if (empty(trim($filter['trailer_url']))) {
+                $errors['trailer_url']['required'] = ' Trailer URL bắt buộc phải nhập';
+            }
+
+            if (empty($errors)) {
+                $data = [
+                    'movie_id' => $idMovie['id'],
+                    'name' => $filter['name'],
+                    'description' => $filter['description'],
+                    'poster_url' => $filter['poster_url'],
+                    'trailer_url' => $filter['trailer_url'],
+                    'status_id' => $filter['status_id'],
+                    'created_at' => date('Y:m:d H:i:s')
+                ];
+                $checkInsert = $this->seasonsModel->insertSeason($data);
+                if ($checkInsert) {
+                    setSessionFlash('msg', 'Thêm mùa mới thành công');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/season?filter-movie-id=' . $idMovie['id']);
+                } else {
+                    setSessionFlash('msg', 'Thêm mùa mới thất bại');
+                    setSessionFlash('msg_type', 'danger');
+                    setSessionFlash('oldData', $filter);
+                    setSessionFlash('errors', $errors);
+                }
+            } else {
+                setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
+                setSessionFlash('msg_type', 'danger');
+                setSessionFlash('oldData', $filter);
+                setSessionFlash('errors', $errors);
+                reload('/admin/season/add');
+            }
+        }
+    }
+
+    public function showEdit()
+    {
+        $filter = filterData('get');
+        $idSeason = $filter['id'];
+        $conditionGetOneSeason = 'id=' . $idSeason;
+        $getOneSeason = $this->seasonsModel->getOneSeason($conditionGetOneSeason);
+        $getAllStatus = $this->moviesModel->getAllStatus();
+
+        $data = [
+            'oldData' => $getOneSeason,
+            'getAllStatus' => $getAllStatus,
+            'idSeason' => $idSeason
+        ];
+        $this->renderView('/layout-part/admin/season/edit', $data);
+    }
+
+    public function edit()
+    {
+        if (isPost()) {
+            $filter = filterData();
+            // echo '<pre>';
+            // print_r($filter);
+            // echo '</pre>';
+            // die();
+            $errors = [];
+
+            if (empty(trim($filter['name']))) {
+                $errors['name']['required'] = ' Tên mùa bắt buộc phải nhập';
+            }
+
+            if (empty(trim($filter['description']))) {
+                $errors['description']['required'] = ' Chi tiết bắt buộc phải nhập';
+            }
+
+            if (empty(trim($filter['poster_url']))) {
+                $errors['poster_url']['required'] = ' Poster URL bắt buộc phải nhập';
+            }
+
+
+            if (empty(trim($filter['trailer_url']))) {
+                $errors['trailer_url']['required'] = ' Trailer URL bắt buộc phải nhập';
+            }
+        }
+
+        if (empty($errors)) {
+            $data = [
+                'name' => $filter['name'],
+                'description' => $filter['description'],
+                'poster_url' => $filter['poster_url'],
+                'trailer_url' => $filter['trailer_url'],
+                'status_id' => $filter['status_id'],
+                'updated_at' => date('Y:m:d H:i:s')
+            ];
+
+            $condition = 'id=' . $filter['id'];
+            $checkUpdate = $this->seasonsModel->updateSeason($data, $condition);
+            if ($checkUpdate) {
+                setSessionFlash('msg', 'Cập nhật thành công');
+                setSessionFlash('msg_type', 'success');
+                reload('/admin/season');
+            } else {
+                setSessionFlash('msg', 'Cập nhật thất bại');
+                setSessionFlash('msg_type', 'danger');
+                reload('/admin/season');
+            }
+        } else {
+            setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
+            setSessionFlash('msg_type', 'danger');
+            setSessionFlash('errors', $errors);
+            reload('/admin/season/edit');
+        }
+    }
+    public function delete()
+    {
+        $filter = filterData('get');
+        if (!empty($filter)) {
+            $season_id = $filter['id'];
+            $condition = 'id=' . $season_id;
+            $checkID = $this->seasonsModel->getOneSeason($condition);
+            if (!empty($checkID)) {
+                $conditionDeleteSeason = 'id=' . $season_id;
+                $deleteSeason = $this->seasonsModel->deleteSeason($conditionDeleteSeason);
+                if ($deleteSeason) {
+                    setSessionFlash('msg', 'Xoá mùa thành công.');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/season');
+                } else {
+                    setSessionFlash('msg', 'Xoá mùa thất bại.');
+                    setSessionFlash('msg_type', 'danger');
+                    reload('/admin/season');
+                }
+            } else {
+                setSessionFlash('msg', 'Mùa phim không tồn tại.');
+                setSessionFlash('msg_type', 'danger');
+                reload('/admin/season');
+            }
+        } else {
+            setSessionFlash('msg', 'Xoá mùa thất bại.');
+            setSessionFlash('msg_type', 'danger');
+        }
     }
 }
