@@ -23,6 +23,22 @@ class CoreModel
         return $result;
     }
 
+    public function countRows($sql)
+    {
+        // 1. Chuẩn bị câu lệnh
+        $stm = $this->connect->prepare($sql);
+
+        // 2. Thực thi
+        $stm->execute();
+
+        // 3. Lấy dữ liệu (SỬA ĐOẠN NÀY)
+        // PDO::FETCH_ASSOC giúp lấy về mảng kết hợp (key là tên cột), bỏ qua index số cho nhẹ
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        // 4. Trả về mảng dữ liệu
+        return $result;
+    }
+
     public function getOne($sql)
     {
         $stm = $this->connect->prepare($sql);

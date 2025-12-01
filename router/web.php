@@ -39,3 +39,14 @@ $router->get('/admin/episode/add', 'EpisodeController@showAdd');
 $router->post('/admin/episode/add', 'EpisodeController@add');
 
 $router->get('/admin/episode/delete', 'EpisodeController@delete');
+
+//ADMIN GENRES
+$router->get('/admin/genres', 'GenresController@list');
+
+$router->get('/admin/genres/edit', 'GenresController@showEdit');
+$router->post('/admin/genres/edit', 'GenresController@edit');
+
+$router->get('/admin/genres/add', 'GenresController@showAdd');
+$router->post('/admin/genres/add', 'GenresController@add');
+
+$router->get('/admin/genres/delete', 'GenresController@delete');

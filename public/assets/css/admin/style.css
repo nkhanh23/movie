@@ -398,6 +398,28 @@ body {
 .filters select {
     display: none; /* Ẩn class cũ để tránh xung đột nếu không dùng */
 }
+
+/* Nút phụ (Màu xám, chữ trắng) */
+.btn-secondary {
+    background-color: #6c757d;  /* Màu xám đậm */
+    color: #fff !important;     /* Chữ màu trắng (quan trọng) */
+    border: 1px solid #6c757d;
+    padding: 0 15px;
+    height: 40px;
+    border-radius: 8px;
+    display: inline-flex;       /* Dùng flex để căn giữa icon và chữ */
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi di chuột vào */
+.btn-secondary:hover {
+    background-color: #5a6268; /* Xám đậm hơn khi hover */
+    border-color: #545b62;
+}
 /* --- TABLES --- */
 .table-container {
     padding: 0;

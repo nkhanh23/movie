@@ -23,4 +23,29 @@ class Episode extends CoreModel
             return $this->getRows("SELECT * FROM episodes");
         }
     }
+
+    public function getAllVideoSource()
+    {
+        return $this->getAll("SELECT * FROM video_sources");
+    }
+
+    public function insertEpisode($data)
+    {
+        return $this->insert('episodes', $data);
+    }
+
+    public function getOneEpisode($condition)
+    {
+        return $this->getOne("SELECT * FROM episodes WHERE $condition");
+    }
+
+    public function updateEpisode($data, $condition)
+    {
+        return $this->update("episodes", $data, $condition);
+    }
+
+    public function deleteEpisode($condition)
+    {
+        return $this->delete("episodes", $condition);
+    }
 }

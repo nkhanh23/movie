@@ -2,9 +2,11 @@
 class MoviesController extends baseController
 {
     private $moviesModel;
+    private $genresModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
+        $this->genresModel = new Genres;
     }
 
     public function list()
@@ -100,7 +102,7 @@ class MoviesController extends baseController
         }
 
 
-        $getAllGenres = $this->moviesModel->getAllGenres();
+        $getAllGenres = $this->genresModel->getAllGenres();
         $getCountries = $this->moviesModel->getAllCountries();
         $getStatus = $this->moviesModel->getAllMoviesStatus();
         $getMovies = $this->moviesModel->getAllMovies("SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ',') as genres, ms.name as movie_status, c.name as country_name, mt.name as type_name
@@ -139,7 +141,7 @@ class MoviesController extends baseController
 
     public function showAdd()
     {
-        $getAllGenres = $this->moviesModel->getAllGenres();
+        $getAllGenres = $this->genresModel->getAllGenres();
         $getAllStatus = $this->moviesModel->getAllStatus();
         $getAllCountries = $this->moviesModel->getAllCountries();
         $getAllType = $this->moviesModel->getAllType();
@@ -249,7 +251,7 @@ class MoviesController extends baseController
         $idMovie = $filter['id'];
         $condition = 'id=' . $idMovie;
         $result = $this->moviesModel->getOneMovie($condition);
-        $listAllGenres = $this->moviesModel->getAllGenres();
+        $listAllGenres = $this->genresModel->getAllGenres();
         $getAllCountries = $this->moviesModel->getAllCountries();
         $getAllStatus = $this->moviesModel->getAllStatus();
         $getAllType = $this->moviesModel->getAllType();

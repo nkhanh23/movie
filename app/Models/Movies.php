@@ -34,14 +34,7 @@ class Movies extends CoreModel
         }
     }
 
-    public function getAllGenres($sql = '')
-    {
-        if (!empty($sql)) {
-            return $this->getAll($sql);
-        } else {
-            return $this->getAll("SELECT * FROM genres");
-        }
-    }
+
 
     public function getAllCountries()
     {
