@@ -40,4 +40,9 @@ class Genres extends CoreModel
     {
         return $this->update("genres", $data, $condition);
     }
+
+    public function deleteGenres($table, $condition)
+    {
+        return $this->delete($table, $condition);
+    }
 }

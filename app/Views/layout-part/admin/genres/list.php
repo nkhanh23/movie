@@ -50,23 +50,23 @@ $msg_type = getSessionFlash('msg_type');
                 <?php
                 $count = 1;
                 foreach ($getAllGenres as $item): ?>
-                    <tr>
-                        <td><?php echo $count;
+                <tr>
+                    <td><?php echo $count;
                             $count++; ?></td>
-                        <td><?php echo $item['name'] ?></td>
-                        <td><?php echo $item['slug'] ?></td>
-                        <td><?php echo $item['count_movies'] ?></td>
-                        <td class="actions">
-                            <div class="action-buttons">
-                                <button
-                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/genres/edit?id=<?php echo $item['id'] ?>'"
-                                    class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
-                                <button
-                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/genres/edit?id=<?php echo $item['id'] ?>'"
-                                    class="btn-icon-sm delete-btn" data-id="g2"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    <td><?php echo $item['name'] ?></td>
+                    <td><?php echo $item['slug'] ?></td>
+                    <td><?php echo $item['count_movies'] ?></td>
+                    <td class="actions">
+                        <div class="action-buttons">
+                            <button
+                                onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/genres/edit?id=<?php echo $item['id'] ?>'"
+                                class="btn-icon-sm"><i class="fa-solid fa-pen"></i></button>
+                            <button
+                                onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/genres/delete?id=<?php echo $item['id'] ?>'"
+                                class="btn-icon-sm delete-btn" data-id="g2"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -74,11 +74,11 @@ $msg_type = getSessionFlash('msg_type');
             <span>Hiển thị 1-5 trên <?php echo $countGenres ?> kết quả</span>
             <div class="page-controls">
                 <?php if ($page > 1): ?>
-                    <button
-                        onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
+                <button
+                    onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
                 <?php elseif ($page == 1): ?>
-                    <button disabled
-                        onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
+                <button disabled
+                    onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
                 <?php endif; ?>
                 <?php
                 $start = $page - 1;
@@ -91,16 +91,16 @@ $msg_type = getSessionFlash('msg_type');
                 }
                 for ($i = $start; $i <= $end; $i++):
                 ?>
-                    <button onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
-                        class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
-                        <?php echo $i ?>
-                    </button>
+                <button onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
+                    class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
+                    <?php echo $i ?>
+                </button>
                 <?php endfor; ?>
                 <?php if ($page < $maxPage): ?>
-                    <button
-                        onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'">Sau</button>
+                <button
+                    onclick="window.location.href='genres?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'">Sau</button>
                 <?php elseif ($page == $maxPage): ?>
-                    <button disabled>Sau</button>
+                <button disabled>Sau</button>
                 <?php endif; ?>
             </div>
         </div>

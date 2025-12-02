@@ -50,3 +50,14 @@ $router->get('/admin/genres/add', 'GenresController@showAdd');
 $router->post('/admin/genres/add', 'GenresController@add');
 
 $router->get('/admin/genres/delete', 'GenresController@delete');
+
+//ADMIN GENRES
+$router->get('/admin/user', 'UserController@list');
+
+$router->get('/admin/user/edit', 'UserController@showEdit');
+$router->post('/admin/user/edit', 'UserController@edit');
+
+$router->get('/admin/user/add', 'UserController@showAdd');
+$router->post('/admin/user/add', 'UserController@add');
+
+$router->get('/admin/user/delete', 'UserController@delete');

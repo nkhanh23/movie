@@ -188,5 +188,37 @@ class GenresController extends baseController
         }
     }
 
-    public function delete() {}
+    public function delete()
+    {
+        $filter = filterData();
+        if (!empty($filter['id'])) {
+            $idGenres = $filter['id'];
+            $conditionGetOneGenres = 'id=' . $idGenres;
+            $checkID = $this->genresModel->getOneGenres($conditionGetOneGenres);
+            if (!empty($checkID)) {
+                $conditionDeleteMovieGenres = 'genre_id=' . $idGenres;
+                $deleteMovieGenres = $this->genresModel->deleteGenres('movie_genres', $conditionDeleteMovieGenres);
+                if ($deleteMovieGenres) {
+                    $conditionDeleteGenres = 'id=' . $idGenres;
+                    $deleteGenres = $this->genresModel->deleteGenres('genres', $conditionDeleteGenres);
+                    if ($deleteGenres) {
+                        setSessionFlash('msg', 'Xoá bài viết thành công.');
+                        setSessionFlash('msg_type', 'success');
+                        reload('/admin/genres');
+                    } else {
+                        setSessionFlash('msg', 'Xoá bài viết thất bại.');
+                        setSessionFlash('msg_type', 'danger');
+                        reload('/admin/genres');
+                    }
+                }
+            } else {
+                setSessionFlash('msg', 'Bài viết không tồn tại.');
+                setSessionFlash('msg_type', 'danger');
+                reload('/admin/genres');
+            }
+        } else {
+            setSessionFlash('msg', 'Xoá bài viết thất bại.');
+            setSessionFlash('msg_type', 'danger');
+        }
+    }
 }

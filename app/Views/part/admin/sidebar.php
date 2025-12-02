@@ -36,15 +36,15 @@ if (!defined('_nkhanhh')) {
 
         <div class="nav-divider">Quản lý Tài khoản</div>
 
-        <a href="#" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/user" class="nav-item">
             <i class="fa-solid fa-users"></i>
             <span>Người dùng</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/actor" class="nav-item">
             <i class="fa-solid fa-user-tie"></i>
             <span>Diễn viên/Đạo diễn</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/role" class="nav-item">
             <i class="fa-solid fa-id-badge"></i>
             <span>Vai trò</span>
         </a>
