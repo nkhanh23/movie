@@ -221,3 +221,27 @@ function oldData($oldData, $fieldName)
 {
     return (!empty($oldData[$fieldName])) ? $oldData[$fieldName] : NULL;
 }
+
+//Hàm render trình phát video
+// core/function.php
+
+function renderMoviePlayer($url)
+{
+    $url = trim($url);
+
+    // 2. [QUAN TRỌNG] Tự động đổi domain myvidplay sang d000d để video chạy mượt hơn
+    $url = str_replace('myvidplay.com', 'd000d.com', $url);
+
+    // 3. Xuất Player
+    return '<div class="video-container" style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+                <iframe src="' . htmlspecialchars($url) . '" 
+                        style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
+                        scrolling="no" 
+                        frameborder="0" 
+                        allowfullscreen="true" 
+                        allow="autoplay; fullscreen"
+                        webkitallowfullscreen="true" 
+                        mozallowfullscreen="true">
+                </iframe>
+            </div>';
+}

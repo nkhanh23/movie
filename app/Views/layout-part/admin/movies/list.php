@@ -115,7 +115,7 @@ $msg_type = getSessionFlash('msg_type');
                         <td><span class="badge success"><?php echo $item['movie_status']; ?></span></td>
                         <td class="actions">
                             <div class="action-buttons">
-                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/add'"
+                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/view'"
                                     class="btn-icon-sm" title="Chi tiết"><i class="fa-solid fa-eye"></i></button>
                                 <button
                                     onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/edit?id=<?php echo $item['id'] ?>'"

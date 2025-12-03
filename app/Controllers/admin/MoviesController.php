@@ -380,4 +380,10 @@ class MoviesController extends baseController
             setSessionFlash('msg_type', 'danger');
         }
     }
+
+    public function showView()
+    {
+        $data = [];
+        $this->renderView('/layout-part/admin/movies/view', $data);
+    }
 }

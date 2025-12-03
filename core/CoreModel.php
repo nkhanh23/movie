@@ -31,8 +31,8 @@ class CoreModel
         // 2. Thực thi
         $stm->execute();
 
-        // 3. Lấy dữ liệu (SỬA ĐOẠN NÀY)
-        // PDO::FETCH_ASSOC giúp lấy về mảng kết hợp (key là tên cột), bỏ qua index số cho nhẹ
+        // 3. Lấy dữ liệu 
+        // PDO::FETCH_ASSOC giúp lấy về mảng kết hợp (key là tên cột)
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
         // 4. Trả về mảng dữ liệu

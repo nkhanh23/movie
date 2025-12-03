@@ -1,14 +1,28 @@
 <?php
+
+use GuzzleHttp\Promise\Is;
+
 class AuthController extends baseController
 {
     private $coreModel;
+    private $client;
     public function __construct()
     {
         $this->coreModel = new CoreModel;
+        // Cấu hình google client
+        $this->client = new Google\Client();
+        $this->client->setClientId(_GOOGLE_CLIENT_ID);
+        $this->client->setClientSecret(_GOOGLE_CLIENT_SECRET);
+        $this->client->setRedirectUri(_GOOGLE_REDIRECT_URL);
+        $this->client->addScope("email");
+        $this->client->addScope("profile");
     }
     public function showLogin()
     {
-        $this->renderView('/layout-part/auth/login');
+        $data = [
+            'google_login_url' => $this->client->createAuthUrl()
+        ];
+        $this->renderView('/layout-part/auth/login', $data);
     }
 
     public function login()
@@ -46,9 +60,6 @@ class AuthController extends baseController
                 $email = $filter['email'];
                 $password = $filter['password'];
                 $checkStatus = $this->coreModel->getOne("SELECT id, password, group_id FROM users WHERE email = '$email' AND status = 1");
-                echo '<pre>';
-                print_r($checkStatus);
-                echo '</pre>';
                 if (!empty($checkStatus)) {
                     if (!empty($checkStatus['password'])) {
                         $checkPassword = password_verify($password, $checkStatus['password']);
@@ -153,6 +164,7 @@ class AuthController extends baseController
                     'email' => $filter['email'],
                     'password' => password_hash($filter['password'], PASSWORD_DEFAULT),
                     'active_token' => $activeToken,
+                    'group_id' => 1,
                     'avartar' => _HOST_URL . '/public/img/avartar_default/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg',
                     'created_at' => date('Y:m:d H:i:s')
                 ];
@@ -207,6 +219,90 @@ class AuthController extends baseController
                 //Giữ lại tab đăng kí sau khi tải lại trang
                 setSessionFlash('active_tab', 'signup');
                 reload('/login');
+            }
+        }
+    }
+
+    public function googleCallback()
+    {
+        if (isset($_GET['code'])) {
+            $token = $this->client->fetchAccessTokenWithAuthCode($_GET['code']);
+            if (!isset($token['error'])) {
+                $this->client->setAccessToken($token['access_token']);
+                //khởi tạo service OAuth2
+                $google_auth = new Google\Service\Oauth2($this->client);
+                //gọi api lấy ìno
+                $google_account_info = $google_auth->userinfo->get();
+
+                // trích xuất dữ liệu
+                $email = $google_account_info->email;
+                $name = $google_account_info->name;
+                $google_id = $google_account_info->id;
+                $avartar = $google_account_info->picture;
+
+                //Kiểm tra
+                $checkUser = $this->coreModel->getOne("SELECT * FROM users WHERE email = '$email'");
+                if (!empty($checkUser)) {
+                    //Nếu có dữ liệu thì cập nhật thêm google_id
+                    if (empty($checkUser['google_id'])) {
+                        $data = [
+                            'google_id' => $google_id
+                        ];
+                        $condition = 'id=' . $checkUser['id'];
+                        $this->coreModel->update('users', $data, $condition);
+                    }
+                    $user_id = $checkUser['id'];
+                    $tokenLogin = sha1(uniqid() . time());
+                    $dataLogin = [
+                        'user_id' => $user_id,
+                        'token' => $tokenLogin
+                    ];
+                    $checkInsert = $this->coreModel->insert('token_login', $dataLogin);
+                    if ($checkInsert) {
+                        if ($checkUser['group_id'] == 1) {
+                            setSession('tokenLogin', $tokenLogin);
+                            reload('/client/dashboard');
+                        } elseif ($checkUser['group_id'] == 2) {
+                            setSession('tokenLogin', $tokenLogin);
+                            reload('/admin/dashboard');
+                        }
+                    } else {
+                        setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
+                        setSessionFlash('msg_type', 'danger');
+                        setSessionFlash('active_tab', 'login');
+                    }
+                } else {
+                    $dataRegister = [
+                        'fullname' => $name,
+                        'email' => $email,
+                        'password' => password_hash('11111111', PASSWORD_DEFAULT),
+                        'active_token' => 1,
+                        'group_id' => 1,
+                        'avartar' => $avartar,
+                        'created_at' => date('Y:m:d H:i:s')
+                    ];
+                    $insertStatus = $this->coreModel->insert('users', $dataRegister);
+                    if ($insertStatus) {
+                        $newUser = $this->coreModel->getLastID();
+                        $user_id = $newUser['id'];
+                        $tokenLogin = sha1(uniqid() . time());
+                        $dataLogin = [
+                            'user_id' => $user_id,
+                            'token' => $tokenLogin
+                        ];
+                        $checkInsertRegister = $this->coreModel->insert('token_login', $dataLogin);
+                        if ($checkInsertRegister) {
+                            if ($newUser['group_id'] == 1) {
+                                setSession('tokenLogin', $tokenLogin);
+                                reload('/client/dashboard');
+                            }
+                        } else {
+                            setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
+                            setSessionFlash('msg_type', 'danger');
+                            setSessionFlash('active_tab', 'register');
+                        }
+                    }
+                }
             }
         }
     }

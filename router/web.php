@@ -3,6 +3,7 @@ $router->get('/admin/dashboard', 'HomeController@adminDashboard');
 $router->get('/client/dashboard', 'HomeController@clientDashboard');
 
 //AUTH
+$router->get('/auth/google/callback', 'AuthController@googleCallback');
 $router->get('/login', 'AuthController@showLogin');
 $router->post('/login', 'AuthController@login');
 $router->post('/register', 'AuthController@register');
@@ -10,11 +11,15 @@ $router->get('/active', 'AuthController@active');
 // ADMIN POST 
 $router->get('/admin/film/list', 'MoviesController@list');
 
+$router->get('/admin/film/view', 'MoviesController@showView');
+$router->post('/admin/film/view', 'MoviesController@view');
+
 $router->get('/admin/film/edit', 'MoviesController@showEdit');
 $router->post('/admin/film/edit', 'MoviesController@edit');
 
 $router->get('/admin/film/add', 'MoviesController@showAdd');
 $router->post('/admin/film/add', 'MoviesController@add');
+
 
 $router->get('/admin/film/delete', 'MoviesController@delete');
 

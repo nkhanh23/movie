@@ -43,10 +43,11 @@ $errorsRegister = $activeTab === 'signup' ? $errorsArr : [];
                                             <h4 class="mb-4 pb-3">Log In</h4>
                                             <div class="form-group">
                                                 <input type="email" name="email" class="form-style"
-                                                    placeholder="Your Email" id="logemail" autocomplete="off" value="<?php
-                                                                                                                        if (!empty($oldData)) {
-                                                                                                                            echo oldData($oldData, 'email');
-                                                                                                                        } ?>">
+                                                    placeholder="Your Email" id="logemail" autocomplete="off"
+                                                    value="<?php
+                                                            if (!empty($oldData)) {
+                                                                echo oldData($oldData, 'email');
+                                                            } ?>">
                                                 <i class="input-icon uil uil-at"></i>
                                                 <?php
                                                 if (!empty($errorsLogin)) {
@@ -64,7 +65,11 @@ $errorsRegister = $activeTab === 'signup' ? $errorsArr : [];
                                                 }
                                                 ?>
                                             </div>
-                                            <button type="submit" href="#" class="btn mt-4">submit</button>
+                                            <button type="submit" href="#" class="btn mt-4">Đăng nhập</button>
+                                            <a href="<?php echo $google_login_url; ?>" class="btn btn-primary"
+                                                style="display: block; text-decoration: none; line-height: 45px;">
+                                                <i class="fa-solid fa-google"></i> Đăng nhập bằng Google
+                                            </a>
                                             <p class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your
                                                     password?</a></p>
                                         </form>

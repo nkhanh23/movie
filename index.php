@@ -3,6 +3,11 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 session_start();
 ob_start(); // tranh loi tu cac ham header, cooke
 
+// Load Composer libraries
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 foreach (glob(__DIR__ . '/configs/*php') as $filename) {
     require_once $filename;
 }

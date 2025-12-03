@@ -35,20 +35,25 @@ $errors = getSessionFlash('errors');
                                                                                                     if (!empty($oldData)) {
                                                                                                         echo oldData($oldData, 'tittle');
                                                                                                     } ?>">
+                <button type="button" class="btn btn-info" onclick="searchTMDB()">
+                    <i class="fa-solid fa-search"></i> Tìm trên TMDB
+                </button>
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'tittle');
                 }
                 ?>
+                <div id="tmdb-results"
+                    style="margin-top: 10px; display: none; border: 1px solid #ddd; max-height: 300px; overflow-y: auto; background: #fff; color: #333;">
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="original_title">Tên Gốc (original_title)</label>
-                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..."
-                    value="<?php
-                            if (!empty($oldData)) {
-                                echo oldData($oldData, 'original_title');
-                            } ?>">
+                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..." value="<?php
+                                                                                                                        if (!empty($oldData)) {
+                                                                                                                            echo oldData($oldData, 'original_title');
+                                                                                                                        } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'original_title');
@@ -210,10 +215,11 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="trailer_url">Trailer URL</label>
-                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..." value="<?php
-                                                                                                                    if (!empty($oldData)) {
-                                                                                                                        echo oldData($oldData, 'trailer_url');
-                                                                                                                    } ?>">
+                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..."
+                    value="<?php
+                            if (!empty($oldData)) {
+                                echo oldData($oldData, 'trailer_url');
+                            } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'trailer_url');
@@ -283,6 +289,123 @@ $errors = getSessionFlash('errors');
         }
     }
 </script>
+<script>
+    // CẤU HÌNH API KEY (Thay thế bằng Key của bạn ở Bước 1)
+    const TMDB_API_KEY = '0e3b943475e881fdc65dcdcbcc13cbaf';
+    const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/original';
 
+    // Hàm 1: Tìm kiếm phim
+    async function searchTMDB() {
+        const query = document.getElementById('tittle').value;
+        const resultBox = document.getElementById('tmdb-results');
+
+        if (!query.trim()) {
+            alert('Vui lòng nhập tên phim để tìm kiếm!');
+            return;
+        }
+
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = '<p style="padding: 10px;">Đang tìm kiếm...</p>';
+
+        try {
+            // Gọi API Search của TMDB
+            const response = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=vi-VN`
+            );
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+                let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+                data.results.forEach(movie => {
+                    const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
+                    // Tạo từng dòng kết quả
+                    html += `
+                        <li style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; gap: 10px;" 
+                            onclick="selectMovie(${movie.id})"
+                            onmouseover="this.style.background='#f0f0f0'" 
+                            onmouseout="this.style.background='#fff'">
+                            <img src="${movie.poster_path ? 'https://image.tmdb.org/t/p/w92' + movie.poster_path : ''}" style="width: 40px; height: 60px; object-fit: cover;">
+                            <div>
+                                <strong>${movie.title}</strong> (${year})<br>
+                                <small>${movie.original_title}</small>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                resultBox.innerHTML = html;
+            } else {
+                resultBox.innerHTML = '<p style="padding: 10px;">Không tìm thấy phim nào.</p>';
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            resultBox.innerHTML = '<p style="padding: 10px; color: red;">Lỗi khi gọi API.</p>';
+        }
+    }
+
+    // Hàm 2: Chọn phim và tự động điền (Fill) dữ liệu
+    async function selectMovie(movieId) {
+        const resultBox = document.getElementById('tmdb-results');
+        resultBox.innerHTML = '<p style="padding: 10px;">Đang lấy chi tiết...</p>';
+
+        try {
+            // Gọi API chi tiết phim để lấy đầy đủ thông tin (thời lượng, thể loại...)
+            const response = await fetch(
+                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN&append_to_response=videos`
+            );
+            const movie = await response.json();
+
+            // 1. Điền Tên phim & Tên gốc
+            document.getElementById('tittle').value = movie.title;
+            document.getElementById('original_title').value = movie.original_title;
+
+            // 2. Điền Slug (Sử dụng hàm createSlug có sẵn của bạn)
+            if (typeof createSlug === 'function') {
+                document.getElementById('slug').value = createSlug(movie.title);
+            }
+
+            // 3. Điền Năm phát hành
+            if (movie.release_date) {
+                document.getElementById('release_year').value = movie.release_date.split('-')[0];
+            }
+
+            // 4. Điền Thời lượng
+            if (movie.runtime) {
+                document.getElementById('duration').value = movie.runtime;
+            }
+
+            // 5. Điền Mô tả
+            if (movie.overview) {
+                document.getElementById('description').value = movie.overview;
+            }
+
+            // 6. Điền URL Ảnh (Poster & Backdrop)
+            if (movie.poster_path) {
+                document.getElementById('poster_url').value = TMDB_IMAGE_BASE + movie.poster_path;
+                document.getElementById('thumbnail').value = TMDB_IMAGE_BASE + movie
+                    .poster_path; // Tạm dùng poster làm thumbnail
+            }
+            if (movie.backdrop_path) {
+                document.getElementById('img').value = TMDB_IMAGE_BASE + movie.backdrop_path;
+            }
+
+            // 7. Điền Trailer (Tìm video loại Trailer trên Youtube)
+            if (movie.videos && movie.videos.results) {
+                const trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                if (trailer) {
+                    document.getElementById('trailer_url').value = `https://www.youtube.com/watch?v=${trailer.key}`;
+                }
+            }
+
+            // Ẩn bảng kết quả sau khi chọn
+            resultBox.style.display = 'none';
+            alert('Đã điền dữ liệu thành công! Hãy kiểm tra lại Thể loại và Quốc gia.');
+
+        } catch (error) {
+            console.error('Lỗi chi tiết:', error);
+            alert('Có lỗi khi lấy chi tiết phim.');
+        }
+    }
+</script>
 <?php
 layout('admin/footer');
