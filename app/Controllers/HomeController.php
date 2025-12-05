@@ -12,7 +12,7 @@ class HomeController extends baseController
         $this->renderView('/layout-part/admin/dashboard');
     }
 
-    public function clientDashboard()
+    public function homePage()
     {
         $this->renderView('/layout-part/client/dashboard');
     }

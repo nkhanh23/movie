@@ -65,8 +65,6 @@ class GenresController extends baseController
         $queryString = '';
         if (!empty($_SERVER['QUERY_STRING'])) {
             $queryString = $_SERVER['QUERY_STRING'];
-
-            // Fix quan trọng: Xử lý cả 2 trường hợp (có & và không có &)
             $queryString = str_replace('&page=' . $page, '', $queryString);
         }
         $data = [

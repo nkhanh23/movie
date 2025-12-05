@@ -51,7 +51,7 @@ class Movies extends CoreModel
         return $this->getAll("SELECT * FROM movie_status");
     }
 
-    public function getRowMovies()
+    public function getRowMovies($sql = '')
     {
         if (!empty($sql)) {
             return $this->getRows($sql);

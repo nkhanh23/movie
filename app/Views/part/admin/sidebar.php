@@ -40,7 +40,7 @@ if (!defined('_nkhanhh')) {
             <i class="fa-solid fa-users"></i>
             <span>Người dùng</span>
         </a>
-        <a href="<?php echo _HOST_URL; ?>/admin/actor" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/person" class="nav-item">
             <i class="fa-solid fa-user-tie"></i>
             <span>Diễn viên/Đạo diễn</span>
         </a>

@@ -74,7 +74,7 @@ class AuthController extends baseController
                             if ($checkInsert) {
                                 if ($checkStatus['group_id'] == 1) {
                                     setSession('tokenLogin', $tokenLogin);
-                                    reload('/client/dashboard');
+                                    reload('/');
                                 } elseif ($checkStatus['group_id'] == 2) {
                                     setSession('tokenLogin', $tokenLogin);
                                     reload('/admin/dashboard');
@@ -261,7 +261,7 @@ class AuthController extends baseController
                     if ($checkInsert) {
                         if ($checkUser['group_id'] == 1) {
                             setSession('tokenLogin', $tokenLogin);
-                            reload('/client/dashboard');
+                            reload('/');
                         } elseif ($checkUser['group_id'] == 2) {
                             setSession('tokenLogin', $tokenLogin);
                             reload('/admin/dashboard');
@@ -276,13 +276,14 @@ class AuthController extends baseController
                         'fullname' => $name,
                         'email' => $email,
                         'password' => password_hash('11111111', PASSWORD_DEFAULT),
-                        'active_token' => 1,
+                        'status' => 1,
                         'group_id' => 1,
                         'avartar' => $avartar,
                         'created_at' => date('Y:m:d H:i:s')
                     ];
                     $insertStatus = $this->coreModel->insert('users', $dataRegister);
                     if ($insertStatus) {
+
                         $newUser = $this->coreModel->getLastID();
                         $user_id = $newUser['id'];
                         $tokenLogin = sha1(uniqid() . time());
@@ -294,7 +295,7 @@ class AuthController extends baseController
                         if ($checkInsertRegister) {
                             if ($newUser['group_id'] == 1) {
                                 setSession('tokenLogin', $tokenLogin);
-                                reload('/client/dashboard');
+                                reload('/');
                             }
                         } else {
                             setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');

@@ -163,6 +163,12 @@ class MoviesController extends baseController
             //validate tittle
             if (empty(trim($filter['tittle']))) {
                 $errors['tittle']['required'] = ' Tên phim bắt buộc phải nhập';
+            } else {
+                $tittle = trim($filter['tittle']);
+                $checkTittle = $this->moviesModel->getRowMovies("SELECT movies WHERE tittle = '$tittle");
+                if ($checkTittle >= 1) {
+                    $errors['tittle']['check'] = ' Phim đã tồn tại ';
+                }
             }
 
             //validate original_tittle

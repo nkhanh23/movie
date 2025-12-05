@@ -56,7 +56,7 @@ $router->post('/admin/genres/add', 'GenresController@add');
 
 $router->get('/admin/genres/delete', 'GenresController@delete');
 
-//ADMIN GENRES
+//ADMIN USER
 $router->get('/admin/user', 'UserController@list');
 
 $router->get('/admin/user/edit', 'UserController@showEdit');
@@ -66,3 +66,25 @@ $router->get('/admin/user/add', 'UserController@showAdd');
 $router->post('/admin/user/add', 'UserController@add');
 
 $router->get('/admin/user/delete', 'UserController@delete');
+
+//ADMIN ACTOR
+$router->get('/admin/person', 'PersonController@list');
+
+$router->get('/admin/person/edit', 'PersonController@showEdit');
+$router->post('/admin/person/edit', 'PersonController@edit');
+
+$router->get('/admin/person/add', 'PersonController@showAdd');
+$router->post('/admin/person/add', 'PersonController@add');
+
+$router->get('/admin/person/delete', 'PersonController@delete');
+
+//ADMIN ROLE
+$router->get('/admin/role', 'RoleController@list');
+
+$router->get('/admin/role/edit', 'RoleController@showEdit');
+$router->post('/admin/role/edit', 'RoleController@edit');
+
+$router->get('/admin/role/add', 'RoleController@showAdd');
+$router->post('/admin/role/add', 'RoleController@add');
+
+$router->get('/admin/role/delete', 'RoleController@delete');

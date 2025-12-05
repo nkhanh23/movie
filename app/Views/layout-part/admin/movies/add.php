@@ -50,10 +50,11 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="original_title">Tên Gốc (original_title)</label>
-                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..." value="<?php
-                                                                                                                        if (!empty($oldData)) {
-                                                                                                                            echo oldData($oldData, 'original_title');
-                                                                                                                        } ?>">
+                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..."
+                    value="<?php
+                            if (!empty($oldData)) {
+                                echo oldData($oldData, 'original_title');
+                            } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'original_title');
@@ -215,11 +216,10 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="trailer_url">Trailer URL</label>
-                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..."
-                    value="<?php
-                            if (!empty($oldData)) {
-                                echo oldData($oldData, 'trailer_url');
-                            } ?>">
+                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..." value="<?php
+                                                                                                                    if (!empty($oldData)) {
+                                                                                                                        echo oldData($oldData, 'trailer_url');
+                                                                                                                    } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'trailer_url');
@@ -290,7 +290,7 @@ $errors = getSessionFlash('errors');
     }
 </script>
 <script>
-    // CẤU HÌNH API KEY (Thay thế bằng Key của bạn ở Bước 1)
+    // CẤU HÌNH API KEY
     const TMDB_API_KEY = '0e3b943475e881fdc65dcdcbcc13cbaf';
     const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/original';
 
