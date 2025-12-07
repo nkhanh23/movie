@@ -1,6 +1,6 @@
 <?php
 $router->get('/admin/dashboard', 'HomeController@adminDashboard');
-$router->get('/client/dashboard', 'HomeController@clientDashboard');
+$router->get('/', 'HomeController@index');
 
 //AUTH
 $router->get('/auth/google/callback', 'AuthController@googleCallback');

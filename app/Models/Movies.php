@@ -89,4 +89,33 @@ class Movies extends CoreModel
     {
         return $this->delete('movies', $condition);
     }
+
+    public function getMoviesHeroSection()
+    {
+        return $this->getAll("SELECT m.*,
+        GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
+        mt.name as type_name
+        FROM movies m
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.id
+        LEFT JOIN movie_types mt ON m.id = mt.id 
+        GROUP BY m.id
+        ORDER BY id 
+        DESC LIMIT 6");
+    }
+
+    public function getMoviesKorean()
+    {
+        return $this->getAll("SELECT * FROM movies WHERE country_id = 2 ORDER BY created_at DESC LIMIT 10");
+    }
+
+    public function getMoviesUSUK()
+    {
+        return $this->getAll("SELECT * FROM movies WHERE country_id = 7 ORDER BY created_at DESC LIMIT 10");
+    }
+
+    public function getMoviesChinese()
+    {
+        return $this->getAll("SELECT * FROM movies WHERE country_id = 4 ORDER BY created_at DESC LIMIT 10");
+    }
 }

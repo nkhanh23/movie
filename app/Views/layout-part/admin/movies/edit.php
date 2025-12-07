@@ -82,6 +82,20 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
+                <label for="imdb_rating">Điểm imdb (imdb_rating)</label>
+                <input type="number" step="0.0001" name="imdb_rating" id="imdb_rating" value="<?php
+                                                                                                if (!empty($oldData)) {
+                                                                                                    echo oldData($oldData, 'imdb_rating');
+                                                                                                } ?>" placeholder="imdb" min="1"
+                    max="10">
+                <?php
+                if (!empty($errors)) {
+                    echo formError($errors, 'imdb_rating');
+                }
+                ?>
+            </div>
+
+            <div class="form-group">
                 <label for="duration">Thời lượng (phút) (duration)</label>
                 <input type="number" name="duration" id="duration" placeholder="120" value="<?php
                                                                                             if (!empty($oldData)) {

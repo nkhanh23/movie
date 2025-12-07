@@ -81,13 +81,18 @@ class MoviesController extends baseController
         $countMovies = $this->moviesModel->getRowMovies($sqlCount);
         $countResult = $this->moviesModel->getAllMovies($sqlCount);
         $maxData = $countResult[0]['total'];
-        $perPage = 5;
+        $perPage = 20;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;
 
         if (isset($filter['page'])) {
             $page = $filter['page'];
+        }
+
+        // Nếu không có dữ liệu (maxPage = 0), gán mặc định là 1 để tránh lỗi chia/trừ số âm
+        if ($maxPage < 1) {
+            $maxPage = 1;
         }
 
         if ($page < 1) {
@@ -149,7 +154,7 @@ class MoviesController extends baseController
         $data = [
             'getAllGenres' => $getAllGenres,
             'getAllStatus' => $getAllStatus,
-            'getAllCoutries' => $getAllCountries,
+            'getAllCountries' => $getAllCountries,
             'getAllType' => $getAllType
         ];
         $this->renderView('/layout-part/admin/movies/add', $data);
@@ -165,7 +170,7 @@ class MoviesController extends baseController
                 $errors['tittle']['required'] = ' Tên phim bắt buộc phải nhập';
             } else {
                 $tittle = trim($filter['tittle']);
-                $checkTittle = $this->moviesModel->getRowMovies("SELECT movies WHERE tittle = '$tittle");
+                $checkTittle = $this->moviesModel->getRowMovies("SELECT * FROM movies WHERE tittle = '$tittle'");
                 if ($checkTittle >= 1) {
                     $errors['tittle']['check'] = ' Phim đã tồn tại ';
                 }
@@ -186,11 +191,6 @@ class MoviesController extends baseController
                 $errors['release_year']['required'] = ' Năm phát hành bắt buộc phải nhập';
             }
 
-            //validate duration
-            if (empty(trim($filter['duration']))) {
-                $errors['duration']['required'] = ' Thời lượng bắt buộc phải nhập';
-            }
-
             if (empty($errors)) {
                 $data = [
                     'tittle' => $filter['tittle'],
@@ -200,6 +200,7 @@ class MoviesController extends baseController
                     'duration' => $filter['duration'],
                     'country_id' => $filter['country_id'],
                     'type_id' => $filter['type_id'],
+                    'imdb_rating' => $filter['imdb_rating'],
                     'status_id' => $filter['status_id'],
                     'poster_url' => $filter['poster_url'],
                     'thumbnail' => $filter['thumbnail'],

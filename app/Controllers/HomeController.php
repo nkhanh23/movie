@@ -1,10 +1,12 @@
 <?php
 class HomeController extends baseController
 {
-    private $coreModel;
+    private $moviesModel;
+    private $genresModel;
     public function __construct()
     {
-        $this->coreModel = new CoreModel;
+        $this->moviesModel = new Movies;
+        $this->genresModel = new Genres;
     }
 
     public function adminDashboard()
@@ -12,8 +14,20 @@ class HomeController extends baseController
         $this->renderView('/layout-part/admin/dashboard');
     }
 
-    public function homePage()
+    public function index()
     {
-        $this->renderView('/layout-part/client/dashboard');
+        $getMoviesHeroSection = $this->moviesModel->getMoviesHeroSection();
+        $getGenresGrid = $this->genresModel->getGenresGrid();
+        $getMoviesKorean = $this->moviesModel->getMoviesKorean();
+        $getMoviesUSUK = $this->moviesModel->getMoviesUSUK();
+        $getMoviesChinese = $this->moviesModel->getMoviesChinese();
+        $data = [
+            'getMoviesHeroSection' => $getMoviesHeroSection,
+            'getGenresGrid' => $getGenresGrid,
+            'getMoviesKorean' => $getMoviesKorean,
+            'getMoviesUSUK' => $getMoviesUSUK,
+            'getMoviesChinese' => $getMoviesChinese
+        ];
+        $this->renderView('/layout-part/client/dashboard', $data);
     }
 }

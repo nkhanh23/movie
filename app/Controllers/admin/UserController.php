@@ -68,6 +68,11 @@ class UserController extends baseController
             $page = $filter['page'];
         }
 
+        // Nếu không có dữ liệu (maxPage = 0), gán mặc định là 1 để tránh lỗi chia/trừ số âm
+        if ($maxPage < 1) {
+            $maxPage = 1;
+        }
+
         if ($page < 1) {
             $page = 1;
         }

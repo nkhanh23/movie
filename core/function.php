@@ -245,3 +245,11 @@ function renderMoviePlayer($url)
                 </iframe>
             </div>';
 }
+
+//Hàm đổi phút sang giờ
+function convertMinutesToHours($minutes)
+{
+    $hours = floor($minutes / 60);
+    $minutes = $minutes % 60;
+    return $hours . 'h ' . $minutes . 'm';
+}

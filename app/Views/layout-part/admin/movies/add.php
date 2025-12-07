@@ -10,7 +10,7 @@ $oldData = getSessionFlash('oldData');
 $errors = getSessionFlash('errors');
 
 // echo '<pre>';
-// (print_r($getAllGenres));
+// (print_r($getAllCountries));
 // echo '</pre>';
 // die();
 ?>
@@ -90,6 +90,20 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
+                <label for="imdb_rating">Điểm imdb (imdb_rating)</label>
+                <input type="number" step="0.0001" name="imdb_rating" id="imdb_rating" value="<?php
+                                                                                                if (!empty($oldData)) {
+                                                                                                    echo oldData($oldData, 'imdb_rating');
+                                                                                                } ?>" placeholder="imdb" min="1"
+                    max="10">
+                <?php
+                if (!empty($errors)) {
+                    echo formError($errors, 'imdb_rating');
+                }
+                ?>
+            </div>
+
+            <div class="form-group">
                 <label for="duration">Thời lượng (phút) (duration)</label>
                 <input type="number" name="duration" id="duration" placeholder="120" value="<?php
                                                                                             if (!empty($oldData)) {
@@ -103,11 +117,11 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
-                <label for="duration">Tổng views</label>
-                <input type="number" name="total_views" id="duration" placeholder="120" value="<?php
-                                                                                                if (!empty($oldData)) {
-                                                                                                    echo oldData($oldData, 'total_views');
-                                                                                                } ?>">
+                <label for="total_views">Tổng views</label>
+                <input type="number" name="total_views" id="total_views" placeholder="120" value="<?php
+                                                                                                    if (!empty($oldData)) {
+                                                                                                        echo oldData($oldData, 'total_views');
+                                                                                                    } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'total_views');
@@ -147,7 +161,7 @@ $errors = getSessionFlash('errors');
                 </div>
                 <?php if (!empty($errors['genre_id'])): ?>
                     <span class="required" style="font-size: 0.85rem; margin-top: 5px;">
-                        <?php echo is_array($errors['genre_id']) ? reset($errors['genre_id']) : $errors['type_id']; ?>
+                        <?php echo is_array($errors['genre_id']) ? reset($errors['genre_id']) : NULL; ?>
                     </span>
                 <?php endif; ?>
             </div>
@@ -163,8 +177,8 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
-                <label for="country_id">Loại phim</label>
-                <select name="status_id" id="genre_id">
+                <label for="type_id">Loại phim</label>
+                <select name="type_id" id="type_id">
                     <option value="">-- Chọn loại phim --</option>
                     <?php foreach ($getAllType as $item): ?>
                         <option value="<?php echo $item['id']; ?>"><?php echo $item['name']; ?></option>
@@ -230,11 +244,10 @@ $errors = getSessionFlash('errors');
             <!-- Description (Full width) -->
             <div class="form-group full-width">
                 <label for="description">Mô tả phim (description)</label>
-                <textarea name="description" id="description" rows="4" placeholder="Nhập tóm tắt nội dung phim..."
-                    value="<?php
-                            if (!empty($oldData)) {
-                                echo oldData($oldData, 'description');
-                            } ?>"></textarea>
+                <textarea name="description" id="description" rows="4" placeholder="Nhập tóm tắt nội dung phim..."><?php
+                                                                                                                    if (!empty($oldData)) {
+                                                                                                                        echo oldData($oldData, 'description');
+                                                                                                                    } ?></textarea>
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'description');
@@ -254,7 +267,7 @@ $errors = getSessionFlash('errors');
 <script>
     // Hàm giúp chuyển text thành slug
     function createSlug(string) {
-        return strig.toLowerCase()
+        return string.toLowerCase()
             .normalize('NFD') // chuyển ký tự có dấu thành tổ hợp: é -> e + '
             .replace(/[\u0300-\u036f]/g, '') // xoá dấu
             .replace(/đ/g, 'd') // thay đ -> d
@@ -290,120 +303,212 @@ $errors = getSessionFlash('errors');
     }
 </script>
 <script>
-    // CẤU HÌNH API KEY
+    // --- CẤU HÌNH ---
     const TMDB_API_KEY = '0e3b943475e881fdc65dcdcbcc13cbaf';
     const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/original';
 
+    // Helper: Chuyển text thành Slug
+    function createSlug(string) {
+        if (!string) return '';
+        return string.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    // Event: Auto slug
+    document.getElementById('tittle').addEventListener('input', function() {
+        document.getElementById('slug').value = createSlug(this.value);
+    });
+
+    // Helper: Dropdown
+    function toggleDropdown(id) {
+        document.querySelector('#' + id + ' .dropdown-content').classList.toggle('show');
+    }
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-btn') && !event.target.matches('.dropdown-btn *')) {
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; i++) {
+                if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+            }
+        }
+    }
+
+    // --- LOGIC TMDB ---
+
     // Hàm 1: Tìm kiếm phim
     async function searchTMDB() {
-        const query = document.getElementById('tittle').value;
+        const query = document.getElementById('tittle').value.trim();
         const resultBox = document.getElementById('tmdb-results');
 
-        if (!query.trim()) {
-            alert('Vui lòng nhập tên phim để tìm kiếm!');
+        if (!query) {
+            alert('Vui lòng nhập tên phim!');
             return;
         }
 
         resultBox.style.display = 'block';
-        resultBox.innerHTML = '<p style="padding: 10px;">Đang tìm kiếm...</p>';
+        resultBox.innerHTML = '<p style="padding:10px;">Đang tìm kiếm...</p>';
 
         try {
-            // Gọi API Search của TMDB
-            const response = await fetch(
-                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=vi-VN`
-            );
-            const data = await response.json();
+            const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=vi-VN`);
+            const data = await res.json();
 
-            if (data.results && data.results.length > 0) {
-                let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
-                data.results.forEach(movie => {
-                    const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
-                    // Tạo từng dòng kết quả
+            if (data.results?.length > 0) {
+                let html = '<ul style="list-style:none; padding:0; margin:0;">';
+                data.results.forEach(m => {
+                    const year = m.release_date?.split('-')[0] || 'N/A';
+                    const img = m.poster_path ? `https://image.tmdb.org/t/p/w92${m.poster_path}` : '';
                     html += `
-                        <li style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; gap: 10px;" 
-                            onclick="selectMovie(${movie.id})"
-                            onmouseover="this.style.background='#f0f0f0'" 
-                            onmouseout="this.style.background='#fff'">
-                            <img src="${movie.poster_path ? 'https://image.tmdb.org/t/p/w92' + movie.poster_path : ''}" style="width: 40px; height: 60px; object-fit: cover;">
+                        <li style="padding:10px; border-bottom:1px solid #eee; cursor:pointer; display:flex; gap:10px; align-items:center;" 
+                            onclick="selectMovie(${m.id})"
+                            onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">
+                            <img src="${img}" style="width:40px; height:60px; object-fit:cover; background:#ddd;">
                             <div>
-                                <strong>${movie.title}</strong> (${year})<br>
-                                <small>${movie.original_title}</small>
+                                <strong>${m.title}</strong> (${year})<br>
+                                <small style="color:#666;">${m.original_title}</small>
                             </div>
-                        </li>
-                    `;
+                        </li>`;
                 });
-                html += '</ul>';
-                resultBox.innerHTML = html;
+                resultBox.innerHTML = html + '</ul>';
             } else {
-                resultBox.innerHTML = '<p style="padding: 10px;">Không tìm thấy phim nào.</p>';
+                resultBox.innerHTML = '<p style="padding:10px;">Không tìm thấy phim nào.</p>';
             }
-        } catch (error) {
-            console.error('Lỗi:', error);
-            resultBox.innerHTML = '<p style="padding: 10px; color: red;">Lỗi khi gọi API.</p>';
+        } catch (e) {
+            console.error(e);
+            resultBox.innerHTML = '<p style="padding:10px; color:red;">Lỗi kết nối API.</p>';
         }
     }
 
-    // Hàm 2: Chọn phim và tự động điền (Fill) dữ liệu
+    // Hàm 2: Chọn phim & Auto-fill (BẢN UPDATE: 4K BACKDROP)
     async function selectMovie(movieId) {
         const resultBox = document.getElementById('tmdb-results');
-        resultBox.innerHTML = '<p style="padding: 10px;">Đang lấy chi tiết...</p>';
+        resultBox.innerHTML = '<p style="padding:10px;">Đang lấy dữ liệu chi tiết...</p>';
 
         try {
-            // Gọi API chi tiết phim để lấy đầy đủ thông tin (thời lượng, thể loại...)
-            const response = await fetch(
-                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN&append_to_response=videos`
-            );
-            const movie = await response.json();
+            // Bước 1: Lấy info Tiếng Việt + Videos + Images (Thêm images vào đây)
+            const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN&append_to_response=videos,images&include_image_language=null,vi,en`);
+            const movie = await res.json();
 
-            // 1. Điền Tên phim & Tên gốc
-            document.getElementById('tittle').value = movie.title;
-            document.getElementById('original_title').value = movie.original_title;
+            // Khởi tạo biến fallback
+            let finalOverview = movie.overview;
+            let finalVideos = movie.videos?.results || [];
+            let finalImages = movie.images?.backdrops || []; // Danh sách tất cả backdrop
 
-            // 2. Điền Slug (Sử dụng hàm createSlug có sẵn của bạn)
-            if (typeof createSlug === 'function') {
-                document.getElementById('slug').value = createSlug(movie.title);
+            // --- KIỂM TRA & FALLBACK DỮ LIỆU TIẾNG ANH ---
+            if (!finalOverview || finalVideos.length === 0) {
+                console.log("Thiếu dữ liệu tiếng Việt, đang lấy tiếng Anh...");
+                const resEn = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=videos`);
+                const movieEn = await resEn.json();
+
+                if (!finalOverview) finalOverview = movieEn.overview;
+                if (finalVideos.length === 0) finalVideos = movieEn.videos?.results || [];
             }
 
-            // 3. Điền Năm phát hành
-            if (movie.release_date) {
-                document.getElementById('release_year').value = movie.release_date.split('-')[0];
-            }
+            console.log("Movie Data:", movie);
 
-            // 4. Điền Thời lượng
-            if (movie.runtime) {
-                document.getElementById('duration').value = movie.runtime;
-            }
+            // --- A. ĐIỀN CÁC TRƯỜNG CƠ BẢN ---
+            document.getElementById('tittle').value = movie.title || '';
+            document.getElementById('original_title').value = movie.original_title || '';
+            document.getElementById('slug').value = createSlug(movie.title || '');
 
-            // 5. Điền Mô tả
-            if (movie.overview) {
-                document.getElementById('description').value = movie.overview;
-            }
+            if (movie.release_date) document.getElementById('release_year').value = movie.release_date.split('-')[0];
+            if (movie.runtime) document.getElementById('duration').value = movie.runtime;
+            if (movie.vote_average) document.getElementById('imdb_rating').value = movie.vote_average;
 
-            // 6. Điền URL Ảnh (Poster & Backdrop)
+            // --- B. XỬ LÝ ẢNH (LOGIC MỚI CHO THUMBNAIL) ---
+
+            // 1. Poster URL (Vẫn giữ nguyên)
             if (movie.poster_path) {
                 document.getElementById('poster_url').value = TMDB_IMAGE_BASE + movie.poster_path;
-                document.getElementById('thumbnail').value = TMDB_IMAGE_BASE + movie
-                    .poster_path; // Tạm dùng poster làm thumbnail
             }
+
+            // 2. Backdrop Image URL (Trường img - Vẫn giữ mặc định tốt nhất)
             if (movie.backdrop_path) {
                 document.getElementById('img').value = TMDB_IMAGE_BASE + movie.backdrop_path;
             }
 
-            // 7. Điền Trailer (Tìm video loại Trailer trên Youtube)
-            if (movie.videos && movie.videos.results) {
-                const trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-                if (trailer) {
-                    document.getElementById('trailer_url').value = `https://www.youtube.com/watch?v=${trailer.key}`;
+            // 3. THUMBNAIL URL (Xử lý 4K Backdrop)
+            // Tìm ảnh có kích thước chính xác 3840x2160
+            const backdrop4k = finalImages.find(img => img.width === 3840 && img.height === 2160);
+
+            if (backdrop4k) {
+                // Nếu tìm thấy ảnh 4K
+                console.log("Đã tìm thấy backdrop 4K:", backdrop4k.file_path);
+                document.getElementById('thumbnail').value = TMDB_IMAGE_BASE + backdrop4k.file_path;
+            } else {
+                // Nếu không có 4K, lấy fallback là backdrop mặc định
+                console.log("Không có backdrop 4K, dùng backdrop mặc định.");
+                if (movie.backdrop_path) {
+                    document.getElementById('thumbnail').value = TMDB_IMAGE_BASE + movie.backdrop_path;
+                } else if (movie.poster_path) {
+                    // Nếu không có cả backdrop, dùng tạm poster
+                    document.getElementById('thumbnail').value = TMDB_IMAGE_BASE + movie.poster_path;
                 }
             }
 
-            // Ẩn bảng kết quả sau khi chọn
-            resultBox.style.display = 'none';
-            alert('Đã điền dữ liệu thành công! Hãy kiểm tra lại Thể loại và Quốc gia.');
+            // --- C. XỬ LÝ TRAILER ---
+            const trailer = finalVideos.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            if (trailer) {
+                document.getElementById('trailer_url').value = `https://www.youtube.com/watch?v=${trailer.key}`;
+            }
 
-        } catch (error) {
-            console.error('Lỗi chi tiết:', error);
-            alert('Có lỗi khi lấy chi tiết phim.');
+            // --- D. XỬ LÝ MÔ TẢ ---
+            if (finalOverview) {
+                const desc = document.getElementById('description');
+                if (desc) desc.value = finalOverview;
+                if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['description']) {
+                    CKEDITOR.instances['description'].setData(finalOverview);
+                }
+            }
+
+            // --- E. AUTO SELECT QUỐC GIA ---
+            if (movie.production_countries && movie.production_countries.length > 0) {
+                const tmdbCountry = movie.production_countries[0].name.toLowerCase();
+                const selectCountry = document.getElementById('country_id');
+                const countryMap = {
+                    'south korea': 'hàn quốc',
+                    'united states of america': 'mỹ',
+                    'united kingdom': 'anh',
+                    'china': 'trung quốc',
+                    'japan': 'nhật bản'
+                };
+                let targetCountry = countryMap[tmdbCountry] || tmdbCountry;
+                for (let i = 0; i < selectCountry.options.length; i++) {
+                    const optText = selectCountry.options[i].text.toLowerCase();
+                    if (optText.includes(targetCountry) || targetCountry.includes(optText)) {
+                        selectCountry.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // --- F. AUTO CHECK THỂ LOẠI ---
+            if (movie.genres && movie.genres.length > 0) {
+                const checkboxes = document.querySelectorAll('input[name="genre_id[]"]');
+                checkboxes.forEach(cb => cb.checked = false);
+                movie.genres.forEach(g => {
+                    const tmdbGenre = g.name.toLowerCase();
+                    checkboxes.forEach(cb => {
+                        const labelSpan = cb.nextElementSibling;
+                        if (labelSpan) {
+                            const sysGenre = labelSpan.innerText.toLowerCase();
+                            if (sysGenre.includes(tmdbGenre) || tmdbGenre.includes(sysGenre)) {
+                                cb.checked = true;
+                            }
+                        }
+                    });
+                });
+            }
+
+            resultBox.style.display = 'none';
+            alert('Đã điền dữ liệu thành công (Đã ưu tiên Thumbnail 4K)!');
+
+        } catch (e) {
+            console.error(e);
+            alert('Có lỗi xảy ra! Xem console để biết chi tiết.');
         }
     }
 </script>

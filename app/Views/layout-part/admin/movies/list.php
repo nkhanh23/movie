@@ -95,6 +95,7 @@ $msg_type = getSessionFlash('msg_type');
                     <th>Quốc Gia</th>
                     <th>Loại phim</th>
                     <th>Trạng thái</th>
+                    <th>IMDB</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
@@ -113,6 +114,7 @@ $msg_type = getSessionFlash('msg_type');
                         <td><?php echo $item['country_name']; ?></td>
                         <td><?php echo $item['type_name']; ?></td>
                         <td><span class="badge success"><?php echo $item['movie_status']; ?></span></td>
+                        <td><?php echo $item['imdb_rating']; ?></td>
                         <td class="actions">
                             <div class="action-buttons">
                                 <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/view'"

@@ -16,6 +16,12 @@ class Genres extends CoreModel
         }
     }
 
+    public function getGenresGrid()
+    {
+
+        return $this->getAll("SELECT * FROM genres LIMIT 7");
+    }
+
     public function getAllGenresWithCount($sql)
     {
         return $this->countRows($sql);
