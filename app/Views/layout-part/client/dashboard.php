@@ -4,7 +4,7 @@ if (!defined('_nkhanhh')) {
 }
 layout('client/header');
 // echo '<pre>';
-// print_r($getMoviesKorean);
+// print_r($getCinemaMovie);
 // echo '</pre>';
 // die();
 ?>
@@ -77,12 +77,12 @@ layout('client/header');
 <div class="relative z-20 -mt-24 pb-20 space-y-8">
 
     <!-- Category Grid -->
-    <div class="w-full py-8">
+    <div class="w-full py-8 mt-12">
         <h2 class="text-xl md:text-2xl font-bold mb-4 px-4 md:px-8 text-white">Bạn đang quan tâm gì?</h2>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 px-4 md:px-8">
 
-            <!-- Card 1: Marvel -->
+            <!-- Card 1 -->
             <div class="relative w-full h-[110px] md:h-[135px] rounded-lg overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg group">
                 <svg class="absolute bottom-0 right-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 100 Q 25 50 50 100 T 100 100 V 50 Q 75 100 50 50 T 0 50 Z" fill="none" stroke="white" stroke-width="0.5" />
@@ -98,7 +98,7 @@ layout('client/header');
                 </div>
             </div>
 
-            <!-- Card 2: 4K -->
+            <!-- Card 2 -->
             <div class="relative w-full h-[110px] md:h-[135px] rounded-lg overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-500 to-slate-700 shadow-lg group">
                 <svg class="absolute bottom-0 right-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 100 Q 25 50 50 100 T 100 100 V 50 Q 75 100 50 50 T 0 50 Z" fill="none" stroke="white" stroke-width="0.5" />
@@ -114,7 +114,7 @@ layout('client/header');
                 </div>
             </div>
 
-            <!-- Card 3: Sitcom -->
+            <!-- Card 3 -->
             <div class="relative w-full h-[110px] md:h-[135px] rounded-lg overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-emerald-500 to-teal-700 shadow-lg group">
                 <svg class="absolute bottom-0 right-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 100 Q 25 50 50 100 T 100 100 V 50 Q 75 100 50 50 T 0 50 Z" fill="none" stroke="white" stroke-width="0.5" />
@@ -130,7 +130,7 @@ layout('client/header');
                 </div>
             </div>
 
-            <!-- Card 4: Lồng Tiếng -->
+            <!-- Card 4 -->
             <div class="relative w-full h-[110px] md:h-[135px] rounded-lg overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-indigo-700 shadow-lg group">
                 <svg class="absolute bottom-0 right-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 100 Q 25 50 50 100 T 100 100 V 50 Q 75 100 50 50 T 0 50 Z" fill="none" stroke="white" stroke-width="0.5" />
@@ -146,7 +146,7 @@ layout('client/header');
                 </div>
             </div>
 
-            <!-- Card 5: Xuyên Không -->
+            <!-- Card 5 -->
             <div class="relative w-full h-[110px] md:h-[135px] rounded-lg overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-orange-400 to-red-400 shadow-lg group">
                 <svg class="absolute bottom-0 right-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path d="M0 100 Q 25 50 50 100 T 100 100 V 50 Q 75 100 50 50 T 0 50 Z" fill="none" stroke="white" stroke-width="0.5" />
@@ -209,8 +209,10 @@ layout('client/header');
         </div>
     </div>
 
+    <!-- Country Movie -->
     <div class="relative z-20 px-4 md:px-12 space-y-12 pb-12">
 
+        <!-- Korea Section -->
         <div class="flex flex-col md:flex-row gap-6 items-start group/section">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
@@ -223,9 +225,12 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Left Button -->
-                <button id="koreaLeft" class="absolute left-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-r cursor-pointer">
-                    <i data-lucide="chevron-left" class="w-8 h-8"></i>
+                <!-- Navigation Buttons (Overlay) -->
+                <button id="koreaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button id="koreaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
                 </button>
 
                 <div id="koreaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
@@ -245,16 +250,11 @@ layout('client/header');
                         </div>
                     <?php endforeach; ?>
                 </div>
-
-                <!-- Right Button -->
-                <button id="koreaRight" class="absolute right-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-l cursor-pointer">
-                    <i data-lucide="chevron-right" class="w-8 h-8"></i>
-                </button>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent w-full"></div>
 
-
+        <!-- China Section -->
         <div class="flex flex-col md:flex-row gap-6 items-start group/section">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
@@ -267,9 +267,12 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Left Button -->
-                <button id="chinaLeft" class="absolute left-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-r cursor-pointer">
-                    <i data-lucide="chevron-left" class="w-8 h-8"></i>
+                <!-- Navigation Buttons (Overlay) -->
+                <button id="chinaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button id="chinaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
                 </button>
 
                 <div id="chinaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
@@ -289,16 +292,11 @@ layout('client/header');
                         </div>
                     <?php endforeach; ?>
                 </div>
-
-                <!-- Right Button -->
-                <button id="chinaRight" class="absolute right-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-l cursor-pointer">
-                    <i data-lucide="chevron-right" class="w-8 h-8"></i>
-                </button>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent w-full"></div>
 
-
+        <!-- US-UK Section -->
         <div class="flex flex-col md:flex-row gap-6 items-start group/section">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
@@ -311,9 +309,12 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Left Button -->
-                <button id="usukLeft" class="absolute left-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-r cursor-pointer">
-                    <i data-lucide="chevron-left" class="w-8 h-8"></i>
+                <!-- Navigation Buttons (Overlay) -->
+                <button id="usukLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button id="usukRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
                 </button>
 
                 <div id="usukCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
@@ -333,25 +334,299 @@ layout('client/header');
                         </div>
                     <?php endforeach; ?>
                 </div>
-
-                <!-- Right Button -->
-                <button id="usukRight" class="absolute right-0 top-0 bottom-4 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-l cursor-pointer">
-                    <i data-lucide="chevron-right" class="w-8 h-8"></i>
-                </button>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent w-full"></div>
 
     </div>
 
+    <!-- Top 10 Phim Bo Section -->
+    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-series">
+        <div class="flex items-center justify-between mb-8 relative">
+            <div>
+                <h3 class="text-2xl md:text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-500 to-orange-500 drop-shadow-sm tracking-tight">
+                    Top 10 Phim Bộ Hôm Nay
+                </h3>
+                <p class="text-gray-400 text-sm mt-1 font-medium">Bảng xếp hạng phim bộ được xem nhiều nhất trong ngày</p>
+            </div>
+        </div>
+
+        <div class="relative group/slider">
+            <!-- Navigation Buttons (Overlay) -->
+            <button id="top10SeriesLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+            <button id="top10SeriesRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+
+            <div id="top10SeriesCarousel" class="flex gap-8 overflow-x-auto no-scrollbar pb-12 pt-6 snap-x px-4 scroll-smooth">
+                <?php
+                $rank = 1;
+                foreach ($getTopDailyByType2 as $item):
+                ?>
+                    <div class="relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer">
+                        <!-- Rank Number -->
+                        <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
+                            <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-700 drop-shadow-2xl"
+                                style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
+                                <?php echo $rank++; ?>
+                            </span>
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-yellow-500/50 group-hover/card:shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
+                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+
+                            <!-- Premium Shine Effect -->
+                            <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+
+                            <!-- Info Overlay -->
+                            <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
+                                <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
+                                <p class="text-yellow-500/90 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
+
+                                <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
+                                        <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                    </div>
+                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 10 Phim Le Section -->
+    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-movies">
+        <div class="flex items-center justify-between mb-8 relative">
+            <div>
+                <h3 class="text-2xl md:text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-rose-500 drop-shadow-sm tracking-tight">
+                    Top 10 Phim Lẻ Hôm Nay
+                </h3>
+                <p class="text-gray-400 text-sm mt-1 font-medium">Bảng xếp hạng phim lẻ được xem nhiều nhất trong ngày</p>
+            </div>
+        </div>
+
+        <div class="relative group/slider">
+            <!-- Navigation Buttons (Overlay) -->
+            <button id="top10MoviesLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+            <button id="top10MoviesRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+
+            <div id="top10MoviesCarousel" class="flex gap-8 overflow-x-auto no-scrollbar pb-12 pt-6 snap-x px-4 scroll-smooth">
+                <?php
+                $rank = 1;
+                foreach ($getTopDailyByType1 as $item):
+                ?>
+                    <div class="relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer">
+                        <!-- Rank Number -->
+                        <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
+                            <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-red-400 to-red-700 drop-shadow-2xl"
+                                style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
+                                <?php echo $rank++; ?>
+                            </span>
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-red-500/50 group-hover/card:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
+                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+
+                            <!-- Premium Shine Effect -->
+                            <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+
+                            <!-- Info Overlay -->
+                            <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
+                                <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
+                                <p class="text-red-400 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
+
+                                <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
+                                        <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                    </div>
+                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phim Chieu Rap Section -->
+    <div class="relative z-20 px-4 md:px-12 py-12 group/theater">
+
+        <div class="flex items-end justify-between mb-8">
+            <div class="relative">
+                <h3 class="text-3xl md:text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 drop-shadow-sm tracking-tighter">
+                    Mãn Nhãn Phim Chiếu Rạp
+                </h3>
+                <div class="h-1 w-1/2 bg-gradient-to-r from-amber-400 to-transparent mt-2 rounded-full"></div>
+            </div>
+            <a href="#" class="hidden md:flex items-center gap-2 text-gray-400 hover:text-amber-400 transition-colors text-sm font-semibold group/link">
+                <span>Xem tất cả</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover/link:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+
+        <div class="relative group/slider">
+            <button id="theaterLeft" class="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-amber-500 hover:text-black text-white flex items-center justify-center rounded-full backdrop-blur-md border border-white/10 transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] opacity-0 group-hover/slider:opacity-100 hidden md:flex transform hover:scale-110">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+
+            <div id="theaterCarousel" class="flex gap-6 overflow-x-auto no-scrollbar pb-10 pt-4 snap-x px-2 scroll-smooth">
+
+                <?php foreach ($getCinemaMovie as $movie) : ?>
+                    <div class="movie-card-wrapper relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer"
+                        data-title="<?php echo $movie['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $movie['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất.">
+
+                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden bg-[#1a1a1a] ring-1 ring-white/10 group-hover/card:ring-amber-500 transition-all duration-500 shadow-lg group-hover/card:shadow-[0_0_25px_rgba(245,158,11,0.3)]">
+                            <img src="<?php echo $movie['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
+
+                            <div class="absolute top-2 left-2 flex flex-col gap-1">
+                                <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md uppercase tracking-wider">Hot</span>
+                                <span class="bg-black/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/30">Vietsub</span>
+                            </div>
+
+                            <div class="absolute top-2 right-2 bg-amber-400 text-black text-[11px] font-extrabold px-1.5 py-0.5 rounded shadow-md">
+                                7.2
+                            </div>
+
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300 flex flex-col items-center gap-2">
+                                    <button class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform shadow-lg shadow-amber-500/50 quick-view-btn">
+                                        <i data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
+                                    </button>
+                                    <span class="text-white text-xs font-bold tracking-wide">Xem Ngay</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 px-1 transition-transform duration-300 group-hover/card:translate-x-1">
+                            <h4 class="text-white font-bold text-lg truncate group-hover/card:text-amber-400 transition-colors leading-tight"><?php echo $movie['tittle']; ?></h4>
+                            <p class="text-gray-500 text-xs truncate mt-1 font-medium flex items-center gap-2">
+                                <span><?php echo $movie['original_tittle']; ?></span>
+                                <span class="w-1 h-1 rounded-full bg-gray-600"></span>
+                                <span><?php echo $movie['release_year']; ?></span>
+                            </p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <button id="theaterRight" class="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-amber-500 hover:text-black text-white flex items-center justify-center rounded-full backdrop-blur-md border border-white/10 transition-all shadow-[0_0_20px_rgba(0,0,0,0.8)] opacity-0 group-hover/slider:opacity-100 hidden md:flex transform hover:scale-110">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Anime Section (New Design) -->
+    <div class="max-w-[1900px] md:px-12 px-5 mx-auto my-12 mb-52 md:mb-64"> <!-- Increased mb to accommodate absolute thumbnails -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-white uppercase tracking-tight">Kho Tàng Anime Mới Nhất</h2>
+            <a href="/c/anime" class="flex items-center gap-2 text-gray-400 hover:text-[#FFD875] transition-colors text-sm font-semibold group">
+                <span>Xem thêm</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+
+        <div class="relative w-full group/anime-section">
+            <!-- Main Display Area (Reduced Height) -->
+            <div id="anime-main-display" class="relative w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden shadow-2xl bg-[#202331]">
+                <?php foreach ($getAnimeMovies as $key => $item):
+                    $activeClass = ($key == 0) ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none';
+                ?>
+                    <div class="anime-slide absolute inset-0 transition-all duration-700 ease-in-out <?php echo $activeClass; ?>" data-index="<?php echo $key; ?>">
+                        <!-- Background Image -->
+                        <div class="absolute inset-0">
+                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
+                            <!-- Gradient Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#0F111A] via-[#0F111A]/80 to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0F111A] via-[#0F111A]/60 to-transparent"></div>
+                        </div>
+
+                        <!-- Content (Adjusted spacing to accommodate overlays) -->
+                        <div class="absolute inset-0 flex flex-col justify-start pt-16 md:pt-20 px-6 md:px-16 w-full md:w-3/5 z-20 space-y-4">
+                            <h3 class="text-2xl md:text-4xl font-black text-white leading-none drop-shadow-lg animate-fade-in-up">
+                                <a href="#" class="hover:text-[#FFD875] transition-colors"><?php echo $item['tittle']; ?></a>
+                            </h3>
+                            <h4 class="text-base md:text-lg text-[#FFD875] font-bold tracking-wide opacity-90">
+                                <?php echo $item['original_tittle']; ?>
+                            </h4>
+
+                            <!-- Tags -->
+                            <div class="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-bold">
+                                <span class="bg-[#e2b616] text-black px-2 py-0.5 rounded shadow-sm">IMDb <?php echo $item['imdb_rating']; ?></span>
+                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['age']; ?></span>
+                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['release_year']; ?></span>
+                                <span class="text-[#FFD875] border border-[#FFD875] px-2 py-0.5 rounded bg-[#FFD700]/10">Tập 10</span>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2 text-xs md:text-sm text-gray-400 font-medium">
+                                <?php
+                                $genres = explode(',', $item['genre_name']);
+                                foreach ($genres as $g): ?>
+                                    <span class="hover:text-white cursor-pointer"><?php echo trim($g); ?></span>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <p class="text-gray-300 text-xs md:text-sm line-clamp-2 md:line-clamp-3 leading-relaxed max-w-2xl drop-shadow-md">
+                                <?php echo $item['description']; ?>
+                            </p>
+
+                            <!-- Buttons -->
+                            <div class="flex items-center gap-4 pt-4">
+                                <a href="#" class="group/play w-10 h-10 md:w-12 md:h-12 bg-[#FFD875] hover:bg-[#ffc107] rounded-full flex items-center justify-center text-[#191B24] transition-all hover:scale-110 shadow-[0_0_20px_rgba(255,216,117,0.4)]">
+                                    <i data-lucide="play" class="w-4 h-4 md:w-5 md:h-5 fill-current ml-1 group-hover/play:scale-110 transition-transform"></i>
+                                </a>
+                                <div class="flex gap-3">
+                                    <button class="w-8 h-8 md:w-10 md:h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center justify-center text-white transition-all hover:scale-105 backdrop-blur-sm">
+                                        <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                    </button>
+                                    <button class="w-8 h-8 md:w-10 md:h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center justify-center text-white transition-all hover:scale-105 backdrop-blur-sm">
+                                        <i data-lucide="info" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Thumbnails Strip -->
+            <div class="absolute -bottom-16 left-0 right-0 z-30 flex justify-center px-4 w-full">
+                <div class="flex gap-3 overflow-x-auto no-scrollbar max-w-full pb-2 px-4 pt-6" id="anime-thumbs-list">
+                    <?php foreach ($getAnimeMovies as $key => $item):
+                        $activeThumb = ($key == 0) ? 'border-[#FFD875] opacity-100 scale-110 -translate-y-4 shadow-2xl z-40' : 'border-transparent opacity-60 hover:opacity-100 hover:-translate-y-2';
+                    ?>
+                        <div class="anime-thumb flex-shrink-0 w-[60px] h-[90px] md:w-[80px] md:h-[120px] rounded-lg overflow-hidden cursor-pointer border-2 <?php echo $activeThumb; ?> transition-all duration-300 shadow-xl bg-[#1a1a1a]"
+                            onclick="changeAnimeSlide(<?php echo $key; ?>)"
+                            data-index="<?php echo $key; ?>">
+                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Trending Section -->
-    <div class="px-4 md:px-12 group/carousel">
+    <div class="px-4 md:px-12 group/carousel pt-40">
         <h3 class="text-xl font-bold mb-4 text-white">Trending Now</h3>
 
         <div class="relative">
             <!-- Left Button -->
-            <button id="trendingLeft" class="absolute left-0 top-0 bottom-0 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-r cursor-pointer">
-                <i data-lucide="chevron-left" class="w-8 h-8"></i>
+            <button id="trendingLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
             </button>
 
             <div id="trendingCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
@@ -607,8 +882,8 @@ layout('client/header');
             </div>
 
             <!-- Right Button -->
-            <button id="trendingRight" class="absolute right-0 top-0 bottom-0 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-l cursor-pointer">
-                <i data-lucide="chevron-right" class="w-8 h-8"></i>
+            <button id="trendingRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
             </button>
         </div>
     </div>
@@ -619,8 +894,8 @@ layout('client/header');
 
         <div class="relative">
             <!-- Left Button -->
-            <button id="cinemaLeft" class="absolute left-0 top-0 bottom-0 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-r cursor-pointer">
-                <i data-lucide="chevron-left" class="w-8 h-8"></i>
+            <button id="cinemaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
             </button>
 
             <div id="cinemaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
@@ -845,8 +1120,8 @@ layout('client/header');
             </div>
 
             <!-- Right Button -->
-            <button id="cinemaRight" class="absolute right-0 top-0 bottom-0 z-50 w-12 bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 text-white hidden md:flex rounded-l cursor-pointer">
-                <i data-lucide="chevron-right" class="w-8 h-8"></i>
+            <button id="cinemaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
             </button>
         </div>
     </div>

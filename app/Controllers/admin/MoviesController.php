@@ -16,6 +16,7 @@ class MoviesController extends baseController
         $countries = '';
         $genres = '';
         $status = '';
+        $types = '';
         $keyword = '';
 
         if (isGet()) {
@@ -24,6 +25,9 @@ class MoviesController extends baseController
             }
             if (isset($filter['status'])) {
                 $status = $filter['status'];
+            }
+            if (isset($filter['types'])) {
+                $types = $filter['types'];
             }
             if (isset($filter['genres'])) {
                 $genres = $filter['genres'];
@@ -59,6 +63,15 @@ class MoviesController extends baseController
                 $chuoiWhere .= "g.id = $genres";
             }
 
+            if (!empty($types)) {
+                if (strpos($chuoiWhere, 'WHERE') == false) {
+                    $chuoiWhere .= ' WHERE ';
+                } else {
+                    $chuoiWhere .= ' AND ';
+                }
+                $chuoiWhere .= "mt.id = $types";
+            }
+
             if (!empty($countries)) {
                 if (strpos($chuoiWhere, 'WHERE') == false) {
                     $chuoiWhere .= ' WHERE ';
@@ -77,6 +90,7 @@ class MoviesController extends baseController
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_status ms ON ms.id = m.status_id 
         LEFT JOIN countries c ON c.id = m.country_id
+        LEFT JOIN movie_types mt ON mt.id = m.type_id
         $chuoiWhere";
         $countMovies = $this->moviesModel->getRowMovies($sqlCount);
         $countResult = $this->moviesModel->getAllMovies($sqlCount);
@@ -110,6 +124,7 @@ class MoviesController extends baseController
         $getAllGenres = $this->genresModel->getAllGenres();
         $getCountries = $this->moviesModel->getAllCountries();
         $getStatus = $this->moviesModel->getAllMoviesStatus();
+        $getAllMovieTypes = $this->moviesModel->getAllType();
         $getMovies = $this->moviesModel->getAllMovies("SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ',') as genres, ms.name as movie_status, c.name as country_name, mt.name as type_name
         FROM movies as m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
@@ -133,6 +148,7 @@ class MoviesController extends baseController
             'getMovies' => $getMovies,
             'getCountries' => $getCountries,
             'getAllGenres' => $getAllGenres,
+            'getAllMovieTypes' => $getAllMovieTypes,
             'maxPage' => $maxPage,
             'page' => $page,
             'queryString' => $queryString,

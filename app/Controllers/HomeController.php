@@ -21,12 +21,21 @@ class HomeController extends baseController
         $getMoviesKorean = $this->moviesModel->getMoviesKorean();
         $getMoviesUSUK = $this->moviesModel->getMoviesUSUK();
         $getMoviesChinese = $this->moviesModel->getMoviesChinese();
+        $getTopDailyByType1 = $this->moviesModel->getTopDailyByType(1);
+        $getTopDailyByType2 = $this->moviesModel->getTopDailyByType(2);
+        $getCinemaMovie = $this->moviesModel->getCinemaMovie();
+        $getAnimeMovies = $this->moviesModel->getAnimeMovies();
+
         $data = [
             'getMoviesHeroSection' => $getMoviesHeroSection,
             'getGenresGrid' => $getGenresGrid,
             'getMoviesKorean' => $getMoviesKorean,
             'getMoviesUSUK' => $getMoviesUSUK,
-            'getMoviesChinese' => $getMoviesChinese
+            'getMoviesChinese' => $getMoviesChinese,
+            'getTopDailyByType1' => $getTopDailyByType1,
+            'getTopDailyByType2' => $getTopDailyByType2,
+            'getCinemaMovie' => $getCinemaMovie,
+            'getAnimeMovies' => $getAnimeMovies
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }

@@ -41,6 +41,20 @@ $msg_type = getSessionFlash('msg_type');
                     </select>
                 </div>
 
+                <div id="filter-genre-wrapper">
+                    <select name="types" onchange="this.form.submit()">
+                        <option value="">-- Tất cả Loại Phim --</option>
+                        <?php if (!empty($getAllMovieTypes)): ?>
+                            <?php foreach ($getAllMovieTypes as $item): ?>
+                                <option value="<?php echo $item['id'] ?>"
+                                    <?php echo (isset($types) && $types == $item['id']) ? 'selected' : '' ?>>
+                                    <?php echo $item['name'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
                 <div id="filter-status-wrapper">
                     <select name="status" onchange="this.form.submit()">
                         <option value="">-- Tất cả Trạng thái --</option>

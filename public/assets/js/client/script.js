@@ -184,6 +184,43 @@ const initCarousel = () => {
     setupCarousel('koreaCarousel', 'koreaLeft', 'koreaRight', false);
     setupCarousel('chinaCarousel', 'chinaLeft', 'chinaRight', false);
     setupCarousel('usukCarousel', 'usukLeft', 'usukRight', false);
+
+    // Initialize Top 10 Series Carousel
+    setupCarousel('top10SeriesCarousel', 'top10SeriesLeft', 'top10SeriesRight', false);
+
+    // Initialize Top 10 Movies Carousel
+    setupCarousel('top10MoviesCarousel', 'top10MoviesLeft', 'top10MoviesRight', false);
+
+    // Initialize Theater (Cinema) Carousel
+    setupCarousel('theaterCarousel', 'theaterLeft', 'theaterRight', false);
+};
+
+// --- HÀM XỬ LÝ ANIME CAROUSEL ---
+// --- HÀM XỬ LÝ ANIME CAROUSEL (NEW) ---
+window.changeAnimeSlide = function (index) {
+    // 1. Handle Main Slides
+    const slides = document.querySelectorAll('.anime-slide');
+    slides.forEach(slide => {
+        if (parseInt(slide.dataset.index) === index) {
+            slide.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+            slide.classList.add('opacity-100', 'z-10');
+        } else {
+            slide.classList.remove('opacity-100', 'z-10');
+            slide.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+        }
+    });
+
+    // 2. Handle Thumbnails
+    const thumbs = document.querySelectorAll('.anime-thumb');
+    thumbs.forEach(thumb => {
+        if (parseInt(thumb.dataset.index) === index) {
+            thumb.classList.remove('border-transparent', 'opacity-60', 'hover:opacity-100', 'hover:-translate-y-2');
+            thumb.classList.add('border-[#FFD875]', 'opacity-100', 'scale-110', '-translate-y-4', 'shadow-2xl', 'z-40');
+        } else {
+            thumb.classList.remove('border-[#FFD875]', 'opacity-100', 'scale-110', '-translate-y-4', 'shadow-2xl', 'z-40');
+            thumb.classList.add('border-transparent', 'opacity-60', 'hover:opacity-100', 'hover:-translate-y-2');
+        }
+    });
 };
 
 // Modal Logic
