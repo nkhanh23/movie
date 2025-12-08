@@ -5,25 +5,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CineMagic AI</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
   <link rel="stylesheet" href="<?php echo _HOST_URL_PUBLIC; ?>/assets/css/client/style.css">
 
-  <!-- Import Map -->
   <script type="importmap">
     {
       "imports": {
         "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
       }
     }
-    </script>
+  </script>
 
-  <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
-  <!-- Navigation -->
   <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-4 flex items-center justify-between transition-all duration-300">
     <div class="flex items-center gap-8">
       <h1 class="text-red-600 text-3xl font-bold tracking-tighter cursor-pointer">CINE<span class="text-white">MAGIC</span></h1>
@@ -44,3 +48,9 @@
       </div>
     </div>
   </nav>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      lucide.createIcons();
+    });
+  </script>

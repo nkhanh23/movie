@@ -1,8 +1,26 @@
+/* =========================================
+   1. SETUP VARIABLES & BASE
+   (Bổ sung các biến màu từ thiết kế gốc để dùng cho Horror Section)
+   ========================================= */
+:root {
+    --primary-color: #FFD875;
+    /* Màu vàng thương hiệu */
+    --text-base: #aaa;
+    /* Màu chữ phụ */
+    --bg-button: #2F3346;
+    /* Màu nền nút điều hướng */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --bs-gray-600: #6c757d;
+}
+
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #141414;
     /* Netflix-like dark background */
     color: white;
+    margin: 0;
+    /* Reset margin mặc định của trình duyệt */
 }
 
 /* Custom scrollbar to match dark theme */
@@ -32,4 +50,346 @@ body {
 .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* =========================================
+   2. HORROR SECTION STYLING
+   (Phần code mới thêm vào)
+   ========================================= */
+
+/* Layout chung của Section */
+.section-horror {
+    margin: 40px auto;
+    max-width: 1600px;
+    /* Giới hạn chiều rộng trên màn to */
+    padding: 0 20px;
+    /* Padding 2 bên */
+    position: relative;
+}
+
+/* HEADER SECTION */
+.row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 15px;
+}
+
+.category-name {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.cat-more a {
+    color: var(--text-base);
+    font-size: 13px;
+    text-decoration: none;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.cat-more a:hover {
+    color: var(--primary-color);
+}
+
+/* NAVIGATION BUTTONS (Nút mũi tên) */
+.sw-navigation {
+    position: absolute;
+    top: -55px;
+    /* Đẩy lên ngang hàng với header title */
+    right: 120px;
+    /* Nằm bên trái nút Xem thêm */
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.sw-button {
+    background: var(--bg-button);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sw-button:hover {
+    background: var(--primary-color);
+    color: #141414;
+    /* Chữ màu đen khi hover nền vàng */
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 216, 117, 0.4);
+    /* Glow effect */
+    border-color: var(--primary-color);
+}
+
+/* MOVIE ITEM CARD */
+.sw-item {
+    transition: transform 0.3s ease;
+    /* Không set margin ở đây vì Swiper xử lý spaceBetween */
+}
+
+/* THUMBNAIL (POSTER) */
+.v-thumbnail {
+    display: block;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    /* Tỉ lệ chuẩn poster phim */
+    background: #222;
+    /* Placeholder color khi ảnh chưa load */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.image-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+}
+
+.movie-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.6s;
+}
+
+/* HIỆU ỨNG HOVER CARD */
+/* 1. Zoom ảnh */
+.v-thumbnail:hover .movie-thumb {
+    transform: scale(1.15);
+    filter: brightness(0.6);
+    /* Làm tối ảnh để nút Play nổi bật */
+}
+
+/* 2. Nút Play Overlay & Favorite */
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    /* Ẩn mặc định */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    /* Khoảng cách giữa 2 nút */
+    z-index: 2;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.v-thumbnail:hover .play-overlay,
+.image-wrapper:hover .play-overlay,
+.movie-card-wrapper:hover .play-overlay {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.play-overlay .btn-action {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.play-overlay .btn-play {
+    background: rgba(255, 216, 117, 0.95);
+    /* Màu primary đậm */
+    color: #141414;
+    box-shadow: 0 0 20px rgba(255, 216, 117, 0.6);
+}
+
+.play-overlay .btn-fav {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.play-overlay .btn-play:hover {
+    transform: scale(1.15);
+    background: #fff;
+}
+
+.play-overlay .btn-fav:hover {
+    transform: scale(1.15);
+    background: white;
+    color: #ef4444;
+    /* Red text on hover */
+    border-color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+/* TAGS / LABELS (Góc trái trên) */
+.pin-new {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pin-new div {
+    background: rgba(20, 20, 20, 0.8);
+    /* Dark background match body */
+    color: #fff;
+    font-size: 9px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.pin-new .line-tm {
+    background: var(--primary-color);
+    color: #141414;
+    border: none;
+    font-weight: 800;
+}
+
+/* MOVIE INFO (Bên dưới ảnh) */
+.info {
+    padding-top: 14px;
+}
+
+.item-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+}
+
+.item-title a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.item-title a:hover {
+    color: var(--primary-color);
+}
+
+.alias-title {
+    font-size: 13px;
+    color: var(--text-base);
+    margin: 0 0 8px 0;
+    font-weight: 400;
+}
+
+.lim-1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta-info {
+    font-size: 12px;
+    color: var(--bs-gray-600);
+    display: flex;
+    align-items: center;
+}
+
+.meta-info .dot {
+    margin: 0 6px;
+    color: var(--primary-color);
+    font-size: 10px;
+}
+
+/* Override styling for Love Section */
+.section-love .row-header {
+    border-left-color: #FF69B4;
+}
+
+/* =========================================
+   3. SWIPER NAVIGATION OVERRIDES
+   ========================================= */
+
+/* Ensure wrapper is relative for absolute positioning of nav */
+.cards-slide-wrapper {
+    position: relative;
+}
+
+/* Override for side-overlay navigation */
+.section-korea .sw-navigation,
+.section-china .sw-navigation,
+.section-usuk .sw-navigation,
+.section-cinema .sw-navigation,
+.section-top10-series .sw-navigation,
+.section-top10-movies .sw-navigation,
+.section-horror .sw-navigation,
+.section-love .sw-navigation {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    z-index: 20;
+    pointer-events: none;
+    /* Allow clicks to pass through container */
+    padding: 0 10px;
+    /* Spacing from edges */
+}
+
+/* Re-enable pointer events for buttons themselves */
+.section-korea .sw-button,
+.section-china .sw-button,
+.section-usuk .sw-button,
+.section-cinema .sw-button,
+.section-top10-series .sw-button,
+.section-top10-movies .sw-button,
+.section-horror .sw-button,
+.section-love .sw-button {
+    pointer-events: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    /* Stronger shadow for overlay */
+    background: rgba(47, 51, 70, 0.8);
+    /* Semi-transparent background */
+    backdrop-filter: blur(4px);
+}
+
+.section-korea .sw-button:hover,
+.section-china .sw-button:hover,
+.section-usuk .sw-button:hover,
+.section-cinema .sw-button:hover,
+.section-top10-series .sw-button:hover,
+.section-top10-movies .sw-button:hover,
+.section-horror .sw-button:hover,
+.section-love .sw-button:hover {
+    background: var(--primary-color);
+    color: #141414;
+}
+
+/* Ensure Cinema section has correct spacing for buttons if needed */
+.section-cinema .sw-navigation {
+    padding: 0 5px;
 }

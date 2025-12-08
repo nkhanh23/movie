@@ -196,7 +196,6 @@ const initCarousel = () => {
 };
 
 // --- HÀM XỬ LÝ ANIME CAROUSEL ---
-// --- HÀM XỬ LÝ ANIME CAROUSEL (NEW) ---
 window.changeAnimeSlide = function (index) {
     // 1. Handle Main Slides
     const slides = document.querySelectorAll('.anime-slide');
@@ -221,6 +220,30 @@ window.changeAnimeSlide = function (index) {
             thumb.classList.add('border-transparent', 'opacity-60', 'hover:opacity-100', 'hover:-translate-y-2');
         }
     });
+};
+
+// --- GENERIC SWIPER INITIALIZATION ---
+const initSwiperGeneric = (selector, nextBtn, prevBtn, config = {}) => {
+    if (document.querySelector(selector)) {
+        const defaultConfig = {
+            slidesPerView: 2,
+            spaceBetween: 15,
+            loop: true,
+            speed: 600,
+            navigation: {
+                nextEl: nextBtn,
+                prevEl: prevBtn,
+            },
+            breakpoints: {
+                576: { slidesPerView: 3, spaceBetween: 15 },
+                768: { slidesPerView: 4, spaceBetween: 20 },
+                1024: { slidesPerView: 5, spaceBetween: 20 },
+                1200: { slidesPerView: 6, spaceBetween: 24 },
+            }
+        };
+        const finalConfig = { ...defaultConfig, ...config };
+        new Swiper(selector, finalConfig);
+    }
 };
 
 // Modal Logic
@@ -330,8 +353,21 @@ const initModal = () => {
 // Main Initialization
 const init = () => {
     initHero();
-    initCarousel();
+    // initCarousel(); // Legacy carousel disabled
     initModal();
+
+    // Initialize all Swipers
+    initSwiperGeneric('.swiper-horror', '.sw-next-horror', '.sw-prev-horror');
+    initSwiperGeneric('.swiper-love', '.sw-next-love', '.sw-prev-love');
+
+    initSwiperGeneric('.swiper-korea', '.sw-next-korea', '.sw-prev-korea');
+    initSwiperGeneric('.swiper-china', '.sw-next-china', '.sw-prev-china');
+    initSwiperGeneric('.swiper-usuk', '.sw-next-usuk', '.sw-prev-usuk');
+
+    initSwiperGeneric('.swiper-top10-series', '.sw-next-top10-series', '.sw-prev-top10-series');
+    initSwiperGeneric('.swiper-top10-movies', '.sw-next-top10-movies', '.sw-prev-top10-movies');
+
+    initSwiperGeneric('.swiper-cinema', '.sw-next-cinema', '.sw-prev-cinema');
 };
 
 // Run initialization immediately if DOM is ready, otherwise wait for it

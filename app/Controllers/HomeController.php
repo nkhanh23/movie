@@ -25,6 +25,8 @@ class HomeController extends baseController
         $getTopDailyByType2 = $this->moviesModel->getTopDailyByType(2);
         $getCinemaMovie = $this->moviesModel->getCinemaMovie();
         $getAnimeMovies = $this->moviesModel->getAnimeMovies();
+        $getLoveMovies = $this->moviesModel->getLoveMovies();
+        $getHorrorMovies = $this->moviesModel->getHorrorMovies();
 
         $data = [
             'getMoviesHeroSection' => $getMoviesHeroSection,
@@ -35,7 +37,9 @@ class HomeController extends baseController
             'getTopDailyByType1' => $getTopDailyByType1,
             'getTopDailyByType2' => $getTopDailyByType2,
             'getCinemaMovie' => $getCinemaMovie,
-            'getAnimeMovies' => $getAnimeMovies
+            'getAnimeMovies' => $getAnimeMovies,
+            'getLoveMovies' => $getLoveMovies,
+            'getHorrorMovies' => $getHorrorMovies
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }

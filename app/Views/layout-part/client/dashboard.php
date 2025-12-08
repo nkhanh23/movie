@@ -213,7 +213,7 @@ layout('client/header');
     <div class="relative z-20 px-4 md:px-12 space-y-12 pb-12">
 
         <!-- Korea Section -->
-        <div class="flex flex-col md:flex-row gap-6 items-start group/section">
+        <div class="flex flex-col md:flex-row gap-6 items-start group/section cards-slide wide section-korea">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
                     Phim Hàn<br class="hidden md:block"> Quốc mới
@@ -225,37 +225,53 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Navigation Buttons (Overlay) -->
-                <button id="koreaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                </button>
-                <button id="koreaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                </button>
+                <div class="cards-slide-wrapper">
+                    <div class="sw-navigation">
+                        <button type="button" class="sw-button sw-prev-korea">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="sw-button sw-next-korea">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
 
-                <div id="koreaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
-                    <?php foreach ($getMoviesKorean as $item): ?>
-                        <div class="flex-shrink-0 w-[260px] md:w-[300px] snap-start cursor-pointer group/card">
-                            <div class="relative w-full aspect-video rounded-lg overflow-hidden mb-3 border border-white/5 hover:border-white/30 transition-all duration-300 shadow-lg">
-                                <img src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['name']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-105 transition-transform duration-500">
-                                <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-[10px] font-bold text-gray-200">PD: 8</div>
-                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <i data-lucide="play-circle" class="w-10 h-10 text-white opacity-80 scale-90 group-hover/card:scale-100 transition-all"></i>
+                    <div class="swiper swiper-korea">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($getMoviesKorean as $item): ?>
+                                <div class="swiper-slide">
+                                    <div class="sw-item">
+                                        <a class="v-thumbnail" href="#">
+                                            <div class="pin-new m-pin-new">
+                                                <div class="line-center line-pd">Full HD</div>
+                                                <div class="line-center line-tm">Vietsub</div>
+                                            </div>
+                                            <div class="image-wrapper">
+                                                <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                <div class="play-overlay">
+                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="info">
+                                            <h4 class="item-title lim-1"><a href="#"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
+                                            <div class="meta-info">
+                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="pr-2">
-                                <h4 class="text-white font-bold text-sm md:text-base truncate group-hover/card:text-purple-400 transition-colors"><?php echo $item['tittle']; ?></h4>
-                                <p class="text-xs text-gray-500 truncate mt-0.5"><?php echo $item['original_tittle']; ?></p>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent w-full"></div>
 
         <!-- China Section -->
-        <div class="flex flex-col md:flex-row gap-6 items-start group/section">
+        <div class="flex flex-col md:flex-row gap-6 items-start group/section cards-slide wide section-china">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
                     Phim Trung<br class="hidden md:block"> Quốc mới
@@ -267,37 +283,53 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Navigation Buttons (Overlay) -->
-                <button id="chinaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                </button>
-                <button id="chinaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                </button>
+                <div class="cards-slide-wrapper">
+                    <div class="sw-navigation">
+                        <button type="button" class="sw-button sw-prev-china">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="sw-button sw-next-china">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
 
-                <div id="chinaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
-                    <?php foreach ($getMoviesChinese as $item): ?>
-                        <div class="flex-shrink-0 w-[260px] md:w-[300px] snap-start cursor-pointer group/card">
-                            <div class="relative w-full aspect-video rounded-lg overflow-hidden mb-3 border border-white/5 hover:border-white/30 transition-all duration-300 shadow-lg">
-                                <img src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-105 transition-transform duration-500">
-                                <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-[10px] font-bold text-gray-200">PD: 26</div>
-                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <i data-lucide="play-circle" class="w-10 h-10 text-white opacity-80 scale-90 group-hover/card:scale-100 transition-all"></i>
+                    <div class="swiper swiper-china">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($getMoviesChinese as $item): ?>
+                                <div class="swiper-slide">
+                                    <div class="sw-item">
+                                        <a class="v-thumbnail" href="#">
+                                            <div class="pin-new m-pin-new">
+                                                <div class="line-center line-pd">Full HD</div>
+                                                <div class="line-center line-tm">Vietsub</div>
+                                            </div>
+                                            <div class="image-wrapper">
+                                                <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                <div class="play-overlay">
+                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="info">
+                                            <h4 class="item-title lim-1"><a href="#"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
+                                            <div class="meta-info">
+                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="pr-2">
-                                <h4 class="text-white font-bold text-sm md:text-base truncate group-hover/card:text-orange-400 transition-colors"><?php echo $item['tittle']; ?></h4>
-                                <p class="text-xs text-gray-500 truncate mt-0.5"><?php echo $item['original_tittle']; ?></p>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-gray-800 to-transparent w-full"></div>
 
         <!-- US-UK Section -->
-        <div class="flex flex-col md:flex-row gap-6 items-start group/section">
+        <div class="flex flex-col md:flex-row gap-6 items-start group/section cards-slide wide section-usuk">
             <div class="w-full md:w-64 flex-shrink-0 flex flex-col justify-center md:h-[200px] space-y-3">
                 <h3 class="text-2xl md:text-3xl font-bold uppercase leading-tight bg-gradient-to-br from-white to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
                     Phim US-UK<br class="hidden md:block"> mới
@@ -309,30 +341,46 @@ layout('client/header');
             </div>
 
             <div class="flex-1 w-full overflow-hidden relative group/slider">
-                <!-- Navigation Buttons (Overlay) -->
-                <button id="usukLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                </button>
-                <button id="usukRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                </button>
+                <div class="cards-slide-wrapper">
+                    <div class="sw-navigation">
+                        <button type="button" class="sw-button sw-prev-usuk">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="sw-button sw-next-usuk">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
 
-                <div id="usukCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x scroll-smooth">
-                    <?php foreach ($getMoviesUSUK as $item): ?>
-                        <div class="flex-shrink-0 w-[260px] md:w-[300px] snap-start cursor-pointer group/card">
-                            <div class="relative w-full aspect-video rounded-lg overflow-hidden mb-3 border border-white/5 hover:border-white/30 transition-all duration-300 shadow-lg">
-                                <img src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-105 transition-transform duration-500">
-                                <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-[10px] font-bold text-gray-200">PD: 2</div>
-                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <i data-lucide="play-circle" class="w-10 h-10 text-white opacity-80 scale-90 group-hover/card:scale-100 transition-all"></i>
+                    <div class="swiper swiper-usuk">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($getMoviesUSUK as $item): ?>
+                                <div class="swiper-slide">
+                                    <div class="sw-item">
+                                        <a class="v-thumbnail" href="#">
+                                            <div class="pin-new m-pin-new">
+                                                <div class="line-center line-pd">Full HD</div>
+                                                <div class="line-center line-tm">Vietsub</div>
+                                            </div>
+                                            <div class="image-wrapper">
+                                                <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                <div class="play-overlay">
+                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="info">
+                                            <h4 class="item-title lim-1"><a href="#"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
+                                            <div class="meta-info">
+                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="pr-2">
-                                <h4 class="text-white font-bold text-sm md:text-base truncate group-hover/card:text-pink-400 transition-colors"><?php echo $item['tittle']; ?></h4>
-                                <p class="text-xs text-gray-500 truncate mt-0.5"><?php echo $item['original_tittle']; ?></p>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -341,7 +389,7 @@ layout('client/header');
     </div>
 
     <!-- Top 10 Phim Bo Section -->
-    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-series">
+    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-series cards-slide wide section-top10-series">
         <div class="flex items-center justify-between mb-8 relative">
             <div>
                 <h3 class="text-2xl md:text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-500 to-orange-500 drop-shadow-sm tracking-tight">
@@ -352,57 +400,67 @@ layout('client/header');
         </div>
 
         <div class="relative group/slider">
-            <!-- Navigation Buttons (Overlay) -->
-            <button id="top10SeriesLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-left" class="w-6 h-6"></i>
-            </button>
-            <button id="top10SeriesRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-right" class="w-6 h-6"></i>
-            </button>
+            <div class="cards-slide-wrapper">
+                <div class="sw-navigation">
+                    <button type="button" class="sw-button sw-prev-top10-series">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="sw-button sw-next-top10-series">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
 
-            <div id="top10SeriesCarousel" class="flex gap-8 overflow-x-auto no-scrollbar pb-12 pt-6 snap-x px-4 scroll-smooth">
-                <?php
-                $rank = 1;
-                foreach ($getTopDailyByType2 as $item):
-                ?>
-                    <div class="relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer">
-                        <!-- Rank Number -->
-                        <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
-                            <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-700 drop-shadow-2xl"
-                                style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
-                                <?php echo $rank++; ?>
-                            </span>
-                        </div>
-
-                        <!-- Card Content -->
-                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-yellow-500/50 group-hover/card:shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
-                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
-
-                            <!-- Premium Shine Effect -->
-                            <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
-
-                            <!-- Info Overlay -->
-                            <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
-                                <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
-                                <p class="text-yellow-500/90 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
-
-                                <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
-                                        <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                <div class="swiper swiper-top10-series">
+                    <div class="swiper-wrapper">
+                        <?php
+                        $rank = 1;
+                        foreach ($getTopDailyByType2 as $item):
+                        ?>
+                            <div class="swiper-slide">
+                                <div class="relative flex-shrink-0 w-full snap-start group/card cursor-pointer"> <!-- Removed fixed width -->
+                                    <!-- Rank Number -->
+                                    <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
+                                        <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-700 drop-shadow-2xl"
+                                            style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
+                                            <?php echo $rank++; ?>
+                                        </span>
                                     </div>
-                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform"></i>
+
+                                    <!-- Card Content -->
+                                    <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-yellow-500/50 group-hover/card:shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
+                                        <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+
+                                        <!-- Premium Shine Effect -->
+                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+
+                                        <!-- Info Overlay -->
+                                        <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
+                                            <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
+                                            <p class="text-yellow-500/90 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
+
+                                            <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
+                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Top 10 Phim Le Section -->
-    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-movies">
+    <div class="relative z-20 px-4 md:px-12 pb-12 group/top10-movies cards-slide wide section-top10-movies">
         <div class="flex items-center justify-between mb-8 relative">
             <div>
                 <h3 class="text-2xl md:text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-rose-500 drop-shadow-sm tracking-tight">
@@ -413,57 +471,67 @@ layout('client/header');
         </div>
 
         <div class="relative group/slider">
-            <!-- Navigation Buttons (Overlay) -->
-            <button id="top10MoviesLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-left" class="w-6 h-6"></i>
-            </button>
-            <button id="top10MoviesRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/slider:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-right" class="w-6 h-6"></i>
-            </button>
+            <div class="cards-slide-wrapper">
+                <div class="sw-navigation">
+                    <button type="button" class="sw-button sw-prev-top10-movies">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="sw-button sw-next-top10-movies">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
 
-            <div id="top10MoviesCarousel" class="flex gap-8 overflow-x-auto no-scrollbar pb-12 pt-6 snap-x px-4 scroll-smooth">
-                <?php
-                $rank = 1;
-                foreach ($getTopDailyByType1 as $item):
-                ?>
-                    <div class="relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer">
-                        <!-- Rank Number -->
-                        <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
-                            <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-red-400 to-red-700 drop-shadow-2xl"
-                                style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
-                                <?php echo $rank++; ?>
-                            </span>
-                        </div>
-
-                        <!-- Card Content -->
-                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-red-500/50 group-hover/card:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
-                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
-
-                            <!-- Premium Shine Effect -->
-                            <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
-
-                            <!-- Info Overlay -->
-                            <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
-                                <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
-                                <p class="text-red-400 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
-
-                                <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
-                                        <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                <div class="swiper swiper-top10-movies">
+                    <div class="swiper-wrapper">
+                        <?php
+                        $rank = 1;
+                        foreach ($getTopDailyByType1 as $item):
+                        ?>
+                            <div class="swiper-slide">
+                                <div class="relative flex-shrink-0 w-full snap-start group/card cursor-pointer"> <!-- Removed fixed width -->
+                                    <!-- Rank Number -->
+                                    <div class="absolute -left-6 -top-4 z-40 select-none pointer-events-none">
+                                        <span class="font-black text-8xl italic text-transparent bg-clip-text bg-gradient-to-b from-red-400 to-red-700 drop-shadow-2xl"
+                                            style="-webkit-text-stroke: 2px rgba(255,255,255,0.05); filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.8)); font-family: 'Arial', sans-serif;">
+                                            <?php echo $rank++; ?>
+                                        </span>
                                     </div>
-                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform"></i>
+
+                                    <!-- Card Content -->
+                                    <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-red-500/50 group-hover/card:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-[#1a1a1a]">
+                                        <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+
+                                        <!-- Premium Shine Effect -->
+                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+
+                                        <!-- Info Overlay -->
+                                        <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent pt-12 transform translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300">
+                                            <h4 class="text-white font-bold text-lg leading-tight line-clamp-2 mb-1 shadow-black drop-shadow-md"><?php echo $item['tittle']; ?></h4>
+                                            <p class="text-red-400 text-xs font-semibold uppercase tracking-wide truncate mb-2"><?php echo $item['original_tittle']; ?></p>
+
+                                            <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
+                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Phim Chieu Rap Section -->
-    <div class="relative z-20 px-4 md:px-12 py-12 group/theater">
+    <!-- Cinema Section -->
+    <div class="relative z-20 px-4 md:px-12 py-12 group/theater cards-slide wide section-cinema">
 
         <div class="flex items-end justify-between mb-8">
             <div class="relative">
@@ -479,53 +547,64 @@ layout('client/header');
         </div>
 
         <div class="relative group/slider">
-            <button id="theaterLeft" class="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-amber-500 hover:text-black text-white flex items-center justify-center rounded-full backdrop-blur-md border border-white/10 transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] opacity-0 group-hover/slider:opacity-100 hidden md:flex transform hover:scale-110">
-                <i data-lucide="chevron-left" class="w-6 h-6"></i>
-            </button>
+            <div class="cards-slide-wrapper">
+                <div class="sw-navigation">
+                    <button type="button" class="sw-button sw-prev-cinema">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="sw-button sw-next-cinema">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
 
-            <div id="theaterCarousel" class="flex gap-6 overflow-x-auto no-scrollbar pb-10 pt-4 snap-x px-2 scroll-smooth">
+                <div class="swiper swiper-cinema">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($getCinemaMovie as $movie) : ?>
+                            <div class="swiper-slide">
+                                <div class="movie-card-wrapper relative flex-shrink-0 w-full snap-start group/card cursor-pointer"
+                                    data-title="<?php echo $movie['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $movie['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất."> <!-- Removed fixed width -->
 
-                <?php foreach ($getCinemaMovie as $movie) : ?>
-                    <div class="movie-card-wrapper relative flex-shrink-0 w-[200px] md:w-[240px] snap-start group/card cursor-pointer"
-                        data-title="<?php echo $movie['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $movie['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất.">
+                                    <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden bg-[#1a1a1a] ring-1 ring-white/10 group-hover/card:ring-amber-500 transition-all duration-500 shadow-lg group-hover/card:shadow-[0_0_25px_rgba(245,158,11,0.3)]">
+                                        <img src="<?php echo $movie['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
 
-                        <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden bg-[#1a1a1a] ring-1 ring-white/10 group-hover/card:ring-amber-500 transition-all duration-500 shadow-lg group-hover/card:shadow-[0_0_25px_rgba(245,158,11,0.3)]">
-                            <img src="<?php echo $movie['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
+                                        <div class="absolute top-2 left-2 flex flex-col gap-1">
+                                            <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md uppercase tracking-wider">Hot</span>
+                                            <span class="bg-black/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/30">Vietsub</span>
+                                        </div>
 
-                            <div class="absolute top-2 left-2 flex flex-col gap-1">
-                                <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md uppercase tracking-wider">Hot</span>
-                                <span class="bg-black/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/30">Vietsub</span>
-                            </div>
+                                        <div class="absolute top-2 right-2 bg-amber-400 text-black text-[11px] font-extrabold px-1.5 py-0.5 rounded shadow-md">
+                                            7.2
+                                        </div>
 
-                            <div class="absolute top-2 right-2 bg-amber-400 text-black text-[11px] font-extrabold px-1.5 py-0.5 rounded shadow-md">
-                                7.2
-                            </div>
+                                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                            <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300 flex flex-col items-center gap-4">
+                                                <div class="flex items-center gap-3">
+                                                    <button class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform shadow-lg shadow-amber-500/50 quick-view-btn">
+                                                        <i data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
+                                                    </button>
+                                                    <button class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 hover:scale-110 transition-all shadow-lg">
+                                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                                    </button>
+                                                </div>
 
-                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                                <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300 flex flex-col items-center gap-2">
-                                    <button class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform shadow-lg shadow-amber-500/50 quick-view-btn">
-                                        <i data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
-                                    </button>
-                                    <span class="text-white text-xs font-bold tracking-wide">Xem Ngay</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 px-1 transition-transform duration-300 group-hover/card:translate-x-1">
+                                        <h4 class="text-white font-bold text-lg truncate group-hover/card:text-amber-400 transition-colors leading-tight"><?php echo $movie['tittle']; ?></h4>
+                                        <p class="text-gray-500 text-xs truncate mt-1 font-medium flex items-center gap-2">
+                                            <span><?php echo $movie['original_tittle']; ?></span>
+                                            <span class="w-1 h-1 rounded-full bg-gray-600"></span>
+                                            <span><?php echo $movie['release_year']; ?></span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mt-3 px-1 transition-transform duration-300 group-hover/card:translate-x-1">
-                            <h4 class="text-white font-bold text-lg truncate group-hover/card:text-amber-400 transition-colors leading-tight"><?php echo $movie['tittle']; ?></h4>
-                            <p class="text-gray-500 text-xs truncate mt-1 font-medium flex items-center gap-2">
-                                <span><?php echo $movie['original_tittle']; ?></span>
-                                <span class="w-1 h-1 rounded-full bg-gray-600"></span>
-                                <span><?php echo $movie['release_year']; ?></span>
-                            </p>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                </div>
             </div>
-
-            <button id="theaterRight" class="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-amber-500 hover:text-black text-white flex items-center justify-center rounded-full backdrop-blur-md border border-white/10 transition-all shadow-[0_0_20px_rgba(0,0,0,0.8)] opacity-0 group-hover/slider:opacity-100 hidden md:flex transform hover:scale-110">
-                <i data-lucide="chevron-right" class="w-6 h-6"></i>
-            </button>
         </div>
     </div>
 
@@ -619,555 +698,129 @@ layout('client/header');
         </div>
     </div>
 
-    <!-- Trending Section -->
-    <div class="px-4 md:px-12 group/carousel pt-40">
-        <h3 class="text-xl font-bold mb-4 text-white">Trending Now</h3>
-
-        <div class="relative">
-            <!-- Left Button -->
-            <button id="trendingLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-left" class="w-6 h-6"></i>
-            </button>
-
-            <div id="trendingCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-
-                <!-- Movie 1 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Stranger Things"
-                    data-year="2022"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=800&auto=format&fit=crop"
-                    data-desc="When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2022</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Stranger Things</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 2022</p>
-                </div>
-
-                <!-- Movie 2 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Neon Racer"
-                    data-year="2024"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=800&auto=format&fit=crop"
-                    data-desc="In a cyberpunk future, an underground street racer must participate in a deadly cross-country competition to save his sister from a ruthless crime syndicate.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2024</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Neon Racer</h4>
-                    <p class="text-xs text-gray-400">Action • 2024</p>
-                </div>
-
-                <!-- Movie 3 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="The Dark Knight"
-                    data-year="2008"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1596727147705-54a9d0c2094c?q=80&w=800&auto=format&fit=crop"
-                    data-desc="When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1596727147705-54a9d0c2094c?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2008</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">The Dark Knight</h4>
-                    <p class="text-xs text-gray-400">Action • 2008</p>
-                </div>
-
-                <!-- Movie 4 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Interstellar"
-                    data-year="2014"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1534809027769-b00d750a6bac?q=80&w=800&auto=format&fit=crop"
-                    data-desc="A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival as Earth becomes uninhabitable.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1534809027769-b00d750a6bac?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2014</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Interstellar</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 2014</p>
-                </div>
-
-                <!-- Movie 5 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Avengers: Endgame"
-                    data-year="2019"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=800&auto=format&fit=crop"
-                    data-desc="After the devastating events of Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2019</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Avengers: Endgame</h4>
-                    <p class="text-xs text-gray-400">Action • 2019</p>
-                </div>
-
-                <!-- Movie 6 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="The Matrix"
-                    data-year="1999"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=800&auto=format&fit=crop"
-                    data-desc="When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">1999</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">The Matrix</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 1999</p>
-                </div>
-
-                <!-- Movie 7 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Cyberpunk 2077"
-                    data-year="2077"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1512149177596-f817c7ef5d4c?q=80&w=800&auto=format&fit=crop"
-                    data-desc="A mercenary outlaw chases a one-of-a-kind implant that is the key to immortality in the vast, open-world megalopolis of Night City.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1512149177596-f817c7ef5d4c?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2077</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Cyberpunk 2077</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 2077</p>
-                </div>
-
-                <!-- Movie 8 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Gravity"
-                    data-year="2013"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=800&auto=format&fit=crop"
-                    data-desc="Two astronauts work together to survive after an accident leaves them stranded in space.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2013</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Gravity</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 2013</p>
-                </div>
-
+    <!-- Horror section  -->
+    <div class="cards-row md:px-12 cards-slide wide section-horror pt-32">
+        <div class="row-header">
+            <h2 class="category-name">
+                <span style="color: var(--primary-color);">Cảm Giác Mạnh &</span> Kinh Dị
+            </h2>
+            <div class="cat-more">
+                <a class="line-center" href="#">
+                    <span>Xem tất cả</span>
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
             </div>
-
-            <!-- Right Button -->
-            <button id="trendingRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-right" class="w-6 h-6"></i>
-            </button>
         </div>
-    </div>
 
-    <!-- Phim Điện Ảnh Section -->
-    <div class="px-4 md:px-12 pb-12 group/carousel">
-        <h3 class="text-xl font-bold mb-4 text-white">Phim Điện Ảnh</h3>
-
-        <div class="relative">
-            <!-- Left Button -->
-            <button id="cinemaLeft" class="absolute left-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -ml-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-left" class="w-6 h-6"></i>
-            </button>
-
-            <div id="cinemaCarousel" class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-
-                <!-- Movie 1 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Oppenheimer"
-                    data-year="2023"
-                    data-genre="History"
-                    data-image="https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=800&auto=format&fit=crop"
-                    data-desc="The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2023</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">History</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Oppenheimer</h4>
-                    <p class="text-xs text-gray-400">History • 2023</p>
-                </div>
-
-                <!-- Movie 2 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Avatar: The Way of Water"
-                    data-year="2022"
-                    data-genre="Sci-Fi"
-                    data-image="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop"
-                    data-desc="Jake Sully lives with his newfound family formed on the extrasolar moon Pandora. Once a familiar threat returns to finish what was previously started, Jake must work with Neytiri and the army of the Na'vi race to protect their home.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2022</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Sci-Fi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Avatar: The Way of Water</h4>
-                    <p class="text-xs text-gray-400">Sci-Fi • 2022</p>
-                </div>
-
-                <!-- Movie 3 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Top Gun: Maverick"
-                    data-year="2022"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1442544213729-6a15f1611937?q=80&w=800&auto=format&fit=crop"
-                    data-desc="After thirty years, Maverick is still pushing the envelope as a top naval aviator, but must confront ghosts of his past when he leads TOP GUN's elite graduates on a mission that demands the ultimate sacrifice from those chosen to fly it.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1442544213729-6a15f1611937?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2022</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Top Gun: Maverick</h4>
-                    <p class="text-xs text-gray-400">Action • 2022</p>
-                </div>
-
-                <!-- Movie 4 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Spider-Man: Across the Spider-Verse"
-                    data-year="2023"
-                    data-genre="Animation"
-                    data-image="https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=800&auto=format&fit=crop"
-                    data-desc="Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2023</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Animation</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Spider-Man: Across the Spider-Verse</h4>
-                    <p class="text-xs text-gray-400">Animation • 2023</p>
-                </div>
-
-                <!-- Movie 5 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="The Batman"
-                    data-year="2022"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=800&auto=format&fit=crop"
-                    data-desc="When the Riddler, a sadistic serial killer, begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1509347528160-9a9e33742cd4?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2022</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">The Batman</h4>
-                    <p class="text-xs text-gray-400">Action • 2022</p>
-                </div>
-
-                <!-- Movie 6 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="John Wick: Chapter 4"
-                    data-year="2023"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1542259681-d3d6232695c0?q=80&w=800&auto=format&fit=crop"
-                    data-desc="John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1542259681-d3d6232695c0?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2023</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">John Wick: Chapter 4</h4>
-                    <p class="text-xs text-gray-400">Action • 2023</p>
-                </div>
-
-                <!-- Movie 7 -->
-                <div class="movie-card-wrapper flex-shrink-0 w-[150px] md:w-[200px] group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl rounded-lg"
-                    data-title="Fast X"
-                    data-year="2023"
-                    data-genre="Action"
-                    data-image="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop"
-                    data-desc="Dom Toretto and his family are targeted by the vengeful son of drug kingpin Hernan Reyes.">
-                    <div class="w-full h-[225px] md:h-[300px] rounded-md overflow-hidden mb-2 relative">
-                        <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white fill-white/20 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
-                            <div class="flex items-center gap-2 mb-6">
-                                <button class="quick-view-btn px-4 py-1.5 bg-gray-500/70 hover:bg-gray-500/90 text-white text-xs font-bold rounded-full flex items-center gap-1 transition-colors backdrop-blur-sm">
-                                    <i data-lucide="info" class="w-3 h-3"></i> Quick View
-                                </button>
-                                <button class="p-2 bg-gray-500/70 hover:bg-gray-500/90 text-white rounded-full transition-colors backdrop-blur-sm group/fav" aria-label="Add to Favorites">
-                                    <i data-lucide="heart" class="w-4 h-4 group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors"></i>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 pb-4 bg-gradient-to-t from-black via-black/60 to-transparent">
-                                <div class="flex items-center justify-center gap-2">
-                                    <span class="text-green-400 font-bold text-sm shadow-black drop-shadow-md">2023</span>
-                                    <span class="px-2 py-0.5 border border-white/30 rounded text-[10px] font-bold text-white uppercase tracking-wider bg-white/10 backdrop-blur-sm shadow-sm">Action</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h4 class="text-white font-medium text-sm md:text-base truncate">Fast X</h4>
-                    <p class="text-xs text-gray-400">Action • 2023</p>
-                </div>
-
-            </div>
-
-            <!-- Right Button -->
-            <button id="cinemaRight" class="absolute right-0 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-black/60 hover:bg-black/90 text-white flex items-center justify-center rounded-full backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:scale-110 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed -mr-6 border border-white/10 hidden md:flex">
-                <i data-lucide="chevron-right" class="w-6 h-6"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Movie Details Modal -->
-<div id="movieModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modalTitle" aria-describedby="modalDesc" role="dialog" aria-modal="true">
-    <!-- Backdrop -->
-    <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm" id="modalBackdrop"></div>
-
-    <!-- Panel -->
-    <div class="flex h-full items-center justify-center p-4">
-        <div class="relative w-full max-w-3xl overflow-hidden rounded-xl bg-[#181818] text-left shadow-2xl ring-1 ring-white/10 transition-all">
-            <!-- Close Button -->
-            <button id="closeModalBtn" aria-label="Close movie details" class="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-
-            <!-- Image Header -->
-            <div class="relative h-[350px] w-full">
-                <img id="modalImage" src="" alt="Movie Cover" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 p-8 w-full">
-                    <h2 id="modalTitle" class="text-4xl font-bold text-white mb-3 drop-shadow-lg"></h2>
-                    <div class="flex items-center gap-4 text-sm text-gray-300">
-                        <span id="modalYear" class="font-semibold text-green-400"></span>
-                        <span id="modalGenre" class="px-2 py-0.5 border border-gray-500 rounded text-xs uppercase tracking-wider"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content -->
-            <div class="px-8 pb-8 pt-4">
-                <div class="flex gap-4 mb-6">
-                    <button class="flex-1 bg-white text-black font-bold py-3 px-6 rounded hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
-                        <i data-lucide="play" class="w-5 h-5 fill-current"></i> Play
+        <div class="row-content">
+            <div class="cards-slide-wrapper">
+                <div class="sw-navigation">
+                    <button type="button" class="sw-button sw-prev-horror">
+                        <i class="fa-solid fa-chevron-left"></i>
                     </button>
-                    <button class="flex-1 bg-gray-600/60 text-white font-bold py-3 px-6 rounded hover:bg-gray-600/80 transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
-                        <i data-lucide="plus" class="w-5 h-5"></i> My List
+                    <button type="button" class="sw-button sw-next-horror">
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
-                <p id="modalDesc" class="text-gray-300 leading-relaxed text-base md:text-lg"></p>
+
+                <div class="swiper swiper-horror">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($getHorrorMovies as $key => $item): ?>
+                            <div class="swiper-slide">
+                                <div class="sw-item">
+                                    <a class="v-thumbnail" href="#">
+
+                                        <div class="pin-new m-pin-new">
+                                            <div class="line-center line-pd">Full HD</div>
+                                        </div>
+                                        <div class="image-wrapper">
+                                            <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                            <div class="play-overlay">
+                                                <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <div class="info">
+                                        <h4 class="item-title lim-1"><a href="#"><?php echo $item['tittle']; ?></a></h4>
+                                        <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
+                                        <div class="meta-info">
+                                            <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Love section  -->
+    <div class="cards-row md:px-12 cards-slide wide section-love pt-28">
+        <div class="row-header">
+            <h2 class="category-name">
+                <span style="color: #FF69B4;">Tình yêu Chảy Nước</span>
+            </h2>
+            <div class="cat-more">
+                <a class="line-center" href="#">
+                    <span>Xem tất cả</span>
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row-content">
+            <div class="cards-slide-wrapper">
+                <div class="sw-navigation">
+                    <button type="button" class="sw-button sw-prev-love">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="sw-button sw-next-love">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="swiper swiper-love">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($getLoveMovies as $key => $item): ?>
+                            <div class="swiper-slide">
+                                <div class="sw-item">
+                                    <a class="v-thumbnail" href="#">
+                                        <div class="pin-new m-pin-new">
+                                            <div class="line-center line-pd">Full HD</div>
+                                            <div class="line-center line-tm">Vietsub</div>
+                                        </div>
+                                        <div class="image-wrapper">
+                                            <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                            <div class="play-overlay">
+                                                <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <div class="info">
+                                        <h4 class="item-title lim-1"><a href="#"><?php echo $item['tittle']; ?></a></h4>
+                                        <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
+                                        <div class="meta-info">
+                                            <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const thumbnails = document.querySelectorAll('.hero-thumb');

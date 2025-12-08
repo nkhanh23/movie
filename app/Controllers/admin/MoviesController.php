@@ -350,22 +350,45 @@ class MoviesController extends baseController
                     'total_views' => $filter['total_views'],
                     'updated_at' => date('Y:m:d H:i:s')
                 ];
-                $conditionUpdate = 'id=' . $filter['idMovie'];
+
+                // ID phim cần sửa
+                $idMovie = $filter['idMovie'];
+                $conditionUpdate = 'id=' . $idMovie;
+
+                // 1. Cập nhật bảng Movies
                 $checkUpdate = $this->moviesModel->updateMovies($dataUpdate, $conditionUpdate);
+
                 if ($checkUpdate) {
+
+                    // Bước 1: Xóa sạch liên kết cũ của phim này với các thể loại
+                    $this->moviesModel->deleteMovieGenres("movie_id = $idMovie");
+
+                    // Kiểm tra xem người dùng có tick chọn genre nào không
+                    if (isset($filter['genre_id']) && !empty($filter['genre_id'])) {
+                        foreach ($filter['genre_id'] as $genreId) {
+                            $dataGenre = [
+                                'movie_id' => $idMovie,
+                                'genre_id' => $genreId
+                            ];
+                            // Insert từng dòng vào bảng movie_genres
+                            $this->moviesModel->insertMoviesGenres($dataGenre);
+                        }
+                    }
+
                     setSessionFlash('msg', 'Cập nhật thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/film/list');
                 } else {
-                    setSessionFlash('msg', 'Cập nhật thất bại');
+                    setSessionFlash('msg', 'Cập nhật thất bại (Lỗi Database)');
                     setSessionFlash('msg_type', 'danger');
-                    reload('/admin/film/edit');
+                    reload('/admin/film/edit?id=' . $idMovie);
                 }
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
                 setSessionFlash('msg_type', 'danger');
                 setSessionFlash('errors', $errors);
-                reload('/admin/film/edit');
+                // Giữ lại ID trên URL để không bị lỗi trang trắng
+                reload('/admin/film/edit?id=' . $filter['idMovie']);
             }
         }
     }

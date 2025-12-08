@@ -65,6 +65,7 @@
 <script>
     lucide.createIcons();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script type="module" src="<?php echo _HOST_URL_PUBLIC; ?>/assets/js/client/script.js?v=<?php echo time(); ?>"></script>
 </body>
 

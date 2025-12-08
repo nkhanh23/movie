@@ -148,4 +148,34 @@ class Movies extends CoreModel
         ORDER BY id 
         DESC LIMIT 12");
     }
+
+    public function getLoveMovies()
+    {
+        return $this->getAll("SELECT m.*,
+        q.name as quality_name
+        FROM movies m
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.id
+        LEFT JOIN movie_types mt ON m.id = mt.id
+        LEFT JOIN qualities q ON m.quality_id = q.id
+        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 57)
+        GROUP BY m.id
+        ORDER BY id 
+        DESC LIMIT 12");
+    }
+
+    public function getHorrorMovies()
+    {
+        return $this->getAll("SELECT m.*,
+        q.name as quality_name
+        FROM movies m
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.id
+        LEFT JOIN movie_types mt ON m.id = mt.id
+        LEFT JOIN qualities q ON m.quality_id = q.id
+        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 1)
+        GROUP BY m.id
+        ORDER BY id 
+        DESC LIMIT 12");
+    }
 }
