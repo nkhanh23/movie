@@ -47,6 +47,13 @@ layout('client/header');
 
         <p id="heroDesc" class="text-lg text-gray-200 mb-8 drop-shadow-md line-clamp-3 max-w-2xl leading-relaxed"><?php echo $heroFirst['description']; ?></p>
         <div class="flex gap-4">
+            <a id="heroPlay" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $heroFirst['id'] ?>" class="group/btn flex items-center gap-3 bg-[#e2b616] hover:bg-[#ffc107] text-black px-8 py-3.5 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(226,182,22,0.4)]">
+                <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+            </a>
+
+            <button id="heroFav" class="group/fav flex items-center gap-3 px-8 py-3.5 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md">
+                <i data-lucide="heart" class="w-5 h-5 group-hover/fav:text-red-500 group-hover/fav:fill-red-500 transition-colors"></i>
+            </button>
         </div>
     </div>
 
@@ -54,6 +61,7 @@ layout('client/header');
         <?php foreach ($getMoviesHeroSection as $key => $value): ?>
             <div class="hero-thumb flex-shrink-0 w-[60px] h-[35px] rounded-md overflow-hidden cursor-pointer border-2 <?php echo ($key == 0) ? 'border-white opacity-100 scale-105' : 'border-transparent opacity-60 hover:opacity-100'; ?> transition-all duration-300"
                 data-index="<?php echo $key ?>"
+                data-id="<?php echo $value['id'] ?>"
                 data-bg="<?php echo $value['thumbnail'] ?>"
 
                 data-imdb="<?php echo $value['imdb_rating'] ?>"
@@ -248,8 +256,8 @@ layout('client/header');
                                             <div class="image-wrapper">
                                                 <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
-                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-heart"></i></div>
                                                 </div>
                                             </div>
                                         </a>
@@ -306,8 +314,8 @@ layout('client/header');
                                             <div class="image-wrapper">
                                                 <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
-                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-heart"></i></div>
                                                 </div>
                                             </div>
                                         </a>
@@ -364,8 +372,8 @@ layout('client/header');
                                             <div class="image-wrapper">
                                                 <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
-                                                    <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-fav" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-heart"></i></div>
                                                 </div>
                                             </div>
                                         </a>
@@ -444,8 +452,8 @@ layout('client/header');
                                                     <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
-                                                    <i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -515,8 +523,8 @@ layout('client/header');
                                                     <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <i data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
-                                                    <i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -559,13 +567,13 @@ layout('client/header');
 
                 <div class="swiper swiper-cinema">
                     <div class="swiper-wrapper">
-                        <?php foreach ($getCinemaMovie as $movie) : ?>
+                        <?php foreach ($getCinemaMovie as $item) : ?>
                             <div class="swiper-slide">
                                 <div class="movie-card-wrapper relative flex-shrink-0 w-full snap-start group/card cursor-pointer"
-                                    data-title="<?php echo $movie['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $movie['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất."> <!-- Removed fixed width -->
+                                    data-title="<?php echo $item['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $item['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất."> <!-- Removed fixed width -->
 
                                     <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden bg-[#1a1a1a] ring-1 ring-white/10 group-hover/card:ring-amber-500 transition-all duration-500 shadow-lg group-hover/card:shadow-[0_0_25px_rgba(245,158,11,0.3)]">
-                                        <img src="<?php echo $movie['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
+                                        <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
 
                                         <div class="absolute top-2 left-2 flex flex-col gap-1">
                                             <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md uppercase tracking-wider">Hot</span>
@@ -580,10 +588,10 @@ layout('client/header');
                                             <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300 flex flex-col items-center gap-4">
                                                 <div class="flex items-center gap-3">
                                                     <button class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform shadow-lg shadow-amber-500/50 quick-view-btn">
-                                                        <i data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
+                                                        <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
                                                     </button>
                                                     <button class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 hover:scale-110 transition-all shadow-lg">
-                                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                                        <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="heart" class="w-5 h-5"></i>
                                                     </button>
                                                 </div>
 
@@ -592,11 +600,11 @@ layout('client/header');
                                     </div>
 
                                     <div class="mt-3 px-1 transition-transform duration-300 group-hover/card:translate-x-1">
-                                        <h4 class="text-white font-bold text-lg truncate group-hover/card:text-amber-400 transition-colors leading-tight"><?php echo $movie['tittle']; ?></h4>
+                                        <h4 class="text-white font-bold text-lg truncate group-hover/card:text-amber-400 transition-colors leading-tight"><?php echo $item['tittle']; ?></h4>
                                         <p class="text-gray-500 text-xs truncate mt-1 font-medium flex items-center gap-2">
-                                            <span><?php echo $movie['original_tittle']; ?></span>
+                                            <span><?php echo $item['original_tittle']; ?></span>
                                             <span class="w-1 h-1 rounded-full bg-gray-600"></span>
-                                            <span><?php echo $movie['release_year']; ?></span>
+                                            <span><?php echo $item['release_year']; ?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -664,7 +672,7 @@ layout('client/header');
 
                             <!-- Buttons -->
                             <div class="flex items-center gap-4 pt-4">
-                                <a href="#" class="group/play w-10 h-10 md:w-12 md:h-12 bg-[#FFD875] hover:bg-[#ffc107] rounded-full flex items-center justify-center text-[#191B24] transition-all hover:scale-110 shadow-[0_0_20px_rgba(255,216,117,0.4)]">
+                                <a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>" class="group/play w-10 h-10 md:w-12 md:h-12 bg-[#FFD875] hover:bg-[#ffc107] rounded-full flex items-center justify-center text-[#191B24] transition-all hover:scale-110 shadow-[0_0_20px_rgba(255,216,117,0.4)]">
                                     <i data-lucide="play" class="w-4 h-4 md:w-5 md:h-5 fill-current ml-1 group-hover/play:scale-110 transition-transform"></i>
                                 </a>
                                 <div class="flex gap-3">
@@ -736,8 +744,8 @@ layout('client/header');
                                         <div class="image-wrapper">
                                             <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                             <div class="play-overlay">
-                                                <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
-                                                <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
                                             </div>
                                         </div>
                                     </a>
@@ -796,8 +804,8 @@ layout('client/header');
                                         <div class="image-wrapper">
                                             <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                             <div class="play-overlay">
-                                                <div class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
-                                                <div class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
+                                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-fav"><i class="fa-solid fa-heart"></i></div>
                                             </div>
                                         </div>
                                     </a>

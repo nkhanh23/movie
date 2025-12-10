@@ -10,7 +10,7 @@ $oldData = getSessionFlash('oldData');
 $errors = getSessionFlash('errors');
 
 // echo '<pre>';
-// (print_r($getAllCountries));
+// (print_r($getAllPerson));
 // echo '</pre>';
 // die();
 ?>
@@ -50,11 +50,10 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="original_title">Tên Gốc (original_title)</label>
-                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..."
-                    value="<?php
-                            if (!empty($oldData)) {
-                                echo oldData($oldData, 'original_title');
-                            } ?>">
+                <input type="text" name="original_title" id="original_title" placeholder="Tên gốc tiếng Anh..." value="<?php
+                                                                                                                        if (!empty($oldData)) {
+                                                                                                                            echo oldData($oldData, 'original_title');
+                                                                                                                        } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'original_title');
@@ -94,8 +93,8 @@ $errors = getSessionFlash('errors');
                 <input type="number" step="0.0001" name="imdb_rating" id="imdb_rating" value="<?php
                                                                                                 if (!empty($oldData)) {
                                                                                                     echo oldData($oldData, 'imdb_rating');
-                                                                                                } ?>" placeholder="imdb" min="1"
-                    max="10">
+                                                                                                } ?>"
+                    placeholder="imdb" min="1" max="10">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'imdb_rating');
@@ -168,7 +167,7 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="status_id">Trạng thái</label>
-                <select name="status_id" id="genre_id">
+                <select name="status_id" id="status_id">
                     <option value="">-- Chọn trạng thái --</option>
                     <?php foreach ($getAllStatus as $item): ?>
                         <option value="<?php echo $item['id']; ?>"><?php echo $item['name']; ?></option>
@@ -230,10 +229,11 @@ $errors = getSessionFlash('errors');
 
             <div class="form-group">
                 <label for="trailer_url">Trailer URL</label>
-                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..." value="<?php
-                                                                                                                    if (!empty($oldData)) {
-                                                                                                                        echo oldData($oldData, 'trailer_url');
-                                                                                                                    } ?>">
+                <input name="trailer_url" type="text" id="trailer_url" placeholder="https://youtube.com/..."
+                    value="<?php
+                            if (!empty($oldData)) {
+                                echo oldData($oldData, 'trailer_url');
+                            } ?>">
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'trailer_url');
@@ -241,13 +241,69 @@ $errors = getSessionFlash('errors');
                 ?>
             </div>
 
+            <div class="form-group full-width">
+                <label>Diễn viên & Đạo diễn (Cast & Crew)</label>
+                <table class="table table-bordered" id="cast-table">
+                    <thead>
+                        <tr>
+                            <th>Nhân sự (Person)</th>
+                            <th>Vai trò (Role)</th>
+                            <th width="50px">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cast-body">
+                        <?php
+                        // DÀNH RIÊNG CHO TRANG EDIT: Hiển thị dữ liệu cũ
+                        if (!empty($currentCast)):
+                            foreach ($currentCast as $cast):
+                        ?>
+                                <tr class="cast-row">
+                                    <td>
+                                        <select name="cast_person[]" class="form-control">
+                                            <option value="">-- Chọn người --</option>
+                                            <?php foreach ($getAllPersons as $item): ?>
+                                                <option value="<?php echo $p['id']; ?>"
+                                                    <?php echo ($item['id'] == $cast['person_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo $item['name']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="cast_role[]" class="form-control">
+                                            <option value="">-- Chọn vai trò --</option>
+                                            <?php foreach ($getAllRoles as $item): ?>
+                                                <option value="<?php echo $r['id']; ?>"
+                                                    <?php echo ($item['id'] == $cast['role_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo $item['name']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeCastRow(this)"><i
+                                                class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-success btn-sm" onclick="addCastRow()" style="margin-top: 10px;">
+                    <i class="fa fa-plus"></i> Thêm nhân sự
+                </button>
+            </div>
+
             <!-- Description (Full width) -->
             <div class="form-group full-width">
                 <label for="description">Mô tả phim (description)</label>
-                <textarea name="description" id="description" rows="4" placeholder="Nhập tóm tắt nội dung phim..."><?php
-                                                                                                                    if (!empty($oldData)) {
-                                                                                                                        echo oldData($oldData, 'description');
-                                                                                                                    } ?></textarea>
+                <textarea name="description" id="description" rows="4"
+                    placeholder="Nhập tóm tắt nội dung phim..."><?php
+                                                                if (!empty($oldData)) {
+                                                                    echo oldData($oldData, 'description');
+                                                                } ?></textarea>
                 <?php
                 if (!empty($errors)) {
                     echo formError($errors, 'description');
@@ -353,7 +409,9 @@ $errors = getSessionFlash('errors');
         resultBox.innerHTML = '<p style="padding:10px;">Đang tìm kiếm...</p>';
 
         try {
-            const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=vi-VN`);
+            const res = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=vi-VN`
+            );
             const data = await res.json();
 
             if (data.results?.length > 0) {
@@ -389,7 +447,9 @@ $errors = getSessionFlash('errors');
 
         try {
             // Bước 1: Lấy info Tiếng Việt + Videos + Images (Thêm images vào đây)
-            const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN&append_to_response=videos,images&include_image_language=null,vi,en`);
+            const res = await fetch(
+                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN&append_to_response=videos,images&include_image_language=null,vi,en`
+            );
             const movie = await res.json();
 
             // Khởi tạo biến fallback
@@ -400,7 +460,9 @@ $errors = getSessionFlash('errors');
             // --- KIỂM TRA & FALLBACK DỮ LIỆU TIẾNG ANH ---
             if (!finalOverview || finalVideos.length === 0) {
                 console.log("Thiếu dữ liệu tiếng Việt, đang lấy tiếng Anh...");
-                const resEn = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=videos`);
+                const resEn = await fetch(
+                    `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=videos`
+                );
                 const movieEn = await resEn.json();
 
                 if (!finalOverview) finalOverview = movieEn.overview;
@@ -510,6 +572,57 @@ $errors = getSessionFlash('errors');
             console.error(e);
             alert('Có lỗi xảy ra! Xem console để biết chi tiết.');
         }
+    }
+</script>
+<script>
+    // Dữ liệu từ PHP
+    const allPersons = <?php echo json_encode($getAllPersons ?? []); ?>;
+    const allRoles = <?php echo json_encode($getAllRoles ?? []); ?>;
+
+    function addCastRow() {
+        const tbody = document.getElementById('cast-body');
+        const tr = document.createElement('tr');
+        tr.className = 'cast-row';
+
+        // 1. Tạo Select Person (Danh sách diễn viên)
+        let personOptions = '<option value="">-- Chọn người --</option>';
+        allPersons.forEach(p => {
+            personOptions += `<option value="${p.id}">${p.name}</option>`;
+        });
+
+        // 2. Tạo Select Role (Mặc định chọn ID = 1)
+        let roleOptions = '<option value="">-- Chọn vai trò --</option>';
+        allRoles.forEach(r => {
+            // Kiểm tra: Nếu ID là 1 thì thêm 'selected', ngược lại để trống
+            const isSelected = (r.id == 1) ? 'selected' : '';
+
+            roleOptions += `<option value="${r.id}" ${isSelected}>${r.name}</option>`;
+        });
+
+        // 3. Render HTML
+        tr.innerHTML = `
+            <td>
+                <select name="cast_person[]" class="form-control" style="width:100%">
+                    ${personOptions}
+                </select>
+            </td>
+            <td>
+                <select name="cast_role[]" class="form-control" style="width:100%">
+                    ${roleOptions}
+                </select>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeCastRow(this)">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    }
+
+    function removeCastRow(btn) {
+        btn.closest('tr').remove();
     }
 </script>
 <?php

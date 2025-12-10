@@ -88,6 +88,7 @@ class Movies extends CoreModel
         return $this->delete('movies', $condition);
     }
 
+    // Dashboard
     public function getMoviesHeroSection()
     {
         return $this->getAll("SELECT m.*,
@@ -177,5 +178,44 @@ class Movies extends CoreModel
         GROUP BY m.id
         ORDER BY id 
         DESC LIMIT 12");
+    }
+
+    // Page Detail
+    public function getMovieDetail($condition)
+    {
+        return $this->getOne("SELECT m.*,
+        GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
+        mt.name as type_name
+        FROM movies m
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.id
+        LEFT JOIN movie_types mt ON m.id = mt.id
+        WHERE m.$condition");
+    }
+
+    public function getSeasonDetail($condition)
+    {
+        return $this->getAll("SELECT s.*,
+        m.tittle as movie_name
+        FROM seasons s
+        LEFT JOIN movies m ON s.movie_id = m.id
+        WHERE s.$condition");
+    }
+
+    public function getEpisodeDetail($condition)
+    {
+        return $this->getAll("SELECT e.*,
+        s.name as season_name
+        FROM episodes e
+        LEFT JOIN seasons s ON e.season_id = s.id
+        WHERE e.$condition");
+    }
+
+    public function getVideoSources($id)
+    {
+        return $this->getOne("SELECT m.*, vs.*
+        FROM movies m
+        LEFT JOIN video_sources vs ON m.video_source_id = vs.id 
+        WHERE m.id = '$id'");
     }
 }

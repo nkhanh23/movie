@@ -46,6 +46,8 @@ const initHero = () => {
     const subtitleEl = document.getElementById('heroSubtitle');
     const descEl = document.getElementById('heroDesc');
     const thumbsContainer = document.getElementById('heroThumbnails');
+    const playBtn = document.getElementById('heroPlay') || document.querySelector('.group\\/btn');
+    const favBtn = document.getElementById('heroFav') || document.querySelector('.group\\/fav');
 
     if (!bgEl || !thumbsContainer) return;
 
@@ -92,7 +94,29 @@ const initHero = () => {
             }
         }
 
-        // 4. Active state cho thumbnail
+        // 4.Play
+        if (playBtn && data.id) {
+            // Lấy href hiện tại (VD: /detail?id=10)
+            const currentHref = playBtn.getAttribute('href');
+            if (currentHref) {
+                // Regex thay thế đoạn "id=số_cũ" thành "id=số_mới"
+                const newHref = currentHref.replace(/id=\d+/, `id=${data.id}`);
+                playBtn.setAttribute('href', newHref);
+            }
+        }
+
+        // 5.Favorite
+        if (favBtn && data.id) {
+            // Lấy href hiện tại (VD: /detail?id=10)
+            const currentHref = favBtn.getAttribute('href');
+            if (currentHref) {
+                // Regex thay thế đoạn "id=số_cũ" thành "id=số_mới"
+                const newHref = currentHref.replace(/id=\d+/, `id=${data.id}`);
+                favBtn.setAttribute('href', newHref);
+            }
+        }
+
+        // 6. Active state cho thumbnail
         thumbsContainer.querySelectorAll('.hero-thumb').forEach((t) => {
             if (t === thumb) {
                 t.classList.add('border-white', 'opacity-100', 'scale-105');

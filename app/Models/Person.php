@@ -6,6 +6,7 @@ class Person extends CoreModel
         parent::__construct();
     }
 
+    // --------------------------------- ADMIN ----------------------
     public function getAllPersonWithCount($sql)
     {
         return $this->countRows($sql);
@@ -69,5 +70,25 @@ class Person extends CoreModel
     public function deletePerson($condition)
     {
         return $this->delete('persons', $condition);
+    }
+
+    // ------------------------ CLIENT -----------------------------
+    // Lấy danh sách nhân sự của một bộ phim (kèm tên diễn viên và tên vai trò)
+    public function getCastByMovieId($movieId)
+    {
+        $sql = "SELECT mp.*, p.*, p.name as person_name, r.name as role_name
+                FROM movie_person mp 
+                JOIN persons p ON mp.person_id = p.id 
+                JOIN person_roles r ON mp.role_id = r.id 
+                WHERE mp.movie_id = $movieId";
+        return $this->getAll($sql);
+    }
+
+    // Hàm lấy tất cả diễn viên (để đổ vào dropdown chọn)
+    public function getAllPersonsSimple()
+    {
+        return $this->getAll("SELECT id, name 
+        FROM persons 
+        ORDER BY name ASC");
     }
 }

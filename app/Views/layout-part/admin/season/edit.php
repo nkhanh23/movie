@@ -47,7 +47,7 @@ $errors = getSessionFlash('errors');
                 <label for="poster_url">Poster URL</label>
                 <input type="text" name="poster_url" id="poster_url" placeholder="Poster URL..."
                     value="<?php echo !empty($oldData) ? oldData($oldData, 'poster_url') : ''; ?>">
-                <?php echo (!empty($errors) ? formError($errors, 'trailer_url') : ''); ?>
+                <?php echo (!empty($errors) ? formError($errors, 'poster_url') : ''); ?>
 
             </div>
 
@@ -55,7 +55,6 @@ $errors = getSessionFlash('errors');
                 <label for="trailer_url">Trailer URL</label>
                 <input type="text" name="trailer_url" id="trailer_url" placeholder="Trailer URL..."
                     value="<?php echo !empty($oldData) ? oldData($oldData, 'trailer_url') : ''; ?>">
-                <?php echo (!empty($errors) ? formError($errors, 'trailer_url') : ''); ?>
             </div>
 
             <div class="form-group">

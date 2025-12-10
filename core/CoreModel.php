@@ -98,4 +98,12 @@ class CoreModel
     {
         return $this->connect->lastInsertId();
     }
+
+    // để hỗ trợ chạy SQL có tham số (binding params)
+    public function query($sql, $params = [])
+    {
+        $stm = $this->connect->prepare($sql);
+        $stm->execute($params);
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -16,12 +16,31 @@ $msg_type = getSessionFlash('msg_type');
     <div class="page-header">
         <h2>Quản lý Tập Phim</h2>
         <?php if (!empty($filterGet['filter-movie-id'])): ?>
+            <?php
+            // Xử lý Logic tạo Link an toàn ngay trong PHP
+            $addEpisodeUrl = _HOST_URL . '/admin/episode/add?id=' . $filterGet['filter-movie-id'];
+
+            // Chỉ nối tham số season_id NẾU nó tồn tại và không rỗng
+            if (!empty($filterGet['season_id'])) {
+                $addEpisodeUrl .= '&season_id=' . $filterGet['season_id'];
+            }
+            ?>
+
             <button
-                onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/episode/add?id=<?php echo $filterGet['filter-movie-id'] ?>&season_id=<?php echo $filterGet['season_id'] ?>'"
-                id="btn-add-episode" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Tập Mới</button>
+                onclick="window.location.href='<?php echo $addEpisodeUrl; ?>'"
+                id="btn-add-episode"
+                class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Thêm Tập Mới
+            </button>
+
         <?php else: ?>
-            <button onclick="alert('Vui lòng chọn và lọc một bộ phim và mùa trước khi thêm tập mới!');"
-                class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Tập Mới</button>
+
+            <button
+                onclick="alert('Vui lòng chọn và lọc một bộ phim (và mùa nếu có) trước khi thêm tập mới!');"
+                class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Thêm Tập Mới
+            </button>
+
         <?php endif; ?>
     </div>
     <?php

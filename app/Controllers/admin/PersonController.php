@@ -50,7 +50,7 @@ class PersonController extends baseController
         GROUP BY p.id";
         $countPerson = $this->personModel->countPerson($sql);
         $maxData = $countPerson;
-        $perPage = 5;
+        $perPage = 40;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;

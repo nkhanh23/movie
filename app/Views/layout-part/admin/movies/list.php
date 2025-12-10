@@ -31,12 +31,12 @@ $msg_type = getSessionFlash('msg_type');
                     <select name="genres" onchange="this.form.submit()">
                         <option value="">-- Tất cả Thể loại --</option>
                         <?php if (!empty($getAllGenres)): ?>
-                            <?php foreach ($getAllGenres as $item): ?>
-                                <option value="<?php echo $item['id'] ?>"
-                                    <?php echo (isset($genres) && $genres == $item['id']) ? 'selected' : '' ?>>
-                                    <?php echo $item['name'] ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <?php foreach ($getAllGenres as $item): ?>
+                        <option value="<?php echo $item['id'] ?>"
+                            <?php echo (isset($genres) && $genres == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['name'] ?>
+                        </option>
+                        <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -45,12 +45,12 @@ $msg_type = getSessionFlash('msg_type');
                     <select name="types" onchange="this.form.submit()">
                         <option value="">-- Tất cả Loại Phim --</option>
                         <?php if (!empty($getAllMovieTypes)): ?>
-                            <?php foreach ($getAllMovieTypes as $item): ?>
-                                <option value="<?php echo $item['id'] ?>"
-                                    <?php echo (isset($types) && $types == $item['id']) ? 'selected' : '' ?>>
-                                    <?php echo $item['name'] ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <?php foreach ($getAllMovieTypes as $item): ?>
+                        <option value="<?php echo $item['id'] ?>"
+                            <?php echo (isset($types) && $types == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['name'] ?>
+                        </option>
+                        <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -59,12 +59,12 @@ $msg_type = getSessionFlash('msg_type');
                     <select name="status" onchange="this.form.submit()">
                         <option value="">-- Tất cả Trạng thái --</option>
                         <?php if (!empty($getStatus)): ?>
-                            <?php foreach ($getStatus as $item): ?>
-                                <option value="<?php echo $item['id'] ?>"
-                                    <?php echo (isset($status) && $status == $item['id']) ? 'selected' : '' ?>>
-                                    <?php echo $item['name'] ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <?php foreach ($getStatus as $item): ?>
+                        <option value="<?php echo $item['id'] ?>"
+                            <?php echo (isset($status) && $status == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['name'] ?>
+                        </option>
+                        <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -73,12 +73,12 @@ $msg_type = getSessionFlash('msg_type');
                     <select name="countries" onchange="this.form.submit()">
                         <option value="">-- Tất cả Quốc gia --</option>
                         <?php if (!empty($getCountries)): ?>
-                            <?php foreach ($getCountries as $item): ?>
-                                <option value="<?php echo $item['id'] ?>"
-                                    <?php echo (isset($countries) && $countries == $item['id']) ? 'selected' : '' ?>>
-                                    <?php echo $item['name'] ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <?php foreach ($getCountries as $item): ?>
+                        <option value="<?php echo $item['id'] ?>"
+                            <?php echo (isset($countries) && $countries == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['name'] ?>
+                        </option>
+                        <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -119,31 +119,31 @@ $msg_type = getSessionFlash('msg_type');
                 $count = 1;
                 foreach ($getMovies as $item):
                 ?>
-                    <tr>
-                        <td><?php echo $count;
+                <tr>
+                    <td><?php echo $count;
                             $count++ ?></td>
-                        <td><img width="180px" src="<?php echo $item['thumbnail']; ?>" alt=""></td>
-                        <td><?php echo $item['tittle']; ?></td>
-                        <td><?php echo $item['genres']; ?></td>
-                        <td><?php echo $item['country_name']; ?></td>
-                        <td><?php echo $item['type_name']; ?></td>
-                        <td><span class="badge success"><?php echo $item['movie_status']; ?></span></td>
-                        <td><?php echo $item['imdb_rating']; ?></td>
-                        <td class="actions">
-                            <div class="action-buttons">
-                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/view'"
-                                    class="btn-icon-sm" title="Chi tiết"><i class="fa-solid fa-eye"></i></button>
-                                <button
-                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/edit?id=<?php echo $item['id'] ?>'"
-                                    class="btn-icon-sm" title="Sửa"><i class="fa-solid fa-pen"></i></button>
-                                <button
-                                    onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/delete?id=<?php echo $item['id'] ?>'"
-                                    class="btn-icon-sm delete-btn" data-id="1" title="Xóa"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </div>
+                    <td><img width="100px" src="<?php echo $item['thumbnail']; ?>" alt=""></td>
+                    <td><?php echo $item['tittle']; ?></td>
+                    <td><?php echo $item['genres']; ?></td>
+                    <td><?php echo $item['country_name']; ?></td>
+                    <td><?php echo $item['type_name']; ?></td>
+                    <td><span class="badge success"><?php echo $item['movie_status']; ?></span></td>
+                    <td><?php echo $item['imdb_rating']; ?></td>
+                    <td class="actions">
+                        <div class="action-buttons">
+                            <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/view'"
+                                class="btn-icon-sm" title="Chi tiết"><i class="fa-solid fa-eye"></i></button>
+                            <button
+                                onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/edit?id=<?php echo $item['id'] ?>'"
+                                class="btn-icon-sm" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+                            <button
+                                onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/film/delete?id=<?php echo $item['id'] ?>'"
+                                class="btn-icon-sm delete-btn" data-id="1" title="Xóa"><i
+                                    class="fa-solid fa-trash"></i></button>
+                        </div>
 
-                        </td>
-                    </tr>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -151,11 +151,11 @@ $msg_type = getSessionFlash('msg_type');
             <span>Hiển thị 1-5 trên <?php echo $countMovies ?> kết quả</span>
             <div class="page-controls">
                 <?php if ($page > 1): ?>
-                    <button
-                        onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
+                <button
+                    onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
                 <?php elseif ($page == 1): ?>
-                    <button disabled
-                        onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
+                <button disabled
+                    onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'">Trước</button>
                 <?php endif; ?>
                 <?php
                 $start = $page - 1;
@@ -168,16 +168,16 @@ $msg_type = getSessionFlash('msg_type');
                 }
                 for ($i = $start; $i <= $end; $i++):
                 ?>
-                    <button onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
-                        class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
-                        <?php echo $i ?>
-                    </button>
+                <button onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
+                    class=" <?php echo ($page == $i) ? 'active' : ''; ?>">
+                    <?php echo $i ?>
+                </button>
                 <?php endfor; ?>
                 <?php if ($page < $maxPage): ?>
-                    <button
-                        onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'">Sau</button>
+                <button
+                    onclick="window.location.href='list?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'">Sau</button>
                 <?php elseif ($page == $maxPage): ?>
-                    <button disabled>Sau</button>
+                <button disabled>Sau</button>
                 <?php endif; ?>
             </div>
         </div>

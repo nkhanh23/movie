@@ -64,27 +64,34 @@ class AuthController extends baseController
                     if (!empty($checkStatus['password'])) {
                         $checkPassword = password_verify($password, $checkStatus['password']);
                         if ($checkPassword) {
+                            // User chỉ được đăng nhập 1 nơi
                             $user_id = $checkStatus['id'];
-                            $tokenLogin = sha1(uniqid() . time());
-                            $data = [
-                                'user_id' => $user_id,
-                                'token' => $tokenLogin
-                            ];
-                            $checkInsert = $this->coreModel->insert('token_login', $data);
-                            if ($checkInsert) {
-                                if ($checkStatus['group_id'] == 1) {
-                                    setSession('tokenLogin', $tokenLogin);
-                                    reload('/');
-                                } elseif ($checkStatus['group_id'] == 2) {
-                                    setSession('tokenLogin', $tokenLogin);
-                                    reload('/admin/dashboard');
-                                }
-                            } else {
-                                setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
+                            $checkAlready = $this->coreModel->getRows("SELECT * FROM token_login WHERE user_id = $user_id");
+                            if ($checkAlready > 0) {
+                                setSessionFlash('msg', 'Tài khoản đang được đăng nhập ở 1 nơi khác, vui lòng thử lại sau.');
                                 setSessionFlash('msg_type', 'danger');
-                                setSessionFlash('oldData', $filter);
-                                setSessionFlash('errors', $errors);
                                 setSessionFlash('active_tab', 'login');
+                            } else {
+                                $tokenLogin = sha1(uniqid() . time());
+                                $data = [
+                                    'user_id' => $user_id,
+                                    'created_at' => date("Y:m:d H:i:s"),
+                                    'token' => $tokenLogin
+                                ];
+                                $checkInsert = $this->coreModel->insert('token_login', $data);
+                                if ($checkInsert) {
+                                    if ($checkStatus['group_id'] == 1) {
+                                        setSession('tokenLogin', $tokenLogin);
+                                        reload('/');
+                                    } elseif ($checkStatus['group_id'] == 2) {
+                                        setSession('tokenLogin', $tokenLogin);
+                                        reload('/admin/dashboard');
+                                    }
+                                } else {
+                                    setSessionFlash('msg', 'Tài khoản của bạn đang đăng nhập ở nơi khác');
+                                    setSessionFlash('msg_type', 'danger');
+                                    setSessionFlash('active_tab', 'login');
+                                }
                             }
                         } else {
                             setSessionFlash('msg', 'Email hoặc mật khẩu không chính xác!');
@@ -93,6 +100,12 @@ class AuthController extends baseController
                             setSessionFlash('errors', $errors);
                             setSessionFlash('active_tab', 'login');
                         }
+                    } else {
+                        setSessionFlash('msg', 'Email hoặc mật khẩu không chính xác!');
+                        setSessionFlash('msg_type', 'danger');
+                        setSessionFlash('oldData', $filter);
+                        setSessionFlash('errors', $errors);
+                        setSessionFlash('active_tab', 'login');
                     }
                 } else {
                     setSessionFlash('msg', 'Email hoặc mật khẩu không chính xác. Hoặc tài khoản chưa kích hoạt');
@@ -275,7 +288,7 @@ class AuthController extends baseController
                     $dataRegister = [
                         'fullname' => $name,
                         'email' => $email,
-                        'password' => password_hash('11111111', PASSWORD_DEFAULT),
+                        'password' => null,
                         'status' => 1,
                         'group_id' => 1,
                         'avartar' => $avartar,
@@ -283,7 +296,6 @@ class AuthController extends baseController
                     ];
                     $insertStatus = $this->coreModel->insert('users', $dataRegister);
                     if ($insertStatus) {
-
                         $newUser = $this->coreModel->getLastID();
                         $user_id = $newUser['id'];
                         $tokenLogin = sha1(uniqid() . time());

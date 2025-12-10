@@ -3,10 +3,14 @@ class MoviesController extends baseController
 {
     private $moviesModel;
     private $genresModel;
+    private $personModel;
+    private $roleModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
         $this->genresModel = new Genres;
+        $this->personModel = new Person;
+        $this->roleModel = new Role;
     }
 
     public function list()
@@ -166,12 +170,16 @@ class MoviesController extends baseController
         $getAllStatus = $this->moviesModel->getAllStatus();
         $getAllCountries = $this->moviesModel->getAllCountries();
         $getAllType = $this->moviesModel->getAllType();
+        $getAllPersons = $this->personModel->getAllPersonsSimple();
+        $getAllRoles = $this->roleModel->getAllRole();
 
         $data = [
             'getAllGenres' => $getAllGenres,
             'getAllStatus' => $getAllStatus,
             'getAllCountries' => $getAllCountries,
-            'getAllType' => $getAllType
+            'getAllType' => $getAllType,
+            'getAllPersons' => $getAllPersons,
+            'getAllRoles' => $getAllRoles
         ];
         $this->renderView('/layout-part/admin/movies/add', $data);
     }
@@ -238,8 +246,31 @@ class MoviesController extends baseController
                             ];
                             $checkInsertMovie_Genres = $this->moviesModel->insertMoviesGenres($data);
                             if ($checkInsertMovie_Genres) {
-                                setSessionFlash('msg', 'Thêm phim mới thành công');
-                                setSessionFlash('msg_type', 'success');
+                                $person_id = $filter['person_id'];
+                                if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
+                                    $persons = $filter['cast_person']; // Mảng ID diễn viên
+                                    $roles   = $filter['cast_role'];   // Mảng ID vai trò tương ứng
+
+                                    for ($i = 0; $i < count($persons); $i++) {
+                                        if (!empty($persons[$i]) && !empty($roles[$i])) {
+                                            $dataCast = [
+                                                'movie_id'  => $movie_id,
+                                                'person_id' => $persons[$i],
+                                                'role_id'   => $roles[$i]
+                                            ];
+                                            $checkInsertPerson = $this->personModel->insertMoviePerson($dataCast);
+                                            if ($checkInsertPerson) {
+                                                setSessionFlash('msg', 'Thêm phim mới thất bại');
+                                                setSessionFlash('msg_type', 'danger');
+                                            } else {
+                                                setSessionFlash('msg', 'Thêm phim mới thất bại');
+                                                setSessionFlash('msg_type', 'danger');
+                                                setSessionFlash('oldData', $filter);
+                                                setSessionFlash('errors', $errors);
+                                            }
+                                        }
+                                    }
+                                }
                             } else {
                                 setSessionFlash('msg', 'Thêm phim mới thất bại');
                                 setSessionFlash('msg_type', 'danger');
@@ -248,9 +279,6 @@ class MoviesController extends baseController
                             }
                         }
                     }
-                    setSessionFlash('msg', 'Thêm phim mới thành công');
-                    setSessionFlash('msg_type', 'success');
-                    reload('/admin/film/list');
                 } else {
                     setSessionFlash('msg', 'Thêm phim mới thất bại');
                     setSessionFlash('msg_type', 'danger');
@@ -287,6 +315,10 @@ class MoviesController extends baseController
         if (!empty($movieGenresData)) {
             $selectedGenresId = array_column($movieGenresData, 'genre_id');
         }
+
+        $currentCast = $this->personModel->getCastByMovieId($idMovie);
+        $getAllPersons = $this->personModel->getAllPersonsSimple();
+        $getAllRoles   = $this->roleModel->getAllRole();
         $data = [
             'idMovie' => $idMovie,
             'oldData' => $result,
@@ -294,7 +326,10 @@ class MoviesController extends baseController
             'selectedGenresId' => $selectedGenresId,
             'getAllCountries' => $getAllCountries,
             'getAllStatus' => $getAllStatus,
-            'getAllType' => $getAllType
+            'getAllType' => $getAllType,
+            'currentCast'   => $currentCast,
+            'getAllPersons' => $getAllPersons,
+            'getAllRoles'   => $getAllRoles
         ];
         $this->renderView('/layout-part/admin/movies/edit', $data);
     }
@@ -355,14 +390,11 @@ class MoviesController extends baseController
                 $idMovie = $filter['idMovie'];
                 $conditionUpdate = 'id=' . $idMovie;
 
-                // 1. Cập nhật bảng Movies
                 $checkUpdate = $this->moviesModel->updateMovies($dataUpdate, $conditionUpdate);
 
                 if ($checkUpdate) {
-
-                    // Bước 1: Xóa sạch liên kết cũ của phim này với các thể loại
+                    //Xóa sạch liên kết cũ của phim này với các thể loại
                     $this->moviesModel->deleteMovieGenres("movie_id = $idMovie");
-
                     // Kiểm tra xem người dùng có tick chọn genre nào không
                     if (isset($filter['genre_id']) && !empty($filter['genre_id'])) {
                         foreach ($filter['genre_id'] as $genreId) {
@@ -370,11 +402,27 @@ class MoviesController extends baseController
                                 'movie_id' => $idMovie,
                                 'genre_id' => $genreId
                             ];
-                            // Insert từng dòng vào bảng movie_genres
                             $this->moviesModel->insertMoviesGenres($dataGenre);
                         }
                     }
+                    $this->personModel->deleteMoviePerson("movie_id = $idMovie");
 
+                    // 2. Thêm dữ liệu mới
+                    if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
+                        $persons = $filter['cast_person']; // Mảng ID diễn viên
+                        $roles   = $filter['cast_role'];   // Mảng ID vai trò tương ứng
+
+                        for ($i = 0; $i < count($persons); $i++) {
+                            if (!empty($persons[$i]) && !empty($roles[$i])) {
+                                $dataCast = [
+                                    'movie_id'  => $idMovie,
+                                    'person_id' => $persons[$i],
+                                    'role_id'   => $roles[$i]
+                                ];
+                                $this->personModel->insertMoviePerson($dataCast);
+                            }
+                        }
+                    }
                     setSessionFlash('msg', 'Cập nhật thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/film/list');

@@ -52,7 +52,6 @@ $errors = getSessionFlash('errors');
                 <label for="trailer_url">Trailer URL</label>
                 <input type="text" name="trailer_url" id="trailer_url" placeholder="Trailer URL..."
                     value="<?php echo !empty($oldData) ? oldData($oldData, 'trailer_url') : ''; ?>">
-                <?php echo (!empty($errors) ? formError($errors, 'trailer_url') : ''); ?>
             </div>
 
             <div class="form-group">

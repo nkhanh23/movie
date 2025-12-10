@@ -88,3 +88,14 @@ $router->get('/admin/role/add', 'RoleController@showAdd');
 $router->post('/admin/role/add', 'RoleController@add');
 
 $router->get('/admin/role/delete', 'RoleController@delete');
+
+
+// -----------------------------------------------------------------
+// CLIENT
+// -----------------------------------------------------------------
+
+// PAGE DETAIL
+$router->get('/detail', 'MovieDetailController@showDetail');
+$router->post('/detail', 'MovieDetailController@detail');
+
+$router->get('/api/get-episodes', 'MovieDetailController@getEpisodesApi');

@@ -137,11 +137,6 @@ class SeasonController extends baseController
                 $errors['poster_url']['required'] = ' Poster URL bắt buộc phải nhập';
             }
 
-
-            if (empty(trim($filter['trailer_url']))) {
-                $errors['trailer_url']['required'] = ' Trailer URL bắt buộc phải nhập';
-            }
-
             if (empty($errors)) {
                 $data = [
                     'movie_id' => $idMovie['id'],
@@ -210,11 +205,6 @@ class SeasonController extends baseController
             if (empty(trim($filter['poster_url']))) {
                 $errors['poster_url']['required'] = ' Poster URL bắt buộc phải nhập';
             }
-
-
-            if (empty(trim($filter['trailer_url']))) {
-                $errors['trailer_url']['required'] = ' Trailer URL bắt buộc phải nhập';
-            }
         }
 
         if (empty($errors)) {
@@ -232,17 +222,17 @@ class SeasonController extends baseController
             if ($checkUpdate) {
                 setSessionFlash('msg', 'Cập nhật thành công');
                 setSessionFlash('msg_type', 'success');
-                reload('/admin/season');
+                reload('/admin/season?filter-movie-id=' . $filter['movie_id']);
             } else {
                 setSessionFlash('msg', 'Cập nhật thất bại');
                 setSessionFlash('msg_type', 'danger');
-                reload('/admin/season');
+                reload('/admin/season?filter-movie-id=' . $filter['movie_id']);
             }
         } else {
             setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
             setSessionFlash('msg_type', 'danger');
             setSessionFlash('errors', $errors);
-            reload('/admin/season/edit');
+            reload('/admin/season/edit?id=' . $filter['id']);
         }
     }
     public function delete()

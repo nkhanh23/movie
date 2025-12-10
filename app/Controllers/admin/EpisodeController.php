@@ -67,7 +67,7 @@ class EpisodeController extends baseController
         ORDER BY m.created_at DESC";
         $countResult = $this->episodeModel->countAllEpisode($sqlCount);
         $maxData = $countResult;
-        $perPage = 5;
+        $perPage = 10;
         $maxPage = ceil($maxData / $perPage);
         $page = 1;
         $offset = 0;
@@ -145,14 +145,28 @@ class EpisodeController extends baseController
     {
         $filterGet = filterData('get');
         $idMovie = $filterGet['id'];
-        $idSeason = $filterGet['season_id'];
+        $idSeason = (!empty($filterGet['season_id'])) ? $filterGet['season_id'] : null;
 
         if (isPost()) {
             $filter = filterData();
             $errors = [];
 
-            if (empty(trim($filter['name']))) {
-                $errors['name']['required'] = ' Tên tập bắt buộc phải nhập';
+            // --- KIỂM TRA CHẾ ĐỘ (Lẻ hay Hàng loạt) ---
+            $isBulk = isset($filter['is_bulk']) && $filter['is_bulk'] == 'on';
+
+            if ($isBulk) {
+                // Nếu là Bulk Mode: Kiểm tra số tập từ...đến
+                $from = isset($filter['episode_from']) ? (int)$filter['episode_from'] : 0;
+                $to = isset($filter['episode_to']) ? (int)$filter['episode_to'] : 0;
+
+                if ($from <= 0) $errors['episode_from']['invalid'] = 'Tập bắt đầu phải lớn hơn 0';
+                if ($to <= 0) $errors['episode_to']['invalid'] = 'Tập kết thúc phải lớn hơn 0';
+                if ($from > $to) $errors['episode_to']['invalid'] = 'Tập kết thúc phải >= tập bắt đầu';
+            } else {
+                // Nếu là Single Mode: Kiểm tra tên tập (như cũ)
+                if (empty(trim($filter['name']))) {
+                    $errors['name']['required'] = ' Tên tập bắt buộc phải nhập';
+                }
             }
 
             if (empty(trim($filter['server_name']))) {
@@ -164,25 +178,55 @@ class EpisodeController extends baseController
             }
 
             if (empty($errors)) {
-                $data = [
-                    'movie_id' => $idMovie,
-                    'season_id' => $idSeason,
-                    'name' => $filter['name'],
-                    'video_source_id' => $filter['video_source_id'],
-                    'duration' => $filter['duration'],
-                    'server_name' => $filter['server_name'],
-                    'created_at' => date('Y:m:d H:i:s'),
-                ];
-                $checkInsert = $this->episodeModel->insertEpisode($data);
-                if ($checkInsert) {
-                    setSessionFlash('msg', 'Thêm tập mới thành công');
+                $videoSourceId = !empty($filter['video_source_id']) ? $filter['video_source_id'] : null;
+                $countSuccess = 0;
+                if ($isBulk) {
+                    // THÊM NHIỀU TẬP 
+                    for ($i = $from; $i <= $to; $i++) {
+                        $dataBulk = [
+                            'movie_id'        => $idMovie,
+                            'season_id'       => $idSeason,
+                            'name'            => 'Tập ' . $i,
+                            'video_source_id' => $videoSourceId,
+                            'duration'        => $filter['duration'],
+                            'server_name'     => $filter['server_name'],
+                            'created_at'      => date('Y:m:d H:i:s'),
+                        ];
+                        $insertBulk = $this->episodeModel->insertEpisode($dataBulk);
+                        if ($insertBulk) {
+                            $countSuccess++;
+                        }
+                    }
+                    setSessionFlash('msg', 'Đã thêm tự động thành công' . $countSuccess . ' tập phim.');
                     setSessionFlash('msg_type', 'success');
-                    reload('/admin/episode?filter-movie-id=' . $idMovie . '&season_id=' . $idSeason);
+                    reload('/admin/episode?filter-movie-id=' . $idMovie);
                 } else {
-                    setSessionFlash('msg', 'Thêm tập mới thất bại');
-                    setSessionFlash('msg_type', 'danger');
-                    setSessionFlash('oldData', $filter);
-                    setSessionFlash('errors', $errors);
+                    // THÊM 1 TẬP
+                    $data = [
+                        'movie_id' => $idMovie,
+                        'season_id' => $idSeason,
+                        'name' => $filter['name'],
+                        'video_source_id' => $videoSourceId,
+                        'duration' => $filter['duration'],
+                        'server_name' => $filter['server_name'],
+                        'created_at' => date('Y:m:d H:i:s'),
+                    ];
+                    $checkInsert = $this->episodeModel->insertEpisode($data);
+                    if ($checkInsert) {
+                        setSessionFlash('msg', 'Thêm tập mới thành công');
+                        setSessionFlash('msg_type', 'success');
+                        // Nếu có season thì redirect kèm season, không thì chỉ redirect về phim
+                        $redirectUrl = '/admin/episode?filter-movie-id=' . $idMovie;
+                        if (!empty($idSeason)) {
+                            $redirectUrl .= '&season_id=' . $idSeason;
+                        }
+                        reload($redirectUrl);
+                    } else {
+                        setSessionFlash('msg', 'Thêm tập mới thất bại');
+                        setSessionFlash('msg_type', 'danger');
+                        setSessionFlash('oldData', $filter);
+                        setSessionFlash('errors', $errors);
+                    }
                 }
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
