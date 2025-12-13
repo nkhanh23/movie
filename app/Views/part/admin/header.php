@@ -1,3 +1,9 @@
+<?php
+$is_logged = isLogin();
+if (!$is_logged) {
+    reload('/login', true);
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 

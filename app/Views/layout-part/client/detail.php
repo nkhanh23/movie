@@ -4,7 +4,7 @@ if (!defined('_nkhanhh')) {
 }
 layout('client/header');
 // echo '<pre>';
-// print_r($getCastByMovieId);
+// print_r($similarMovies);
 // echo '</pre>';
 // die();
 ?>
@@ -19,263 +19,279 @@ layout('client/header');
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <style>
-    .glass-panel {
-        background-color: rgba(26, 26, 26, 0.6);
-        /* #1A1A1A with 60% opacity */
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        /* For Safari */
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .glow-border {
-        position: relative;
-    }
-
-    .glow-border::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 1rem;
-        /* Matches rounded-xl */
-        background: conic-gradient(from 180deg at 50% 50%, #00C2FF 0deg, #E040FB 180deg, #00C2FF 360deg);
-        z-index: -1;
-        filter: blur(20px);
-        animation: rotate-glow 8s linear infinite;
-    }
-
-    .trailer-glow::before {
-        border-radius: 0.75rem;
-        /* Matches rounded-lg */
-    }
-
-    @keyframes rotate-glow {
-        from {
-            transform: rotate(0deg);
+        .glass-panel {
+            background-color: rgba(26, 26, 26, 0.6);
+            /* #1A1A1A with 60% opacity */
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        to {
-            transform: rotate(360deg);
+        .glow-border {
+            position: relative;
         }
-    }
 
-    .button-glow {
-        position: relative;
-        overflow: hidden;
-    }
+        .glow-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 1rem;
+            /* Matches rounded-xl */
+            background: conic-gradient(from 180deg at 50% 50%, #00C2FF 0deg, #E040FB 180deg, #00C2FF 360deg);
+            z-index: -1;
+            filter: blur(20px);
+            animation: rotate-glow 8s linear infinite;
+        }
 
-    .button-glow::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 300%;
-        height: 300%;
-        background: radial-gradient(circle, rgba(37, 140, 244, 0.4) 0%, rgba(37, 140, 244, 0) 60%);
-        transform: translate(-50%, -50%);
-        transition: width 0.3s ease, height 0.3s ease;
-        z-index: 0;
-        opacity: 0;
-    }
+        .trailer-glow::before {
+            border-radius: 0.75rem;
+            /* Matches rounded-lg */
+        }
 
-    .button-glow:hover::before {
-        opacity: 1;
-    }
+        @keyframes rotate-glow {
+            from {
+                transform: rotate(0deg);
+            }
 
-    .button-glow>* {
-        position: relative;
-        z-index: 1;
-    }
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    /* Custom scrollbar for Cast/Comments if needed */
-    .custom-scroll::-webkit-scrollbar {
-        width: 6px;
-    }
+        .button-glow {
+            position: relative;
+            overflow: hidden;
+        }
 
-    .custom-scroll::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-    }
+        .button-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(37, 140, 244, 0.4) 0%, rgba(37, 140, 244, 0) 60%);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+            z-index: 0;
+            opacity: 0;
+        }
 
-    .custom-scroll::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-    }
+        .button-glow:hover::before {
+            opacity: 1;
+        }
 
-    /* Container chính cho phần nền */
-    .movie-hero-container {
-        position: relative;
-        /* Thêm margin âm để bù lại padding của body nếu cần thiết, hoặc để width: 100vw */
-        width: 100vw;
-        left: 50%;
-        right: 50%;
-        margin-left: -50vw;
-        margin-right: -50vw;
+        .button-glow>* {
+            position: relative;
+            z-index: 1;
+        }
 
-        height: 80vh;
-        overflow: hidden;
-        margin-bottom: -200px;
-        /* Kéo nội dung lên */
-        z-index: 0;
-    }
+        /* Custom scrollbar for Cast/Comments if needed */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
 
-    /* Phần bao quanh ảnh để xử lý animation */
-    .hero-image-wrapper {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
 
-    /* Ảnh nền */
-    .hero-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* Đảm bảo ảnh không bị méo */
-        object-position: center top;
-        /* Căn ảnh lấy phần trên làm trọng tâm */
-        transition: transform 3s ease;
-        /* Hiệu ứng chuyển động mượt trong 3 giây */
-    }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
 
-    /* Hiệu ứng khi di chuột vào vùng banner: Zoom nhẹ lên */
-    .movie-hero-container:hover .hero-img {
-        transform: scale(1.1);
-        /* Phóng to 10% */
-    }
+        /* Container chính cho phần nền */
+        .movie-hero-container {
+            position: relative;
+            /* Thêm margin âm để bù lại padding của body nếu cần thiết, hoặc để width: 100vw */
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
 
-    /* Lớp phủ Gradient (Làm mờ ảnh để hòa vào nền đen) */
-    .hero-gradient-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        /* Gradient từ trong suốt -> đen, và từ trái -> phải */
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%),
-            linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0) 50%);
-        pointer-events: none;
-        /* Để chuột vẫn click được vào các nút bên dưới nếu bị che */
-        z-index: 1;
-    }
+            height: 80vh;
+            overflow: hidden;
+            margin-bottom: -200px;
+            /* Kéo nội dung lên */
+            z-index: 0;
+        }
 
-    /* Container cho các thẻ tags (Hàng 1) */
-    .movie-meta-tags {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 16px;
-        margin-bottom: 16px;
-    }
+        /* Phần bao quanh ảnh để xử lý animation */
+        .hero-image-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-    /* Base style cho tất cả các thẻ kính */
-    .glass-tag {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 32px;
-        padding: 0 12px;
-        border-radius: 8px;
-        /* Bo góc mềm mại */
-        font-size: 14px;
-        font-weight: 600;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        transition: all 0.3s ease;
-    }
+        /* Ảnh nền */
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Đảm bảo ảnh không bị méo */
+            object-position: center top;
+            /* Căn ảnh lấy phần trên làm trọng tâm */
+            transition: transform 3s ease;
+            /* Hiệu ứng chuyển động mượt trong 3 giây */
+        }
 
-    /* 1. Thiết kế thẻ IMDb (Premium Gold) */
-    .tag-imdb {
-        background: rgba(255, 216, 117, 0.1);
-        /* Màu primary mờ */
-        border: 1px solid var(--primary-color);
-        color: var(--primary-color);
-        box-shadow: 0 0 10px rgba(255, 216, 117, 0.15);
-        /* Glow nhẹ */
-    }
+        /* Hiệu ứng khi di chuột vào vùng banner: Zoom nhẹ lên */
+        .movie-hero-container:hover .hero-img {
+            transform: scale(1.1);
+            /* Phóng to 10% */
+        }
 
-    .tag-imdb span {
-        color: #fff;
-        margin-left: 6px;
-        font-weight: 700;
-    }
+        /* Lớp phủ Gradient (Làm mờ ảnh để hòa vào nền đen) */
+        .hero-gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Gradient từ trong suốt -> đen, và từ trái -> phải */
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%),
+                linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0) 50%);
+            pointer-events: none;
+            /* Để chuột vẫn click được vào các nút bên dưới nếu bị che */
+            z-index: 1;
+        }
 
-    /* 2. Thiết kế thẻ Độ tuổi (T16) - Nổi bật */
-    .tag-age {
-        background: rgba(255, 255, 255, 0.9);
-        color: #000;
-        font-weight: 800;
-        border: 1px solid #fff;
-    }
+        /* Container cho các thẻ tags (Hàng 1) */
+        .movie-meta-tags {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
 
-    /* 3. Thiết kế Năm & Thời lượng (Glass Classic) */
-    .tag-info {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #e0e0e0;
-    }
+        /* Base style cho tất cả các thẻ kính */
+        .glass-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            padding: 0 12px;
+            border-radius: 8px;
+            /* Bo góc mềm mại */
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
 
-    .tag-info:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-    }
+        /* 1. Thiết kế thẻ IMDb (Premium Gold) */
+        .tag-imdb {
+            background: rgba(255, 216, 117, 0.1);
+            /* Màu primary mờ */
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(255, 216, 117, 0.15);
+            /* Glow nhẹ */
+        }
 
-    /* Container cho Thể loại (Hàng 2) */
-    .movie-genres {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 8px;
-    }
+        .tag-imdb span {
+            color: #fff;
+            margin-left: 6px;
+            font-weight: 700;
+        }
 
-    /* Thiết kế thẻ Thể loại */
-    .genre-pill {
-        display: inline-block;
-        padding: 6px 16px;
-        background: rgba(30, 33, 48, 0.6);
-        /* --top-bg-default mờ */
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--text-base);
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.3s;
-    }
+        /* 2. Thiết kế thẻ Độ tuổi (T16) - Nổi bật */
+        .tag-age {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            font-weight: 800;
+            border: 1px solid #fff;
+        }
 
-    .genre-pill:hover {
-        background: rgba(255, 216, 117, 0.15);
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
+        /* 3. Thiết kế Năm & Thời lượng (Glass Classic) */
+        .tag-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e0e0e0;
+        }
+
+        .tag-info:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Container cho Thể loại (Hàng 2) */
+        .movie-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        /* Thiết kế thẻ Thể loại */
+        .genre-pill {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(30, 33, 48, 0.6);
+            /* --top-bg-default mờ */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-base);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .genre-pill:hover {
+            background: rgba(255, 216, 117, 0.15);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fadeInDown 0.3s ease-out forwards;
+        }
     </style>
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display">
     <script id="tailwind-config">
-    tailwind.config = {
-        darkMode: "class",
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#258cf4",
-                    "background-light": "#ffffff",
-                    "background-dark": "#000000",
-                },
-                fontFamily: {
-                    "display": ["Space Grotesk", "sans-serif"]
-                },
-                borderRadius: {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                        "background-light": "#ffffff",
+                        "background-dark": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
                 },
             },
-        },
-    }
+        }
     </script>
 
     <div class="relative min-h-screen w-full flex-col overflow-x-hidden px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8 pt-0">
@@ -298,7 +314,7 @@ layout('client/header');
         </div>
 
         <div class="relative z-10 mx-auto max-w-7xl">
-            <main class="mt-8 grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+            <main class="mt-32 grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
                 <!-- Movie Poster -->
                 <div class="lg:col-span-1 flex justify-center items-start">
                     <div class="glow-border w-72 mx-auto sticky top-8">
@@ -337,16 +353,16 @@ layout('client/header');
                         ?>
                         <div class="movie-genres">
                             <?php foreach ($genres as $genre) { ?>
-                            <a href="#" class="genre-pill">
-                                <?php echo trim($genre); ?>
-                            </a>
+                                <a href="#" class="genre-pill">
+                                    <?php echo trim($genre); ?>
+                                </a>
                             <?php } ?>
                         </div>
 
                         <p class="text-white/80 mt-4 text-base leading-relaxed">
                             <?php echo $movieDetail['description']; ?></p>
                         <div class="flex flex-wrap gap-3 mt-6">
-                            <button
+                            <button onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>'"
                                 class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105">
                                 <span class="material-symbols-outlined mr-2">play_arrow</span>
                                 <span class="truncate">Xem Ngay</span>
@@ -367,7 +383,7 @@ layout('client/header');
                                 $hasSeasons = ($isSeries && !empty($seasonDetail));
                                 //Phim bộ có season
                                 if ($hasSeasons): ?>
-                                <?php
+                                    <?php
                                     $currentDisplayName = "Chọn Phần";
                                     if (!empty($seasonDetail)) {
                                         foreach ($seasonDetail as $item) {
@@ -378,43 +394,43 @@ layout('client/header');
                                         }
                                     }
                                     ?>
-                                <button onclick="toggleSeasonDropdown()"
-                                    class="flex items-center gap-2 text-white font-bold text-lg hover:text-primary transition-colors group focus:outline-none">
-                                    <span class="material-symbols-outlined text-primary">sort</span>
-                                    <span id="current-season-text"><?php echo $currentDisplayName; ?></span>
-                                    <span id="season-arrow"
-                                        class="material-symbols-outlined text-sm transition-transform duration-300">expand_more</span>
-                                </button>
+                                    <button onclick="toggleSeasonDropdown()"
+                                        class="flex items-center gap-2 text-white font-bold text-lg hover:text-primary transition-colors group focus:outline-none">
+                                        <span class="material-symbols-outlined text-primary">sort</span>
+                                        <span id="current-season-text"><?php echo $currentDisplayName; ?></span>
+                                        <span id="season-arrow"
+                                            class="material-symbols-outlined text-sm transition-transform duration-300">expand_more</span>
+                                    </button>
 
-                                <div id="season-list"
-                                    class="hidden absolute left-0 z-50 mt-2 w-56 origin-top-left rounded-xl bg-[#202331]/95 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200">
-                                    <div class="py-1">
-                                        <?php foreach ($seasonDetail as $item): ?>
-                                        <?php
+                                    <div id="season-list"
+                                        class="hidden absolute left-0 z-50 mt-2 w-56 origin-top-left rounded-xl bg-[#202331]/95 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200">
+                                        <div class="py-1">
+                                            <?php foreach ($seasonDetail as $item): ?>
+                                                <?php
                                                 $isActive = ($item['id'] == $currentSeasonId);
                                                 $textClass = $isActive ? 'text-primary font-bold bg-white/5' : 'text-gray-300 hover:bg-white/5';
                                                 $iconClass = $isActive ? '' : 'invisible';
                                                 ?>
-                                        <a href="javascript:void(0)"
-                                            onclick="selectSeason(<?php echo $item['id']; ?>, '<?php echo $item['name']; ?>', this)"
-                                            class="season-item flex items-center justify-between px-4 py-3 text-sm transition-colors <?php echo $textClass; ?>">
-                                            <span><?php echo $item['name']; ?></span>
-                                            <span
-                                                class="season-check material-symbols-outlined text-base <?php echo $iconClass; ?>">check</span>
-                                        </a>
-                                        <?php endforeach; ?>
+                                                <a href="javascript:void(0)"
+                                                    onclick="selectSeason(<?php echo $item['id']; ?>, '<?php echo $item['name']; ?>', this)"
+                                                    class="season-item flex items-center justify-between px-4 py-3 text-sm transition-colors <?php echo $textClass; ?>">
+                                                    <span><?php echo $item['name']; ?></span>
+                                                    <span
+                                                        class="season-check material-symbols-outlined text-base <?php echo $iconClass; ?>">check</span>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
-                                </div>
 
                                 <?php else: ?>
-                                <!-- Phim lẻ -->
-                                <div
-                                    class="flex items-center gap-2 text-white font-bold text-lg select-none cursor-default">
-                                    <span class="material-symbols-outlined text-primary">video_library</span>
-                                    <span>
-                                        <?php echo $isSeries ? 'Danh sách tập' : 'Danh sách phát'; ?>
-                                    </span>
-                                </div>
+                                    <!-- Phim lẻ -->
+                                    <div
+                                        class="flex items-center gap-2 text-white font-bold text-lg select-none cursor-default">
+                                        <span class="material-symbols-outlined text-primary">video_library</span>
+                                        <span>
+                                            <?php echo $isSeries ? 'Danh sách tập' : 'Danh sách phát'; ?>
+                                        </span>
+                                    </div>
                                 <?php endif; ?>
                             </div>
 
@@ -430,63 +446,63 @@ layout('client/header');
 
                                     <?php if (!empty($episodeDetail)): ?>
 
-                                    <?php if ($isSeries): ?>
-                                    <?php foreach ($episodeDetail as $item): ?>
-                                    <a href="?mod=client&act=watch&id=<?php echo $item['id']; ?>"
-                                        class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
+                                        <?php if ($isSeries): ?>
+                                            <?php foreach ($episodeDetail as $item): ?>
+                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>"
+                                                    class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
 
-                                        <span class="text-sm font-semibold truncate">
-                                            <?php echo $item['name']; ?>
-                                        </span>
-                                    </a>
-                                    <?php endforeach; ?>
+                                                    <span class="text-sm font-semibold truncate">
+                                                        <?php echo $item['name']; ?>
+                                                    </span>
+                                                </a>
+                                            <?php endforeach; ?>
 
-                                    <?php else: ?>
-                                    <?php foreach ($episodeDetail as $item): ?>
-                                    <a href="?mod=client&act=watch&id=<?php echo $item['id']; ?>"
-                                        class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                                        <?php else: ?>
+                                            <?php foreach ($episodeDetail as $item): ?>
+                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>"
+                                                    class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
-                                        <div
-                                            class="relative w-[70px] h-[95px] shrink-0 rounded-lg overflow-hidden border border-white/5">
-                                            <img src="<?php echo $movieDetail['thumbnail']; ?>"
-                                                alt="<?php echo $movieDetail['tittle']; ?>" loading="lazy"
-                                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                            <div
-                                                class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors">
-                                            </div>
-                                            <span
-                                                class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 text-3xl drop-shadow-md">
-                                                play_circle
-                                            </span>
-                                        </div>
+                                                    <div
+                                                        class="relative w-[70px] h-[95px] shrink-0 rounded-lg overflow-hidden border border-white/5">
+                                                        <img src="<?php echo $movieDetail['thumbnail']; ?>"
+                                                            alt="<?php echo $movieDetail['tittle']; ?>" loading="lazy"
+                                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                                        <div
+                                                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors">
+                                                        </div>
+                                                        <span
+                                                            class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 text-3xl drop-shadow-md">
+                                                            play_circle
+                                                        </span>
+                                                    </div>
 
-                                        <div class="flex-1 min-w-0 py-1">
-                                            <div class="flex items-center gap-2 mb-1.5">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
-                                                    <span
-                                                        class="material-symbols-outlined text-[12px]">closed_caption</span>
-                                                    <?php echo !empty($item['voice_type']) ? $item['voice_type'] : 'Vietsub'; ?>
-                                                </span>
-                                            </div>
-                                            <h4
-                                                class="text-white font-bold text-sm leading-tight truncate group-hover:text-primary transition-colors mb-1">
-                                                <?php echo $movieDetail['tittle']; ?>
-                                            </h4>
-                                            <div class="flex items-center justify-between mt-1">
-                                                <span class="text-xs text-gray-400 font-medium">
-                                                    Server: <span class="text-white"><?php echo $item['name']; ?></span>
-                                                </span>
-                                                <span
-                                                    class="text-[11px] bg-white/5 text-gray-300 px-2 py-1 rounded group-hover:bg-primary group-hover:text-[#191B24] transition-colors font-bold flex items-center gap-1">
-                                                    Xem ngay <span
-                                                        class="material-symbols-outlined text-[10px]">arrow_forward</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <?php endforeach; ?>
-                                    <?php endif; ?>
+                                                    <div class="flex-1 min-w-0 py-1">
+                                                        <div class="flex items-center gap-2 mb-1.5">
+                                                            <span
+                                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
+                                                                <span
+                                                                    class="material-symbols-outlined text-[12px]">closed_caption</span>
+                                                                <?php echo !empty($item['voice_type']) ? $item['voice_type'] : 'Vietsub'; ?>
+                                                            </span>
+                                                        </div>
+                                                        <h4
+                                                            class="text-white font-bold text-sm leading-tight truncate group-hover:text-primary transition-colors mb-1">
+                                                            <?php echo $movieDetail['tittle']; ?>
+                                                        </h4>
+                                                        <div class="flex items-center justify-between mt-1">
+                                                            <span class="text-xs text-gray-400 font-medium">
+                                                                Server: <span class="text-white"><?php echo $item['name']; ?></span>
+                                                            </span>
+                                                            <span onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>'"
+                                                                class="text-[11px] bg-white/5 text-gray-300 px-2 py-1 rounded group-hover:bg-primary group-hover:text-[#191B24] transition-colors font-bold flex items-center gap-1">
+                                                                Xem ngay <span
+                                                                    class="material-symbols-outlined text-[10px]">arrow_forward</span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
 
                                     <?php endif; ?>
                                 </div>
@@ -496,21 +512,28 @@ layout('client/header');
                         <div class="flex flex-col gap-6">
                             <h3 class="text-white text-xl font-bold px-2">Cast</h3>
                             <div class="glass-panel p-4 rounded-xl flex-1 max-h-[300px] overflow-y-auto custom-scroll">
-                                <div class="space-y-4">
+                                <div class="space-y-1">
                                     <?php foreach ($getCastByMovieId as $item): ?>
-                                    <div class="flex items-center gap-3">
-                                        <img class="size-12 rounded-full object-cover border border-white/10"
-                                            src="<?php echo $item['avatar'] ?>" alt="<?php echo $item['name'] ?>" />
-                                        <div>
-                                            <p class="text-white font-medium text-sm"><?php echo $item['name'] ?></p>
 
-                                            <?php if (!empty($item['character_name'])): ?>
-                                            <p class="text-gray-400 text-xs">trong vai
-                                                <?php echo $item['character_name'] ?>
-                                            </p>
-                                            <?php endif; ?>
+                                        <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien?id=<?php echo $item['id'] ?>';" class="group flex items-center gap-3 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-lg cursor-pointer hover:scale-[1.02]">
+
+                                            <img class="size-12 rounded-full object-cover border border-white/10 group-hover:border-primary transition-colors duration-300"
+                                                src="<?php echo $item['avatar'] ?>"
+                                                alt="<?php echo $item['name'] ?>" />
+
+                                            <div>
+                                                <p class="text-white font-medium text-sm group-hover:text-primary transition-colors duration-300">
+                                                    <?php echo $item['name'] ?>
+                                                </p>
+
+                                                <?php if (!empty($item['character_name'])): ?>
+                                                    <p class="text-gray-400 text-xs group-hover:text-gray-300 transition-colors duration-300">
+                                                        trong vai <?php echo $item['character_name'] ?>
+                                                    </p>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
-                                    </div>
+
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -525,106 +548,31 @@ layout('client/header');
                     <h3 class="text-white text-xl font-bold pl-2 border-l-4 border-primary">Similar Movies</h3>
 
                     <div class="flex flex-col gap-4">
+                        <?php foreach ($similarMovies as $movie): ?>
+                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';"
+                                class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
+                                <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
+                                    <img src="<?php echo $movie['poster_url']; ?>" alt="<?php echo $movie['tittle']; ?>"
+                                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                </div>
 
-                        <div
-                            class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
-                            <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
-                                <img src="https://image.tmdb.org/t/p/w200/qA5kPYZA7FkVvqcEfJRoOy4kpHg.jpg" alt="Poster"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            </div>
-
-                            <div class="flex-1 min-w-0">
-                                <h4
-                                    class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                    Nova Drift</h4>
-                                <p class="text-white/40 text-xs mt-1">Drifting into the void</p>
-                                <div class="flex items-center gap-3 mt-2">
-                                    <span
-                                        class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">9.2</span>
-                                    <span class="text-white/60 text-xs font-medium">2023</span>
+                                <div class="flex-1 min-w-0">
+                                    <h4
+                                        class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                                        <?php echo $movie['tittle']; ?></h4>
+                                    <p class="text-white/40 text-xs mt-1"><?php echo $movie['original_tittle']; ?></p>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span
+                                            class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded"><?php echo $movie['imdb_rating']; ?></span>
+                                        <span class="text-white/60 text-xs font-medium"><?php echo $movie['release_year']; ?></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div
-                            class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
-                            <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
-                                <img src="https://image.tmdb.org/t/p/w200/t6HIqrRAclMCA60cKCwd5ishZvS.jpg" alt="Poster"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4
-                                    class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                    The Void Walker</h4>
-                                <p class="text-white/40 text-xs mt-1">Action • Sci-Fi</p>
-                                <div class="flex items-center gap-3 mt-2">
-                                    <span
-                                        class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">8.5</span>
-                                    <span class="text-white/60 text-xs font-medium">2022</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
-                            <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
-                                <img src="https://image.tmdb.org/t/p/w200/8Cd164V76A96C2W2582Q6M0Vl67.jpg" alt="Poster"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4
-                                    class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                    Chrome Souls</h4>
-                                <p class="text-white/40 text-xs mt-1">Cyberpunk • Thriller</p>
-                                <div class="flex items-center gap-3 mt-2">
-                                    <span
-                                        class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">7.4</span>
-                                    <span class="text-white/60 text-xs font-medium">2024</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
-                            <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
-                                <img src="https://image.tmdb.org/t/p/w200/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="Poster"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4
-                                    class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                    Helios Rising</h4>
-                                <p class="text-white/40 text-xs mt-1">Adventure • Space</p>
-                                <div class="flex items-center gap-3 mt-2">
-                                    <span
-                                        class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">6.9</span>
-                                    <span class="text-white/60 text-xs font-medium">2021</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
-                            <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
-                                <img src="https://image.tmdb.org/t/p/w200/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg" alt="Poster"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4
-                                    class="text-white font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                    Quantum Leap</h4>
-                                <p class="text-white/40 text-xs mt-1">Mystery • Drama</p>
-                                <div class="flex items-center gap-3 mt-2">
-                                    <span
-                                        class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">8.0</span>
-                                    <span class="text-white/60 text-xs font-medium">2020</span>
-                                </div>
-                            </div>
-                        </div>
-
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
+                <!-- Review & Comments -->
                 <div class="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
                     <div class="flex items-center justify-between px-2">
                         <h3 class="text-white text-xl font-bold">Reviews & Comments</h3>
@@ -632,100 +580,175 @@ layout('client/header');
                     </div>
 
                     <div class="glass-panel p-6 rounded-xl">
-                        <div class="flex gap-4 mb-8">
-                            <div
-                                class="size-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                ME</div>
-                            <div class="flex-1">
-                                <form onsubmit="event.preventDefault();">
-                                    <textarea
-                                        class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-white/40 focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-colors resize-none"
-                                        rows="3" placeholder="Write your review about this movie..."></textarea>
-                                    <div class="flex justify-between items-center mt-3">
-                                        <div class="flex gap-1">
-                                            <button
-                                                class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
-                                            <button
-                                                class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
-                                            <button
-                                                class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
-                                            <button
-                                                class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
-                                            <button
-                                                class="text-white/20 material-symbols-outlined text-[20px]">star</button>
+
+                        <?php if (!empty($_SESSION['auth'])): ?>
+
+                            <div class="flex gap-4 mb-8">
+                                <div class="size-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
+                                    <img src="<?php echo $_SESSION['auth']['avatar']; ?>"
+                                        onerror="this.src='https://i.pravatar.cc/150?u=default'"
+                                        class="w-full h-full object-cover">
+                                </div>
+
+                                <div class="flex-1">
+                                    <form id="commentForm" onsubmit="postComment(event)">
+                                        <input type="hidden" name="movie_id" value="<?php echo $idMovie; ?>">
+
+                                        <textarea name="content" id="commentContent"
+                                            class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-white/40 focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-colors resize-none"
+                                            rows="3"
+                                            placeholder="Viết cảm nghĩ của bạn về phim..."></textarea>
+
+                                        <div class="flex justify-between items-center mt-3">
+                                            <div class="flex gap-1 opacity-50 cursor-not-allowed" title="Tính năng đang phát triển">
+                                                <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
+                                                <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
+                                                <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
+                                                <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
+                                                <button type="button" class="text-white/20 material-symbols-outlined text-[20px]">star</button>
+                                            </div>
+
+                                            <button type="submit"
+                                                class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold transition-transform active:scale-95 flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-[18px]">send</span> Gửi
+                                            </button>
                                         </div>
-                                        <button type="submit"
-                                            class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold transition-transform active:scale-95">Post
-                                            Review</button>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
 
+                        <?php else: ?>
+
+                            <div class="mb-8 p-6 bg-white/5 border border-dashed border-white/20 rounded-xl text-center">
+                                <p class="text-white/60 text-sm md:text-base">
+                                    Vui lòng
+                                    <a href="<?php echo _HOST_URL; ?>/login" class="text-primary font-bold hover:underline hover:text-primary/80 transition-colors">
+                                        đăng nhập
+                                    </a>
+                                    để tham gia bình luận.
+                                </p>
+                            </div>
+
+                        <?php endif; ?>
                         <hr class="border-white/10 mb-8">
+                        <!-- Danh sách bình luận -->
+                        <div id="comment-list" class="flex flex-col mt-8 space-y-4">
+                            <?php
+                            // 1. Định nghĩa hàm đệ quy hiển thị
+                            if (!function_exists('render_comment_recursive')) {
+                                function render_comment_recursive($comments, $level = 0, $parentName = null)
+                                {
+                                    foreach ($comments as $key => $item) {
+                                        // Xử lý ẩn/hiện cho Load More (Chỉ áp dụng cho cấp cha - Level 0)
+                                        $wrapperAttr = '';
+                                        if ($level == 0) {
+                                            $hiddenClass = ($key >= 10) ? 'hidden comment-hidden-thread' : '';
+                                            echo '<div class="comment-thread-wrapper ' . $hiddenClass . '">';
+                                        }
 
-                        <div class="space-y-8">
-                            <div class="flex gap-4 group">
-                                <img src="https://i.pravatar.cc/150?u=user1"
-                                    class="size-10 rounded-full border border-white/10 shrink-0">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <h4 class="text-white font-bold text-sm">John Doe</h4>
-                                        <span class="text-white/40 text-xs">2 hours ago</span>
-                                    </div>
-                                    <div class="flex text-yellow-500 text-[14px] mb-2">
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                    </div>
-                                    <p class="text-white/80 text-sm leading-relaxed">Absolutely stunning visuals! The
-                                        story felt a bit rushed in the second act, but the ending made up for it.
-                                        Definitely watching this again in IMAX.</p>
-                                    <div class="flex gap-4 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            class="text-white/40 hover:text-primary text-xs flex items-center gap-1"><span
-                                                class="material-symbols-outlined text-[14px]">thumb_up</span> Helpful
-                                            (2)</button>
-                                        <button class="text-white/40 hover:text-white text-xs">Reply</button>
-                                    </div>
-                                </div>
-                            </div>
+                                        // Style thụt đầu dòng (Dùng Margin inline để tính toán chính xác theo cấp)
+                                        $marginLeftPx = $level * 48; // 48px ~ 3rem (ml-12)
+                                        $marginStyle = "margin-left: {$marginLeftPx}px";
 
-                            <div class="flex gap-4 group">
-                                <img src="https://i.pravatar.cc/150?u=user2"
-                                    class="size-10 rounded-full border border-white/10 shrink-0">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <h4 class="text-white font-bold text-sm">Alice Smith</h4>
-                                        <span class="text-white/40 text-xs">1 day ago</span>
-                                    </div>
-                                    <div class="flex text-yellow-500 text-[14px] mb-2">
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px] text-white/20">star</span>
-                                        <span class="material-symbols-outlined text-[16px] text-white/20">star</span>
-                                    </div>
-                                    <p class="text-white/80 text-sm leading-relaxed">It was okay. Good acting but the
-                                        plot is very generic for a sci-fi movie.</p>
-                                    <div class="flex gap-4 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            class="text-white/40 hover:text-primary text-xs flex items-center gap-1"><span
-                                                class="material-symbols-outlined text-[14px]">thumb_up</span>
-                                            Helpful</button>
-                                        <button class="text-white/40 hover:text-white text-xs">Reply</button>
-                                    </div>
-                                </div>
-                            </div>
+                                        $borderClass = ($level > 0) ? 'border-l-2 border-white/10 pl-4' : '';
+                                        $marginTop = ($level > 0) ? 'mt-4' : 'mt-6';
+                                        $avatarSize = ($level == 0) ? 'size-10' : 'size-8';
+
+                                        // Check quyền
+                                        $currentUserId = $_SESSION['auth']['id'] ?? 0;
+                                        $currentGroupId = $_SESSION['auth']['group_id'] ?? 0;
+                                        $isOwnerOrAdmin = ($currentGroupId == 2 || $currentUserId == $item['user_id']);
+                            ?>
+
+                                        <div id="comment-<?php echo $item['id']; ?>"
+                                            class="flex gap-4 group comment-item animate-fade-in-down <?php echo $borderClass . ' ' . $marginTop; ?>"
+                                            style="<?php echo $marginStyle; ?>"
+                                            data-level="<?php echo $level; ?>">
+
+                                            <img src="<?php echo $item['avartar']; ?>"
+                                                class="<?php echo $avatarSize; ?> rounded-full border border-white/10 shrink-0 object-cover"
+                                                onerror="this.src='https://i.pravatar.cc/150?u=default'">
+
+                                            <div class="flex-1 comment-body">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <h4 class="text-white font-bold text-<?php echo $level == 0 ? 'sm' : 'xs'; ?>"><?php echo htmlspecialchars($item['fullname']); ?></h4>
+                                                    <span class="text-white/40 text-[10px]"><?php echo $item['created_at']; ?></span>
+                                                </div>
+
+                                                <div class="<?php echo ($item['content'] === 'Bình luận này đã bị Admin xóa do vi phạm quy tắc cộng đồng.') ? 'text-red-500 italic' : 'text-white/80'; ?> text-sm leading-relaxed">
+                                                    <?php if ($level > 0 && $parentName): ?>
+                                                        <span class="inline-flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-white font-bold text-xs mr-1 transition-colors cursor-pointer">
+                                                            @<?php echo htmlspecialchars($parentName); ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                    <?php echo nl2br(htmlspecialchars($item['content'])); ?>
+                                                </div>
+                                                <?php
+                                                $isLiked = !empty($item['is_liked']) && $item['is_liked'] > 0;
+                                                $likeBtnClass = $isLiked ? 'text-primary' : 'text-white/40 hover:text-primary';
+                                                $likeIconType = $isLiked ? 'thumb_up_filled' : 'thumb_up';
+                                                ?>
+                                                <div class="flex gap-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onclick="toggleLike(<?php echo $item['id']; ?>, this)"
+                                                        class="btn-like <?php echo $likeBtnClass; ?> text-xs flex items-center gap-1 transition-colors"
+                                                        data-id="<?php echo $item['id']; ?>">
+                                                        <span class="material-symbols-outlined text-[14px]">thumb_up</span>
+                                                        <span class="like-text"><?php echo $isLiked ? 'Liked' : 'Helpful'; ?></span>
+                                                        <span class="like-count ml-1 font-bold <?php echo ($item['like_count'] > 0) ? '' : 'hidden'; ?>">
+                                                            (<?php echo $item['like_count']; ?>)
+                                                        </span>
+                                                    </button>
+                                                    <button class="btn-reply text-white/40 hover:text-white text-xs flex items-center gap-1"
+                                                        data-id="<?php echo $item['id']; ?>"
+                                                        data-name="<?php echo htmlspecialchars($item['fullname']); ?>"
+                                                        data-level="<?php echo $level; ?>">
+                                                        Reply
+                                                    </button>
+
+                                                    <?php if ($isOwnerOrAdmin): ?>
+                                                        <button onclick="deleteComment(<?php echo $item['id']; ?>)" class="text-white/20 hover:text-red-500 text-xs flex items-center gap-1">
+                                                            <span class="material-symbols-outlined text-[14px]">delete</span> Xóa
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                            <?php
+                                        // ĐỆ QUY: Tìm con của comment này
+                                        if (!empty($item['replies'])) {
+                                            render_comment_recursive($item['replies'], $level + 1, $item['fullname']);
+                                        }
+
+                                        // Đóng thẻ wrapper (Chỉ Level 0)
+                                        if ($level == 0) {
+                                            echo '<hr class="border-white/5 my-6">';
+                                            echo '</div>'; // Đóng div.comment-thread-wrapper
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 2. Gọi hàm hiển thị
+                            if (!empty($listComments)) {
+                                render_comment_recursive($listComments);
+                            } else {
+                                echo '<p class="text-white/40 text-center text-sm py-4">Chưa có bình luận nào. Hãy là người đầu tiên!</p>';
+                            }
+                            ?>
                         </div>
 
-                        <div class="flex justify-center mt-8">
-                            <button
-                                class="text-white/60 hover:text-white text-sm font-medium px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">Load
-                                more comments</button>
-                        </div>
+                        <?php if (isset($totalComments) && $totalComments > 10): ?>
+                            <div class="flex justify-center mt-8" id="loadMoreContainer">
+                                <button onclick="loadMoreComments()"
+                                    class="text-white/60 hover:text-white text-sm font-medium px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2">
+                                    Load more comments
+                                    <span id="remainingCount" class="bg-white/10 px-2 py-0.5 rounded text-xs">
+                                        <?php echo $totalComments - 10; ?>
+                                    </span>
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -735,99 +758,102 @@ layout('client/header');
     </div>
 </body>
 <script>
-// -----------------------------------------------------------------------
-// 1. CÁC HÀM XỬ LÝ GIAO DIỆN (UI)
-// -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // 1. CÁC HÀM XỬ LÝ GIAO DIỆN (UI)
+    // -----------------------------------------------------------------------
 
-function toggleSeasonDropdown() {
-    const dropdown = document.getElementById('season-list');
-    const arrow = document.getElementById('season-arrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        dropdown.classList.add('block', 'animate-fade-in-up');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        dropdown.classList.remove('block');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-// Sự kiện: Click ra ngoài thì tự đóng menu
-window.addEventListener('click', function(e) {
-    const container = document.getElementById('season-dropdown-container');
-    // Kiểm tra nếu container tồn tại (phòng trường hợp xem phim lẻ không có nút này)
-    if (container && !container.contains(e.target)) {
+    function toggleSeasonDropdown() {
         const dropdown = document.getElementById('season-list');
         const arrow = document.getElementById('season-arrow');
-        if (dropdown && !dropdown.classList.contains('hidden')) {
+
+        if (dropdown.classList.contains('hidden')) {
+            dropdown.classList.remove('hidden');
+            dropdown.classList.add('block', 'animate-fade-in-up');
+            arrow.style.transform = 'rotate(180deg)';
+        } else {
             dropdown.classList.add('hidden');
+            dropdown.classList.remove('block');
             arrow.style.transform = 'rotate(0deg)';
         }
     }
-});
 
-// -----------------------------------------------------------------------
-// 2. LOGIC CHỌN SEASON & GỌI API (AJAX)
-// -----------------------------------------------------------------------
-
-function selectSeason(seasonId, seasonName, element) {
-    // A. Cập nhật text hiển thị
-    const textElement = document.getElementById('current-season-text');
-    if (textElement) textElement.innerText = seasonName;
-
-    // B. Đóng menu
-    toggleSeasonDropdown();
-
-    // C. Cập nhật style cho item trong menu
-    const allItems = document.querySelectorAll('.season-item');
-    allItems.forEach(item => {
-        const checkIcon = item.querySelector('.season-check');
-        item.classList.remove('text-primary', 'font-bold', 'bg-white/5');
-        item.classList.add('text-gray-300', 'hover:bg-white/5');
-        if (checkIcon) checkIcon.classList.add('invisible');
+    // Sự kiện: Click ra ngoài thì tự đóng menu
+    window.addEventListener('click', function(e) {
+        const container = document.getElementById('season-dropdown-container');
+        // Kiểm tra nếu container tồn tại (phòng trường hợp xem phim lẻ không có nút này)
+        if (container && !container.contains(e.target)) {
+            const dropdown = document.getElementById('season-list');
+            const arrow = document.getElementById('season-arrow');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
     });
 
-    if (element) {
-        element.classList.remove('text-gray-300', 'hover:bg-white/5');
-        element.classList.add('text-primary', 'font-bold', 'bg-white/5');
-        const activeCheck = element.querySelector('.season-check');
-        if (activeCheck) activeCheck.classList.remove('invisible');
+    // -----------------------------------------------------------------------
+    // 2. LOGIC CHỌN SEASON & GỌI API (AJAX)
+    // -----------------------------------------------------------------------
+
+    function selectSeason(seasonId, seasonName, element) {
+        // A. Cập nhật text hiển thị
+        const textElement = document.getElementById('current-season-text');
+        if (textElement) textElement.innerText = seasonName;
+
+        // B. Đóng menu
+        toggleSeasonDropdown();
+
+        // C. Cập nhật style cho item trong menu
+        const allItems = document.querySelectorAll('.season-item');
+        allItems.forEach(item => {
+            const checkIcon = item.querySelector('.season-check');
+            item.classList.remove('text-primary', 'font-bold', 'bg-white/5');
+            item.classList.add('text-gray-300', 'hover:bg-white/5');
+            if (checkIcon) checkIcon.classList.add('invisible');
+        });
+
+        if (element) {
+            element.classList.remove('text-gray-300', 'hover:bg-white/5');
+            element.classList.add('text-primary', 'font-bold', 'bg-white/5');
+            const activeCheck = element.querySelector('.season-check');
+            if (activeCheck) activeCheck.classList.remove('invisible');
+        }
+
+        // D. Gọi Ajax load lại danh sách tập phim
+        loadEpisodes(seasonId);
     }
+    // -----------------------------------------------------------------------
+    // 3. LOGIC LẤY DANH SÁCH TẬP PHIM (AJAX)
+    // -----------------------------------------------------------------------
+    function loadEpisodes(seasonId) {
+        const listContainer = document.getElementById('episode-list');
+        if (!listContainer) return;
 
-    // D. Gọi Ajax load lại danh sách tập phim
-    loadEpisodes(seasonId);
-}
+        // 1. Hiện thông báo đang tải (dùng col-span-full để căn giữa khung grid)
+        listContainer.innerHTML =
+            '<div class="col-span-full text-white/50 text-sm py-8 text-center">Đang tải danh sách tập...</div>';
 
-function loadEpisodes(seasonId) {
-    const listContainer = document.getElementById('episode-list');
-    if (!listContainer) return;
+        // 2. Gọi fetch (DÙNG ĐÚNG LINK BẠN YÊU CẦU)
+        fetch('./api/get-episodes?season_id=' + seasonId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Lỗi kết nối server');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 3. Xóa nội dung loading
+                listContainer.innerHTML = '';
 
-    // 1. Hiện thông báo đang tải (dùng col-span-full để căn giữa khung grid)
-    listContainer.innerHTML =
-        '<div class="col-span-full text-white/50 text-sm py-8 text-center">Đang tải danh sách tập...</div>';
-
-    // 2. Gọi fetch (DÙNG ĐÚNG LINK BẠN YÊU CẦU)
-    fetch('./api/get-episodes?season_id=' + seasonId)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Lỗi kết nối server');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // 3. Xóa nội dung loading
-            listContainer.innerHTML = '';
-
-            if (data && data.length > 0) {
-                let html = '';
-                data.forEach(ep => {
-                    // --- Tạo HTML nút bấm Grid ---
-                    // Lưu ý: Sửa đường dẫn href theo đúng logic routing của bạn
-                    // Ví dụ: ?mod=client&act=watch&id=...
-                    html += `
-                            <a href="?mod=client&act=watch&id=${ep.id}"
+                if (data && data.length > 0) {
+                    let html = '';
+                    const hostUrl = '<?php echo _HOST_URL; ?>';
+                    data.forEach(ep => {
+                        // --- Tạo HTML nút bấm Grid ---
+                        // Lưu ý: Sửa đường dẫn href theo đúng logic routing của bạn
+                        // Ví dụ: ?mod=client&act=watch&id=...
+                        html += `
+                            <a href="${hostUrl}/watch?id=${ep.id}"
                                class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
                                 
                                 <span class="text-sm font-semibold truncate">
@@ -835,19 +861,474 @@ function loadEpisodes(seasonId) {
                                 </span>
                             </a>
                         `;
-                });
-                listContainer.innerHTML = html;
-            } else {
+                    });
+                    listContainer.innerHTML = html;
+                } else {
+                    listContainer.innerHTML =
+                        '<div class="col-span-full text-gray-400 text-sm py-4 text-center">Chưa có tập phim nào.</div>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
                 listContainer.innerHTML =
-                    '<div class="col-span-full text-gray-400 text-sm py-4 text-center">Chưa có tập phim nào.</div>';
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            listContainer.innerHTML =
-                '<div class="col-span-full text-red-400 text-sm py-4 text-center">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
+                    '<div class="col-span-full text-red-400 text-sm py-4 text-center">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
+            });
+    }
+</script>
+<!-- POST COMMENT -->
+<script>
+    function postComment(event) {
+        event.preventDefault(); // Chặn việc load lại trang
+
+        // Lấy nội dung
+        const contentInput = document.getElementById('commentContent');
+        const content = contentInput.value.trim();
+
+        if (!content) {
+            alert("Vui lòng nhập nội dung bình luận!");
+            return;
+        }
+
+        // Hiệu ứng nút bấm đang xử lý
+        const btnSubmit = event.target.querySelector('button[type="submit"]');
+        const oldText = btnSubmit.innerHTML;
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = 'Đang gửi...';
+
+        // Chuẩn bị dữ liệu gửi đi
+        const formData = new FormData(document.getElementById('commentForm'));
+
+        // Gọi API
+        fetch('/movie/api/post-comment', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 1. Xóa nội dung trong ô nhập
+                    contentInput.value = '';
+
+                    // 2. Chèn comment mới vào đầu danh sách (dùng JS render HTML)
+                    const list = document.getElementById('commentList');
+
+                    const newCommentHTML = `
+    <div class="flex gap-4 group animate-[fade-in_0.5s]" id="comment-${data.data.id}">
+        <div class="size-10 rounded-full border border-white/10 shrink-0 overflow-hidden">
+             <img src="${data.data.avatar}" class="w-full h-full object-cover">
+        </div>
+        <div class="flex-1 comment-body">
+            <div class="flex items-center justify-between mb-1">
+                <h4 class="text-white font-bold text-sm">${data.data.fullname}</h4> 
+                
+                <div class="flex items-center gap-3">
+                    <span class="text-white/40 text-xs">Vừa xong</span>
+                </div>
+            </div>
+            
+            <div class="flex text-yellow-500 text-[14px] mb-2">
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+            </div>
+
+            <p class="text-white/80 text-sm leading-relaxed">${data.data.content}</p>
+            
+            <div class="flex gap-4 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="text-white/40 hover:text-primary text-xs flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">thumb_up</span> Helpful
+                </button>
+                <button class="btn-reply text-white/40 hover:text-white text-xs flex items-center gap-1"
+                        data-id="${data.data.id}"
+                        data-name="${data.data.fullname}"
+                        data-level="0">
+                    Reply
+                </button>
+                <button onclick="deleteComment(${data.data.id})" class="text-white/20 hover:text-red-500 text-xs flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">delete</span> Xóa
+                </button>
+            </div>
+        </div>
+    </div>
+`;
+                    // Chèn vào đầu danh sách comment
+                    document.getElementById('comment-list').insertAdjacentHTML('afterbegin', newCommentHTML);
+
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            })
+            .finally(() => {
+                // Mở lại nút bấm
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = oldText;
+            });
+    }
+</script>
+<!-- showAllComments -->
+<script>
+    function showAllComments() {
+        // 1. Lấy tất cả các comment đang bị ẩn
+        const hiddenComments = document.querySelectorAll('.comment-item.hidden');
+
+        // 2. Lặp qua và xóa class 'hidden'
+        hiddenComments.forEach(function(item) {
+            item.classList.remove('hidden');
+            // Thêm hiệu ứng fade-in nhẹ cho mượt
+            item.classList.add('animate-[fade-in_0.5s]');
         });
-}
+
+        // 3. Ẩn nút Load More đi sau khi đã hiện hết
+        const btn = document.getElementById('btnLoadMore');
+        if (btn) {
+            btn.style.display = 'none';
+        }
+    }
+</script>
+<!-- deleteComment -->
+<script>
+    function deleteComment(id) {
+        if (!confirm('Bạn có chắc chắn muốn xóa bình luận này không?')) return;
+
+        // Gọi API xóa (Đảm bảo URL API của bạn đúng)
+        // Ví dụ dùng FormData
+        const formData = new FormData();
+        formData.append('comment_id', id);
+
+        fetch('/movie/api/delete-comment', { // Thay bằng đường dẫn API xóa thực tế của bạn
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+
+                    // --- XỬ LÝ GIAO DIỆN (FIX LỖI KHOẢNG TRẮNG) ---
+                    const commentItem = document.getElementById('comment-' + id);
+
+                    if (data.action === 'hide' && commentItem) {
+                        // TRƯỜNG HỢP: ADMIN ẨN BÌNH LUẬN (Soft Delete)
+                        const contentDiv = commentItem.querySelector('.text-white\\/80'); // Tìm div nội dung
+                        if (contentDiv) {
+                            contentDiv.innerText = data.new_content; // Cập nhật text
+                            contentDiv.classList.remove('text-white/80'); // Xóa màu trắng
+                            contentDiv.classList.add('text-red-500', 'italic'); // Thêm màu đỏ
+                        }
+                        return; // Kết thúc, không xóa phần tử
+                    }
+
+                    if (commentItem) {
+                        // 1. Lấy cấp độ của bình luận (Level)
+                        const level = parseInt(commentItem.getAttribute('data-level')) || 0;
+
+                        if (level === 0) {
+                            // 2. NẾU LÀ CHA (Level 0):
+                            // Tìm thẻ bao ngoài (wrapper) gần nhất để xóa toàn bộ luồng (gồm cả <hr> và comment con)
+                            const wrapper = commentItem.closest('.comment-thread-wrapper');
+                            if (wrapper) {
+                                wrapper.remove(); // Xóa sạch cả cụm
+                            } else {
+                                commentItem.remove(); // Dự phòng nếu không tìm thấy wrapper
+                            }
+                        } else {
+                            // 3. NẾU LÀ CON (Level > 0):
+                            // Tìm và xóa tất cả con cháu (các thẻ tiếp theo có level > level hiện tại)
+                            let nextSibling = commentItem.nextElementSibling;
+                            while (nextSibling) {
+                                // Kiểm tra xem sibling có phải là comment item không
+                                if (nextSibling.classList.contains('comment-item')) {
+                                    const nextLevel = parseInt(nextSibling.getAttribute('data-level')) || 0;
+
+                                    if (nextLevel > level) {
+                                        // Nếu level con > level cha -> Là con cháu -> Xóa
+                                        const nodeToRemove = nextSibling;
+                                        nextSibling = nextSibling.nextElementSibling; // Move next trước khi xóa
+                                        nodeToRemove.remove();
+                                    } else {
+                                        // Gặp level ngang bằng hoặc nhỏ hơn -> Hết nhánh con -> Dừng
+                                        break;
+                                    }
+                                } else {
+                                    // Gặp element khác (ví dụ hr, div khác...) -> Dừng hoặc bỏ qua
+                                    // Trong structure này, siblings đều là comment-item, nếu gặp cái khác thì break cho an toàn
+                                    break;
+                                }
+                            }
+
+                            // Xóa chính nó
+                            commentItem.remove();
+                        }
+                    }
+
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra khi xóa.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            });
+    }
+</script>
+<!-- REPLY COMMENT -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Lấy Movie ID từ URL (để gửi kèm khi reply)
+        // Giả sử URL là ...&id=123
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentMovieId = urlParams.get('id');
+
+        // 2. Event Delegation cho nút Reply và Cancel
+        document.body.addEventListener('click', function(e) {
+
+            // --- XỬ LÝ NÚT REPLY ---
+            const btn = e.target.closest('.btn-reply');
+            if (btn) {
+                e.preventDefault();
+                const commentId = btn.getAttribute('data-id');
+                const parentName = btn.getAttribute('data-name');
+                const parentLevel = parseInt(btn.getAttribute('data-level')) || 0;
+
+                const commentItem = document.getElementById('comment-' + commentId);
+                const contentBody = commentItem.querySelector('.comment-body');
+                const existingForm = contentBody.querySelector('.reply-form-wrapper');
+
+                if (existingForm) {
+                    existingForm.remove();
+                } else {
+                    // HTML Form: Thêm onsubmit và hidden input movie_id
+                    const replyFormHtml = `
+                    <div class="reply-form-wrapper mt-4 animate-fade-in-down ml-2">
+                        <form onsubmit="handleReplySubmit(event, this)" class="flex flex-col gap-2">
+                            <input type="hidden" name="parent_id" value="${commentId}">
+                            <input type="hidden" name="movie_id" value="${currentMovieId}">
+                            <input type="hidden" name="reply_to_name" value="${parentName}"> <textarea name="content" rows="2" 
+                                class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-primary placeholder-white/20 transition-all"
+                                placeholder="Trả lời ${parentName}..."></textarea>
+                            
+                            <div class="flex justify-end gap-2">
+                                <button type="button" class="btn-cancel-reply text-xs text-white/40 hover:text-white px-3 py-1">Hủy</button>
+                                <button type="submit" class="bg-primary hover:bg-primary/80 text-white text-xs font-bold px-4 py-2 rounded transition-colors">
+                                    Gửi trả lời
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+
+                    contentBody.insertAdjacentHTML('beforeend', replyFormHtml);
+
+                    const textarea = contentBody.querySelector('textarea');
+                    if (textarea) textarea.focus();
+                }
+            }
+
+            // --- XỬ LÝ NÚT HỦY ---
+            if (e.target && e.target.classList.contains('btn-cancel-reply')) {
+                e.preventDefault();
+                const formWrapper = e.target.closest('.reply-form-wrapper');
+                if (formWrapper) {
+                    formWrapper.remove();
+                }
+            }
+        });
+    });
+
+    // 3. Hàm xử lý gửi form (AJAX)
+    function handleReplySubmit(e, form) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const btnSubmit = form.querySelector('button[type="submit"]');
+        const parentId = formData.get('parent_id');
+        const replyToName = formData.get('reply_to_name');
+
+        // Kiểm tra nội dung rỗng
+        const content = formData.get('content').trim();
+        if (!content) {
+            alert('Vui lòng nhập nội dung bình luận!');
+            return;
+        }
+
+        // UI Loading
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = 'Đang gửi...';
+
+        fetch('/movie/api/reply-comment', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    // Xóa form
+                    form.closest('.reply-form-wrapper').remove();
+                    // Vẽ comment mới
+                    renderReplyItem(res.data, parentId, replyToName);
+                } else {
+                    alert(res.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Lỗi kết nối server: ' + err.message);
+            })
+            .finally(() => {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = 'Gửi trả lời';
+                }
+            });
+    }
+
+    // 4. Hàm vẽ giao diện Reply mới
+    function renderReplyItem(data, parentId, parentName = null) {
+        // Tìm đúng comment cha để chèn vào sau nó
+        // Lưu ý: Nếu muốn reply nằm thụt vào, dùng margin-left (ml-12)
+        const parentComment = document.getElementById('comment-' + parentId);
+
+        // Lấy level của cha từ thuộc tính data-level
+        let parentLevel = 0;
+        if (parentComment.hasAttribute('data-level')) {
+            parentLevel = parseInt(parentComment.getAttribute('data-level'));
+        }
+        const newLevel = parentLevel + 1;
+
+        // Tạo Style thụt lề dựa trên Level mới
+        // Mỗi cấp thụt vào 48px (tương đương 3rem hoặc class ml-12)
+        const marginLeftPx = newLevel * 48;
+        const styleIndent = `margin-left: ${marginLeftPx}px`;
+
+        const nameTag = parentName ?
+            `<span class="inline-flex items-center bg-white/10 hover:bg-white/10 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-white font-bold text-xs mr-1 transition-colors cursor-pointer">@${parentName}</span>` :
+            '';
+
+        const html = `
+        <div class="flex gap-4 group animate-fade-in-down comment-item mt-4 pl-4 border-l-2 border-white/10" 
+             id="comment-${data.id}" 
+             data-level="${newLevel}"
+             style="${styleIndent}"> 
+            
+            <img src="${data.avartar || 'https://i.pravatar.cc/150?u=default'}" class="size-8 rounded-full border border-white/10 shrink-0 object-cover">
+            
+            <div class="flex-1 comment-body">
+                <div class="flex items-center gap-2 mb-1">
+                    <h4 class="text-white font-bold text-xs">${data.fullname}</h4>
+                    <span class="text-white/40 text-[10px]">Vừa xong</span>
+                </div>
+                
+                <div class="text-white/80 text-sm leading-relaxed">
+                    ${nameTag}${data.content}
+                </div>
+
+                <div class="flex gap-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button class="text-white/40 hover:text-primary text-xs flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">thumb_up</span> Helpful
+                    </button>
+                    <button class="btn-reply text-white/40 hover:text-white text-xs flex items-center gap-1"
+                            data-id="${data.id}"
+                            data-name="${data.fullname}"
+                            data-level="${newLevel}">
+                        Reply
+                    </button>
+
+                    <button onclick="deleteComment(${data.id})" class="text-white/20 hover:text-red-500 text-xs flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[12px]">delete</span> Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        // Insert trực tiếp sau comment cha
+        parentComment.insertAdjacentHTML('afterend', html);
+    }
+
+    function loadMoreComments() {
+        // 1. Lấy tất cả các luồng đang bị ẩn
+        const hiddenThreads = document.querySelectorAll('.comment-hidden-thread');
+
+        // 2. Hiển thị 10 luồng tiếp theo
+        let count = 0;
+        hiddenThreads.forEach(thread => {
+            if (count < 10) {
+                thread.classList.remove('hidden', 'comment-hidden-thread'); // Xóa class ẩn
+                thread.classList.add('animate-fade-in-up'); // Thêm hiệu ứng hiện ra cho đẹp
+                count++;
+            }
+        });
+
+        // 3. Cập nhật số lượng còn lại trên nút bấm
+        const remaining = document.querySelectorAll('.comment-hidden-thread').length;
+        const countSpan = document.getElementById('remainingCount');
+
+        if (remaining > 0) {
+            if (countSpan) countSpan.innerText = remaining;
+        } else {
+            // Nếu hết comment ẩn rồi thì xóa nút Load more
+            const btnContainer = document.getElementById('loadMoreContainer');
+            if (btnContainer) btnContainer.remove();
+        }
+    }
+
+    function toggleLike(commentId, btnElement) {
+        // Chặn spam click
+        if (btnElement.classList.contains('processing')) return;
+        btnElement.classList.add('processing');
+
+        const formData = new FormData();
+        formData.append('comment_id', commentId);
+
+        fetch('/movie/api/like-comment', { // Đảm bảo route này trỏ đúng vào function likeCommentApi trong Controller
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const icon = btnElement.querySelector('.material-symbols-outlined');
+                    const textSpan = btnElement.querySelector('.like-text');
+                    const countSpan = btnElement.querySelector('.like-count');
+
+                    if (data.action === 'liked') {
+                        // Cập nhật giao diện: Đã Like
+                        btnElement.classList.remove('text-white/40');
+                        btnElement.classList.add('text-primary');
+                        textSpan.innerText = 'Liked';
+                    } else {
+                        // Cập nhật giao diện: Bỏ Like
+                        btnElement.classList.add('text-white/40');
+                        btnElement.classList.remove('text-primary');
+                        textSpan.innerText = 'Helpful';
+                    }
+
+                    // Cập nhật số lượng
+                    if (data.likes > 0) {
+                        countSpan.innerText = '(' + data.likes + ')';
+                        countSpan.classList.remove('hidden');
+                    } else {
+                        countSpan.classList.add('hidden');
+                    }
+                } else {
+                    alert(data.message);
+                    // Nếu lỗi chưa đăng nhập -> chuyển hướng login (tùy chọn)
+                    if (data.message.includes('đăng nhập')) {
+                        window.location.href = '/login';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            })
+            .finally(() => {
+                btnElement.classList.remove('processing');
+            });
+    }
 </script>
 
 </html>

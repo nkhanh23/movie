@@ -73,12 +73,11 @@ class AuthController extends baseController
                                 setSessionFlash('active_tab', 'login');
                             } else {
                                 $tokenLogin = sha1(uniqid() . time());
-                                $data = [
+                                $dataToken = [
                                     'user_id' => $user_id,
-                                    'created_at' => date("Y:m:d H:i:s"),
                                     'token' => $tokenLogin
                                 ];
-                                $checkInsert = $this->coreModel->insert('token_login', $data);
+                                $checkInsert = $this->coreModel->insert('token_login', $dataToken);
                                 if ($checkInsert) {
                                     if ($checkStatus['group_id'] == 1) {
                                         setSession('tokenLogin', $tokenLogin);
@@ -88,7 +87,7 @@ class AuthController extends baseController
                                         reload('/admin/dashboard');
                                     }
                                 } else {
-                                    setSessionFlash('msg', 'Tài khoản của bạn đang đăng nhập ở nơi khác');
+                                    setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
                                     setSessionFlash('msg_type', 'danger');
                                     setSessionFlash('active_tab', 'login');
                                 }
@@ -242,35 +241,49 @@ class AuthController extends baseController
             $token = $this->client->fetchAccessTokenWithAuthCode($_GET['code']);
             if (!isset($token['error'])) {
                 $this->client->setAccessToken($token['access_token']);
-                //khởi tạo service OAuth2
                 $google_auth = new Google\Service\Oauth2($this->client);
-                //gọi api lấy ìno
                 $google_account_info = $google_auth->userinfo->get();
 
-                // trích xuất dữ liệu
                 $email = $google_account_info->email;
                 $name = $google_account_info->name;
                 $google_id = $google_account_info->id;
                 $avartar = $google_account_info->picture;
 
-                //Kiểm tra
                 $checkUser = $this->coreModel->getOne("SELECT * FROM users WHERE email = '$email'");
+
                 if (!empty($checkUser)) {
-                    //Nếu có dữ liệu thì cập nhật thêm google_id
+                    // --- TRƯỜNG HỢP 1: TÀI KHOẢN ĐÃ TỒN TẠI ---
+
+                    // Cập nhật Google ID nếu chưa có
                     if (empty($checkUser['google_id'])) {
-                        $data = [
-                            'google_id' => $google_id
-                        ];
+                        $data = ['google_id' => $google_id];
                         $condition = 'id=' . $checkUser['id'];
                         $this->coreModel->update('users', $data, $condition);
                     }
+
                     $user_id = $checkUser['id'];
+
+                    // 1. Kiểm tra xem user này đã đăng nhập ở đâu chưa
+                    $checkAlready = $this->coreModel->getRows("SELECT * FROM token_login WHERE user_id = $user_id");
+
+                    if ($checkAlready > 0) {
+                        // 2. NẾU ĐÃ ĐĂNG NHẬP: Báo lỗi và quay về trang login (giống hàm login)
+                        setSessionFlash('msg', 'Tài khoản đang được đăng nhập ở 1 nơi khác, vui lòng thử lại sau.');
+                        setSessionFlash('msg_type', 'danger');
+                        setSessionFlash('active_tab', 'login');
+                        reload('/login');
+                        return; // Dừng code tại đây, không chạy xuống phần insert bên dưới
+                    }
+
+                    // 3. NẾU CHƯA ĐĂNG NHẬP: Tiến hành tạo token và đăng nhập
                     $tokenLogin = sha1(uniqid() . time());
                     $dataLogin = [
                         'user_id' => $user_id,
                         'token' => $tokenLogin
                     ];
+
                     $checkInsert = $this->coreModel->insert('token_login', $dataLogin);
+
                     if ($checkInsert) {
                         if ($checkUser['group_id'] == 1) {
                             setSession('tokenLogin', $tokenLogin);
@@ -283,36 +296,47 @@ class AuthController extends baseController
                         setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
                         setSessionFlash('msg_type', 'danger');
                         setSessionFlash('active_tab', 'login');
+                        reload('/login');
                     }
                 } else {
+                    // --- TRƯỜNG HỢP 2: ĐĂNG KÝ MỚI (User chưa tồn tại) ---
+                    // Phần này giữ nguyên vì user mới chắc chắn chưa đăng nhập ở đâu
                     $dataRegister = [
                         'fullname' => $name,
                         'email' => $email,
-                        'password' => null,
+                        'password' => null, // Hoặc password random
                         'status' => 1,
                         'group_id' => 1,
                         'avartar' => $avartar,
-                        'created_at' => date('Y:m:d H:i:s')
+                        'created_at' => date('Y:m:d H:i:s'),
+                        'google_id' => $google_id
                     ];
+
                     $insertStatus = $this->coreModel->insert('users', $dataRegister);
+
                     if ($insertStatus) {
-                        $newUser = $this->coreModel->getLastID();
-                        $user_id = $newUser['id'];
-                        $tokenLogin = sha1(uniqid() . time());
-                        $dataLogin = [
-                            'user_id' => $user_id,
-                            'token' => $tokenLogin
-                        ];
-                        $checkInsertRegister = $this->coreModel->insert('token_login', $dataLogin);
-                        if ($checkInsertRegister) {
-                            if ($newUser['group_id'] == 1) {
+                        // Lưu ý: Nên dùng cách query lại email như đã bàn trước đó để an toàn hơn getLastID()
+                        $newUser = $this->coreModel->getOne("SELECT * FROM users WHERE email = '$email'");
+
+                        if (!empty($newUser)) {
+                            $user_id = $newUser['id'];
+                            $tokenLogin = sha1(uniqid() . time());
+                            $dataLogin = [
+                                'user_id' => $user_id,
+                                'token' => $tokenLogin
+                            ];
+
+                            $checkInsertRegister = $this->coreModel->insert('token_login', $dataLogin);
+
+                            if ($checkInsertRegister) {
                                 setSession('tokenLogin', $tokenLogin);
                                 reload('/');
+                            } else {
+                                setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
+                                setSessionFlash('msg_type', 'danger');
+                                setSessionFlash('active_tab', 'register');
+                                reload('/login');
                             }
-                        } else {
-                            setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
-                            setSessionFlash('msg_type', 'danger');
-                            setSessionFlash('active_tab', 'register');
                         }
                     }
                 }

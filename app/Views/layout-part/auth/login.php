@@ -16,11 +16,14 @@ $oldData = getSessionFlash('oldData');
 $errorsLogin    = $activeTab === 'login'  ? $errorsArr : [];
 $errorsRegister = $activeTab === 'signup' ? $errorsArr : [];
 ?>
-<a href="https://front.codes/" class="logo" target="_blank">
-    <img src="https://assets.codepen.io/1462889/fcy.png" alt="">
-</a>
 
 <div class="section">
+    <div class="video-background-holder">
+        <div class="video-overlay"></div>
+        <video autoplay muted playsinline id="bg-video">
+            <source src="<?php echo _HOST_URL_PUBLIC; ?>/video/logo_animation_5.mp4" type="video/mp4">
+        </video>
+    </div>
     <div class="container">
         <div class="row full-height justify-content-center">
             <div class="col-12 text-center align-self-center py-5">

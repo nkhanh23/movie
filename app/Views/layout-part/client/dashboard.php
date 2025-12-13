@@ -24,7 +24,7 @@ layout('client/header');
     <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent"></div>
 
 
-    <div class="relative z-10 px-4 md:px-12 w-full max-w-5xl mt-16 flex flex-col justify-center h-full pb-12">
+    <div class="relative z-10 px-4 md:px-12 w-full max-w-5xl mt-32 flex flex-col justify-center h-full pb-12">
         <h2 id="heroTitle" class="text-3xl md:text-6xl lg:text-7xl font-bold mb-2 drop-shadow-xl text-white leading-tight uppercase font-heading"><?php echo $heroFirst['tittle']; ?></h2>
         <h3 id="heroSubtitle" class="text-xl md:text-2xl text-yellow-500 font-semibold mb-6 drop-shadow-md"><?php echo $heroFirst['original_tittle']; ?></h3>
 

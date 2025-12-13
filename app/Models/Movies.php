@@ -185,11 +185,17 @@ class Movies extends CoreModel
     {
         return $this->getOne("SELECT m.*,
         GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
+        q.name as quality_name,
+        c.name as country_name,
+        vs.source_url as source_url,
         mt.name as type_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
+        LEFT JOIN qualities q ON m.quality_id = q.id
+        LEFT JOIN countries c ON m.country_id = c.id
+        LEFT JOIN video_sources vs ON m.video_source_id = vs.id
         WHERE m.$condition");
     }
 
@@ -217,5 +223,36 @@ class Movies extends CoreModel
         FROM movies m
         LEFT JOIN video_sources vs ON m.video_source_id = vs.id 
         WHERE m.id = '$id'");
+    }
+
+    public function getSimilarMovies($currentMovieId, $limit = 6)
+    {
+        // 1. Lấy danh sách phim có chung genre_id với phim hiện tại
+        // 2. Loại trừ phim hiện tại (m.id != $currentMovieId)
+        // 3. GROUP BY để tránh trùng lặp phim
+        // 4. Lấy kèm tên thể loại (GROUP_CONCAT) để hiển thị lên card
+
+        $sql = "SELECT m.*, 
+                GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') as genre_name,
+                mt.name as type_name
+                FROM movies m
+                JOIN movie_genres mg ON m.id = mg.movie_id
+                LEFT JOIN genres g ON mg.genre_id = g.id
+                LEFT JOIN movie_types mt ON m.id = mt.id
+                WHERE m.id != $currentMovieId 
+                AND m.id IN (
+                    SELECT DISTINCT sub_mg.movie_id 
+                    FROM movie_genres sub_mg 
+                    WHERE sub_mg.genre_id IN (
+                        SELECT current_mg.genre_id 
+                        FROM movie_genres current_mg 
+                        WHERE current_mg.movie_id = $currentMovieId
+                    )
+                )
+                GROUP BY m.id
+                ORDER BY m.created_at DESC
+                LIMIT $limit";
+
+        return $this->getAll($sql);
     }
 }

@@ -11,8 +11,8 @@ $router->get('/active', 'AuthController@active');
 // ADMIN POST 
 $router->get('/admin/film/list', 'MoviesController@list');
 
-$router->get('/admin/film/view', 'MoviesController@showView');
-$router->post('/admin/film/view', 'MoviesController@view');
+$router->get('/watch', 'WatchDetailController@showWatch');
+$router->post('/watch', 'WatchDetailController@watch');
 
 $router->get('/admin/film/edit', 'MoviesController@showEdit');
 $router->post('/admin/film/edit', 'MoviesController@edit');
@@ -99,3 +99,36 @@ $router->get('/detail', 'MovieDetailController@showDetail');
 $router->post('/detail', 'MovieDetailController@detail');
 
 $router->get('/api/get-episodes', 'MovieDetailController@getEpisodesApi');
+
+$router->post('/api/post-comment', 'MovieDetailController@postCommentApi');
+$router->post('/api/delete-comment', 'MovieDetailController@deleteCommentApi');
+$router->post('/api/reply-comment', 'MovieDetailController@replyCommentApi');
+$router->post('/api/like-comment', 'MovieDetailController@likeCommentApi');
+
+// PAGE WATCH
+$router->get('/watch', 'WatchDetailController@showWatch');
+$router->post('/watch', 'WatchDetailController@watch');
+
+// PAGE PERSON
+$router->get('/dien_vien', 'PersonDetailController@showPerson');
+
+//PAGE SEARCH
+$router->get('/tim_kiem', 'HomeController@search');
+
+//PAGE PHIM LE
+$router->get('/phim-le', 'HomeController@phimLe');
+
+//PAGE PHIM BO
+$router->get('/phim-bo', 'HomeController@phimBo');
+
+//PAGE PHIM CHIEU RAP
+$router->get('/phim-chieu-rap', 'HomeController@phimChieuRap');
+
+//PAGE THE LOAI
+$router->get('/the-loai', 'HomeController@theLoai');
+
+//PAGE QUOC GIA
+$router->get('/quoc-gia', 'HomeController@quocGia');
+
+//PAGE DIEN VIEN
+$router->get('/dien-vien', 'HomeController@dienVien');

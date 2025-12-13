@@ -409,8 +409,8 @@ class MoviesController extends baseController
 
                     // 2. Thêm dữ liệu mới
                     if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
-                        $persons = $filter['cast_person']; // Mảng ID diễn viên
-                        $roles   = $filter['cast_role'];   // Mảng ID vai trò tương ứng
+                        $persons = $filter['cast_person'];
+                        $roles   = $filter['cast_role'];
 
                         for ($i = 0; $i < count($persons); $i++) {
                             if (!empty($persons[$i]) && !empty($roles[$i])) {

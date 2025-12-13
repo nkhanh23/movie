@@ -273,8 +273,12 @@ $errors = getSessionFlash('errors');
                                         <select name="cast_role[]" class="form-control">
                                             <option value="">-- Chọn vai trò --</option>
                                             <?php foreach ($getAllRoles as $item): ?>
-                                                <option value="<?php echo $r['id']; ?>"
-                                                    <?php echo ($item['id'] == $cast['role_id']) ? 'selected' : ''; ?>>
+                                                <option value="<?php echo $item['id']; ?>"
+                                                    <?php
+                                                    if (isset($cast['role_id']) && $item['id'] == $cast['role_id']) {
+                                                        echo 'selected';
+                                                    }
+                                                    ?>>
                                                     <?php echo $item['name']; ?>
                                                 </option>
                                             <?php endforeach; ?>

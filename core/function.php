@@ -253,3 +253,39 @@ function convertMinutesToHours($minutes)
     $minutes = $minutes % 60;
     return $hours . 'h ' . $minutes . 'm';
 }
+
+// Check login
+function isLogin()
+{
+    // Lấy token từ Session
+    $tokenLogin = getSession('tokenLogin');
+
+    if (empty($tokenLogin)) {
+        return false;
+    }
+
+    $model = new CoreModel();
+    // Lấy thông tin User tương ứng với Token đó
+    $sql = "SELECT u.* FROM token_login t 
+            JOIN users u ON t.user_id = u.id 
+            WHERE t.token = '$tokenLogin' AND u.status = 1";
+
+    $user = $model->getOne($sql);
+
+    if (!empty($user)) {
+        // Lưu thông tin user vào Session Auth để dùng lại ở các trang khác
+        $_SESSION['auth'] = [
+            'id' => $user['id'],
+            'fullname' => $user['fullname'],
+            'email' => $user['email'],
+            'group_id' => $user['group_id'],
+            'avatar' => $user['avartar']
+        ];
+        return true;
+    } else {
+        // Token không hợp lệ hoặc user bị khóa -> Xóa session
+        removeSession('tokenLogin');
+        removeSession('auth');
+        return false;
+    }
+}

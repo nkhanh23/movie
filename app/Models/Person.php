@@ -7,6 +7,11 @@ class Person extends CoreModel
     }
 
     // --------------------------------- ADMIN ----------------------
+    public function getAllPerson($sql)
+    {
+        return $this->getAll($sql);
+    }
+
     public function getAllPersonWithCount($sql)
     {
         return $this->countRows($sql);
@@ -90,5 +95,41 @@ class Person extends CoreModel
         return $this->getAll("SELECT id, name 
         FROM persons 
         ORDER BY name ASC");
+    }
+
+    // Hàm lấy thông tin chi tiết của một diễn viên
+    public function getPersonDetail($id)
+    {
+        return $this->getOne("SELECT p.*, COUNT(mp.movie_id) as count_movies, GROUP_CONCAT( DISTINCT pr.name SEPARATOR ', ') as role_name
+        FROM persons p
+        LEFT JOIN movie_person mp ON p.id = mp.person_id
+        LEFT JOIN person_roles pr ON pr.id = mp.role_id
+        WHERE p.id = $id");
+    }
+
+    // Hàm lấy số lượng phim của một diễn viên
+    public function countPersonMovies($id)
+    {
+        return $this->getRows("SELECT m.*
+        FROM movies m
+        JOIN movie_person mp ON m.id = mp.movie_id
+        WHERE mp.person_id = $id");
+    }
+
+    // Hàm lấy danh sách phim của một diễn viên
+    public function getPersonMovies($id, $offset = 0, $perPage = 10)
+    {
+        $sql = "SELECT m.*
+                FROM movies m
+                JOIN movie_person mp ON m.id = mp.movie_id
+                LEFT JOIN person_roles pr ON mp.role_id = pr.id
+                WHERE mp.person_id = $id
+                ORDER BY m.id DESC";
+
+        if ($perPage > 0) {
+            $sql .= " LIMIT " . $offset . ", " . $perPage;
+        }
+
+        return $this->getAll($sql);
     }
 }
