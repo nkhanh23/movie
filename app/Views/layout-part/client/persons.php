@@ -9,109 +9,11 @@ layout('client/header');
 // echo '</pre>';
 // die();
 ?>
-<!DOCTYPE html>
-
-<html class="dark" lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>StreamFlow - Actor Profile</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <!-- Tailwind Config -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#D96C16", // Cam Cháy (Burnt Orange)
-                        "secondary": "#F29F05", // Vàng Mật Ong (Honey/Amber)
-                        "highlight": "#F2CB05", // Vàng Sáng (Bright Yellow)
-                        "background-light": "#f5f7f8",
-                        "background-dark": "#050505", // Black
-                        "glass-surface": "rgba(30, 41, 59, 0.4)",
-                        "glass-border": "rgba(255, 255, 255, 0.08)",
-                        "glass-highlight": "rgba(255, 255, 255, 0.03)",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "full": "9999px"
-                    },
-                    backgroundImage: {
-                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-                    },
-                    boxShadow: {
-                        'neon': '0 0 10px rgba(217, 108, 22, 0.3), 0 0 20px rgba(217, 108, 22, 0.1)',
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        /* Custom Glassmorphism Styles */
-        body {
-            background-color: #050505;
-            background-image:
-                radial-gradient(circle at 15% 10%, rgba(217, 108, 22, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 85% 60%, rgba(242, 159, 5, 0.1) 0%, transparent 45%),
-                radial-gradient(circle at 50% 110%, rgba(217, 108, 22, 0.1) 0%, transparent 40%);
-            background-attachment: fixed;
-        }
-
-        .glass-panel {
-            background-color: rgba(26, 26, 26, 0.6);
-            /* #1A1A1A with 60% opacity */
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            /* For Safari */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(217, 108, 22, 0.5);
-            box-shadow: 0 0 15px rgba(217, 108, 22, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .text-glow {
-            text-shadow: 0 0 20px rgba(217, 108, 22, 0.3);
-        }
-
-        /* Abstract Particles/Decorations */
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(1px);
-            opacity: 0.3;
-            z-index: -1;
-        }
-    </style>
-</head>
 
 <body class="font-display text-white overflow-x-hidden min-h-screen relative">
     <div class="layout-container flex flex-col min-h-screen pt-32">
         <div class="flex-1 flex justify-center py-8 px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col max-w-6xl w-full gap-8">
+            <div class="flex flex-col max-w-[1920px] w-full gap-8">
                 <!-- Actor Profile Hero -->
                 <section class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden group">
                     <!-- Decorational BG glow -->
@@ -204,7 +106,7 @@ layout('client/header');
                             <h2 class="text-2xl font-bold text-white tracking-wide">Danh sách phim</h2>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
                         <!-- Movie Card -->
                         <?php foreach ($getPersonMovies as $movie): ?>
                             <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">

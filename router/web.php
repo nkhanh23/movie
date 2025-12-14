@@ -116,19 +116,19 @@ $router->get('/dien_vien', 'PersonDetailController@showPerson');
 $router->get('/tim_kiem', 'HomeController@search');
 
 //PAGE PHIM LE
-$router->get('/phim-le', 'HomeController@phimLe');
+$router->get('/phim_le', 'HomeController@phimLe');
 
 //PAGE PHIM BO
-$router->get('/phim-bo', 'HomeController@phimBo');
+$router->get('/phim_bo', 'HomeController@phimBo');
 
 //PAGE PHIM CHIEU RAP
-$router->get('/phim-chieu-rap', 'HomeController@phimChieuRap');
+$router->get('/phim_chieu_rap', 'HomeController@phimChieuRap');
 
 //PAGE THE LOAI
-$router->get('/the-loai', 'HomeController@theLoai');
+$router->get('/the_loai', 'HomeController@theLoai');
 
 //PAGE QUOC GIA
-$router->get('/quoc-gia', 'HomeController@quocGia');
+$router->get('/quoc_gia', 'HomeController@quocGia');
 
 //PAGE DIEN VIEN
-$router->get('/dien-vien', 'HomeController@dienVien');
+$router->get('/dien_vien', 'HomeController@dienVien');

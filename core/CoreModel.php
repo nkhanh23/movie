@@ -7,18 +7,26 @@ class CoreModel
         $this->connect = Database::connectPDO();
     }
 
-    public function getAll($sql)
+    public function getAll($sql, $params = [])
     {
         $stm = $this->connect->prepare($sql);
-        $stm->execute();
+        $stm->execute($params);
         $result = $stm->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
-    public function getRows($sql)
+    public function exactlyCount($sql, $params = [])
+    {
+        $stmtCount = $this->connect->prepare($sql);
+        $stmtCount->execute($params);
+        $result = $stmtCount->fetchColumn();
+        return $result;
+    }
+
+    public function getRows($sql, $params = [])
     {
         $stm = $this->connect->prepare($sql);
-        $stm->execute();
+        $stm->execute($params);
         $result = $stm->rowCount();
         return $result;
     }

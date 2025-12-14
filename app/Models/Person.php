@@ -12,6 +12,27 @@ class Person extends CoreModel
         return $this->getAll($sql);
     }
 
+
+    public function getPersonsByRole($roleId, $offset, $perPage)
+    {
+        $sql = "SELECT DISTINCT p.* FROM movie_person mp
+                JOIN persons p ON mp.person_id = p.id 
+                WHERE mp.role_id = ?
+                ORDER BY p.id DESC
+                LIMIT $perPage OFFSET $offset";
+
+        return $this->getAll($sql, [$roleId]);
+    }
+
+    public function countPersonsByRole($roleId)
+    {
+        $sql = "SELECT DISTINCT p.id FROM movie_person mp
+                JOIN persons p ON mp.person_id = p.id 
+                WHERE mp.role_id = ?";
+
+        return $this->getRows($sql, [$roleId]);
+    }
+
     public function getAllPersonWithCount($sql)
     {
         return $this->countRows($sql);

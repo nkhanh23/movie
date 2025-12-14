@@ -289,3 +289,27 @@ function isLogin()
         return false;
     }
 }
+
+// Hàm nối ? và tham số trên url
+function getUrlParams($key, $value)
+{
+    // Lấy tất cả tham số trên url
+    $params = $_GET;
+
+    //Kiểm tra giá trị có rỗng hay null không
+    if ($value === '' || $value === null) {
+        // nếu rỗng hoặc null thì xóa tham số đó
+        unset($params[$key]);
+    } else {
+        // nếu không rỗng hoặc null thì gán giá trị vào tham số
+        $params[$key] = $value;
+    }
+
+    //Ví dụ đang ở trang 10 phim hành động mà giờ chọn lại phim tình cảm thì phải set về lại page = 1
+    if ($key !== 'page') {
+        unset($params['page']);
+    }
+
+    //Nối lại url
+    return '?' . http_build_query($params);
+}

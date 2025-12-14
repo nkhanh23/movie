@@ -1,5 +1,11 @@
 <?php
 $is_logged = isLogin();
+
+// Fetch genres and countries for dropdown
+$genresModel = new Genres();
+$moviesModel = new Movies();
+$allGenres = $genresModel->getAllGenres();
+$allCountries = $moviesModel->getAllCountries();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -11,6 +17,43 @@ $is_logged = isLogin();
   <title>Phê Phim</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#D96C16", // Cam Cháy (Burnt Orange)
+            "secondary": "#F29F05", // Vàng Mật Ong (Honey/Amber)
+            "highlight": "#F2CB05", // Vàng Sáng (Bright Yellow)
+            "background-light": "#f5f7f8",
+            "background-dark": "#050505", // Black
+            "glass-surface": "rgba(30, 41, 59, 0.4)",
+            "glass-border": "rgba(255, 255, 255, 0.08)",
+            "glass-highlight": "rgba(255, 255, 255, 0.03)",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+          },
+          boxShadow: {
+            'neon': '0 0 10px rgba(217, 108, 22, 0.3), 0 0 20px rgba(217, 108, 22, 0.1)',
+            'neon-sm': '0 0 8px rgba(217, 108, 22, 0.5)',
+            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+          }
+        },
+      },
+    }
+  </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
@@ -43,12 +86,47 @@ $is_logged = isLogin();
 
       <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300 ml-4">
         <a href="<?php echo _HOST_URL ?>" class="hover:text-white transition-colors text-white font-bold">Trang chủ</a>
-        <a href="<?php echo _HOST_URL ?>/phim-le" class="hover:text-white transition-colors">Phim lẻ</a>
-        <a href="<?php echo _HOST_URL ?>/phim-bo" class="hover:text-white transition-colors">Phim bộ</a>
-        <a href="#" class="hover:text-white transition-colors">Phim chiếu rạp</a>
-        <a href="#" class="hover:text-white transition-colors">Thể loại</a>
-        <a href="#" class="hover:text-white transition-colors">Quốc gia</a>
-        <a href="#" class="hover:text-white transition-colors">Diễn viên</a>
+        <a href="<?php echo _HOST_URL ?>/phim_le" class="hover:text-white transition-colors">Phim lẻ</a>
+        <a href="<?php echo _HOST_URL ?>/phim_bo" class="hover:text-white transition-colors">Phim bộ</a>
+        <a href="<?php echo _HOST_URL ?>/phim_chieu_rap" class="hover:text-white transition-colors">Phim chiếu rạp</a>
+
+        <!-- Genres Dropdown -->
+        <div class="relative group">
+          <button class="hover:text-white transition-colors flex items-center gap-1">
+            Thể loại
+            <i class="fa-solid fa-caret-down text-xs"></i>
+          </button>
+          <div class="absolute left-0 top-full pt-2 hidden group-hover:block w-[800px] glass-panel rounded-xl p-4 border border-white/10 shadow-neon">
+            <div class="grid grid-cols-6 gap-2">
+              <?php foreach ($allGenres as $genre): ?>
+                <a href="<?php echo _HOST_URL ?>/the_loai?id=<?php echo $genre['id'] ?>"
+                  class="px-3 py-2 rounded-lg text-xs hover:bg-primary/20 hover:text-primary transition-all border border-transparent hover:border-primary/30">
+                  <?php echo $genre['name'] ?>
+                </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+
+        <!-- Countries Dropdown -->
+        <div class="relative group">
+          <button class="hover:text-white transition-colors flex items-center gap-1">
+            Quốc gia
+            <i class="fa-solid fa-caret-down text-xs"></i>
+          </button>
+          <div class="absolute left-0 top-full pt-2 hidden group-hover:block w-[650px] glass-panel rounded-xl p-4 border border-white/10 shadow-neon">
+            <div class="grid grid-cols-4 gap-2">
+              <?php foreach ($allCountries as $country): ?>
+                <a href="<?php echo _HOST_URL ?>/quoc_gia?id=<?php echo $country['id'] ?>"
+                  class="px-3 py-2 rounded-lg text-xs hover:bg-primary/20 hover:text-primary transition-all border border-transparent hover:border-primary/30">
+                  <?php echo $country['name'] ?>
+                </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+
+        <a href="<?php echo _HOST_URL ?>/dien_vien" class="hover:text-white transition-colors">Diễn viên</a>
 
 
       </div>

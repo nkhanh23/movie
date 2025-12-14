@@ -90,46 +90,126 @@ class HomeController extends baseController
         $this->renderView('/layout-part/client/search', $data);
     }
 
-    public function filter()
+    private function renderMoviesByType($typeId, $genresId = null, $countriesId = null, $viewPath)
     {
-        $getAllMovies = $this->moviesModel->getAllMovies();
-        $getAllGenres = $this->genresModel->getAllGenres();
-        $data = [
-            'getAllMovies' => $getAllMovies,
-            'getAllGenres' => $getAllGenres,
+        $filter = filterData('get');
+        $filterParams = [
+            'genres'       => $filter['genres'] ?? $genresId,
+            'countries'    => $filter['countries'] ?? $countriesId,
+            'types'        => $typeId,
+            'release_year' => $filter['release_year'] ?? null,
+            'quality'      => $filter['quality'] ?? null,
+            'age'          => $filter['age'] ?? null,
+            'language'     => $filter['language'] ?? null,
         ];
-        $this->renderView('/layout-part/client/filter', $data);
+
+        $whereData = $this->moviesModel->buildMovieWhereClause($filterParams);
+        $page = $filter['page'] ?? 1;
+        $sort = $filter['sort'] ?? 'newest';
+        $result = $this->moviesModel->getMoviesByBuilder($whereData, $sort, $page);
+
+        $data = [
+            'movies'            => $result['data'],
+            'pagination'        => $result['pagination'],
+            'filters'           => $filterParams,
+            'sort'              => $sort,
+            'page'              => $page,
+            'maxPage'           => $result['pagination']['maxPage'],
+            'getAllGenres'      => $this->genresModel->getAllGenres(),
+            'getAllCountries'   => $this->moviesModel->getAllCountries(),
+            'getAllTypes'       => $this->moviesModel->getAllType(),
+            'getAllVoiceType'   => $this->moviesModel->getVoiceType(),
+            'getAllQuality'     => $this->moviesModel->getQuality(),
+            'getAllAge'         => $this->moviesModel->getAge(),
+            'getAllReleaseYear' => $this->moviesModel->getReleaseYear(),
+        ];
+
+        $this->renderView($viewPath, $data);
     }
 
     public function phimLe()
     {
-
-        $data = [];
-        $this->renderView('/layout-part/client/phim-le', $data);
+        $this->renderMoviesByType(1, null, null, '/layout-part/client/phim-le');
     }
 
     public function phimBo()
     {
-        $this->renderView('/layout-part/client/phim-bo');
+        $this->renderMoviesByType(2, null, null, '/layout-part/client/phim-bo');
     }
 
     public function phimChieuRap()
     {
-        $this->renderView('/layout-part/client/phim-chieu-rap');
+        $this->renderMoviesByType(3, null, null, '/layout-part/client/phim-chieu-rap');
     }
+
 
     public function theLoai()
     {
-        $this->renderView('/layout-part/client/the-loai');
+        $filter = filterData();
+        $genresId = $filter['id'];
+        $this->renderMoviesByType(1, $genresId, null, '/layout-part/client/the_loai');
     }
 
     public function quocGia()
     {
-        $this->renderView('/layout-part/client/quoc-gia');
+        $filter = filterData();
+        $countriesId = $filter['id'];
+        $this->renderMoviesByType(1, null, $countriesId, '/layout-part/client/quoc_gia');
     }
 
     public function dienVien()
     {
-        $this->renderView('/layout-part/client/dien-vien');
+        $filter = filterData();
+        $currentTab = $filter['tab'] ?? 'actors';
+        $roleId = ($currentTab === 'directors') ? 5 : 1;
+
+        $maxData = $this->personModel->countPersonsByRole($roleId);
+        $perPage = 12;
+        $maxPage = ceil($maxData / $perPage);
+        $offset = 0;
+        $page = 1;
+        if (isset($filter['page'])) {
+            $page = $filter['page'];
+        }
+        if ($maxPage < 1) {
+            $maxPage = 1;
+        }
+        if ($page < 1) {
+            $page = 1;
+        }
+        if ($maxPage > 0 && $page > $maxPage) {
+            $page = $maxPage;
+        }
+        if (isset($page)) {
+            $offset = ($page - 1) * $perPage;
+        }
+
+        // Lấy danh sách active
+        $activeList = $this->personModel->getPersonsByRole($roleId, $offset, $perPage);
+
+        $getAllActors = [];
+        $getAllDirectors = [];
+        if ($currentTab === 'directors') {
+            $getAllDirectors = $activeList;
+        } else {
+            $getAllActors = $activeList;
+        }
+
+        //Xử lý query
+        $queryString = '';
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $queryString = $_SERVER['QUERY_STRING'];
+            $queryString = str_replace('&page=' . $page, '', $queryString);
+        }
+
+        $data = [
+            'getAllActors'    => $getAllActors,
+            'getAllDirectors' => $getAllDirectors,
+            'page'            => $page,
+            'maxPage'         => $maxPage,
+            'currentTab'      => $currentTab,
+            'queryString'     => $queryString,
+        ];
+        $this->renderView('/layout-part/client/dien_vien', $data);
     }
 }
