@@ -98,6 +98,13 @@ class MovieDetailController extends baseController
         // Lấy phim tương tự
         $similarMovies = $this->moviesModel->getSimilarMovies($idMovie, 12);
 
+        // Kiểm tra trạng thái favorite cho movie hiện tại
+        $movieIsFavorited = false;
+        if (!empty($_SESSION['auth'])) {
+            $userId = $_SESSION['auth']['id'];
+            $checkFavorite = $this->moviesModel->checkIsFavorite($userId, $idMovie);
+            $movieIsFavorited = !empty($checkFavorite);
+        }
 
         $data = [
             'idMovie' => $idMovie,
@@ -109,7 +116,8 @@ class MovieDetailController extends baseController
             'comments' => $comments,
             'listComments' => $commentsTree,
             'totalComments' => $totalComments,
-            'similarMovies' => $similarMovies
+            'similarMovies' => $similarMovies,
+            'movieIsFavorited' => $movieIsFavorited
         ];
 
         $this->renderView('layout-part/client/detail', $data);

@@ -39,9 +39,11 @@ layout('client/header');
             <!-- Movie Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
                 <!-- Card  -->
-                <?php foreach ($movies as $movie): ?>
-                    <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">
-                        <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden">
+                <?php foreach ($movies as $movie):
+                    $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';
+                ?>
+                    <div class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">
+                        <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60"></div>
                             <div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="<?php echo $movie['tittle']; ?>" style='background-image: url("<?php echo $movie['poster_url']; ?>");'></div>
                             <div class="absolute top-2 right-2 z-20 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10 flex items-center gap-1">
@@ -50,10 +52,14 @@ layout('client/header');
                             </div>
                         </div>
                         <div class="px-1">
-                            <h3 class="text-white font-medium truncate group-hover:text-primary transition-colors"><?php echo $movie['tittle'] ?></h3>
+                            <h3 onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-white font-medium truncate group-hover:text-primary transition-colors cursor-pointer"><?php echo $movie['tittle'] ?></h3>
                             <div class="flex items-center justify-between mt-1">
-                                <p class="text-gray-500 text-xs"><?php echo $movie['original_tittle'] ?></p>
-                                <span class="material-symbols-outlined text-gray-600 group-hover:text-white transition-colors text-sm">favorite</span>
+                                <p onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-gray-500 text-xs truncate flex-1 cursor-pointer"><?php echo $movie['original_tittle'] ?></p>
+                                <button
+                                    class="js-favorite-btn ml-2 flex-shrink-0 p-2 rounded-full hover:bg-white/10 transition-all duration-300 <?= $favClass ?>"
+                                    data-movie-id="<?php echo $movie['id']; ?>">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-red-500 hover:scale-110 transition-all duration-300 text-2xl">favorite</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -129,5 +135,8 @@ layout('client/header');
         });
     </script>
 </body>
+
+<!-- FOOTER -->
+<?php layout('client/footer') ?>
 
 </html>

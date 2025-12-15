@@ -65,6 +65,10 @@ $allCountries = $moviesModel->getAllCountries();
 
   <link rel="stylesheet" href="<?php echo _HOST_URL_PUBLIC; ?>/assets/css/client/style.css">
 
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script type="importmap">
     {
       "imports": {
@@ -146,14 +150,65 @@ $allCountries = $moviesModel->getAllCountries();
           </div>
         </div>
       </form>
+
+      <!-- Thong Bao -->
       <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-300 hidden sm:block"></i>
-      <div class="flex items-center gap-2 cursor-pointer group">
-        <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold">K</div>
-        <i data-lucide="menu" class="w-5 h-5 md:hidden"></i>
-      </div>
+
+      <!-- User Avatar / Login Button -->
+      <?php if (!empty($_SESSION['auth'])): ?>
+        <!-- Logged In: Show Avatar with Dropdown -->
+        <div class="relative" id="userDropdownContainer">
+          <div class="flex items-center gap-2 cursor-pointer" id="userAvatarBtn">
+            <img src="<?php echo $_SESSION['auth']['avatar']; ?>"
+              alt="<?php echo $_SESSION['auth']['fullname']; ?>"
+              class="w-10 h-10 rounded-full object-cover border-2 border-white/20 hover:border-primary transition-all duration-300">
+            <i data-lucide="chevron-down" id="dropdownChevron" class="w-4 h-4 hidden md:block transition-transform duration-300"></i>
+          </div>
+
+          <!-- Dropdown Menu -->
+          <div id="userDropdown" class="absolute right-0 top-full mt-3 w-64 glass-panel rounded-xl border border-white/10 shadow-glass opacity-0 invisible transform translate-y-2 transition-all duration-300 overflow-hidden">
+            <!-- User Info -->
+            <div class="px-4 py-3 border-b border-white/10">
+              <p class="text-white font-semibold text-sm"><?php echo $_SESSION['auth']['fullname']; ?></p>
+              <p class="text-gray-400 text-xs mt-0.5"><?php echo $_SESSION['auth']['email']; ?></p>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="py-2">
+              <a href="<?php echo _HOST_URL; ?>/yeu_thich" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <i data-lucide="heart" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
+                <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Yêu thích</span>
+              </a>
+
+              <a href="<?php echo _HOST_URL; ?>/tai_khoan" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
+                <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Tài khoản</span>
+              </a>
+
+              <a href="<?php echo _HOST_URL; ?>/thong_bao" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <i data-lucide="bell" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
+                <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Thông báo</span>
+              </a>
+
+              <div class="border-t border-white/10 my-2"></div>
+
+              <a href="<?php echo _HOST_URL; ?>/logout" class="flex items-center gap-3 px-4 py-2.5 hover:bg-red-500/10 transition-colors group">
+                <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors"></i>
+                <span class="text-gray-300 text-sm group-hover:text-red-500 transition-colors">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      <?php else: ?>
+        <!-- Not Logged In: Show Login Button -->
+        <a href="<?php echo _HOST_URL; ?>/login"
+          class="px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white font-semibold text-sm transition-all duration-300 shadow-neon hover:shadow-neon-sm transform hover:scale-105 flex items-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Đăng nhập</span>
+        </a>
+      <?php endif; ?>
     </div>
   </nav>
-
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       lucide.createIcons();
@@ -192,5 +247,40 @@ $allCountries = $moviesModel->getAllCountries();
       searchInput.addEventListener('click', function(e) {
         e.stopPropagation();
       });
+
+      // User Dropdown Toggle
+      const userAvatarBtn = document.getElementById('userAvatarBtn');
+      const userDropdown = document.getElementById('userDropdown');
+      const dropdownChevron = document.getElementById('dropdownChevron');
+      const userDropdownContainer = document.getElementById('userDropdownContainer');
+
+      if (userAvatarBtn && userDropdown) {
+        let isDropdownOpen = false;
+
+        userAvatarBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          isDropdownOpen = !isDropdownOpen;
+
+          if (isDropdownOpen) {
+            userDropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+            userDropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+            if (dropdownChevron) dropdownChevron.classList.add('rotate-180');
+          } else {
+            userDropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+            userDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+            if (dropdownChevron) dropdownChevron.classList.remove('rotate-180');
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (isDropdownOpen && !userDropdownContainer.contains(e.target)) {
+            userDropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+            userDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+            if (dropdownChevron) dropdownChevron.classList.remove('rotate-180');
+            isDropdownOpen = false;
+          }
+        });
+      }
     });
   </script>

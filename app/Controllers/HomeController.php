@@ -30,6 +30,15 @@ class HomeController extends baseController
         $getLoveMovies = $this->moviesModel->getLoveMovies();
         $getHorrorMovies = $this->moviesModel->getHorrorMovies();
 
+        // Kiểm tra trạng thái favorite cho hero movie
+        $heroIsFavorited = false;
+        if (!empty($_SESSION['auth']) && !empty($getMoviesHeroSection[0])) {
+            $userId = $_SESSION['auth']['id'];
+            $heroMovieId = $getMoviesHeroSection[0]['id'];
+            $checkFavorite = $this->moviesModel->checkIsFavorite($userId, $heroMovieId);
+            $heroIsFavorited = !empty($checkFavorite);
+        }
+
         $data = [
             'getMoviesHeroSection' => $getMoviesHeroSection,
             'getGenresGrid' => $getGenresGrid,
@@ -41,7 +50,8 @@ class HomeController extends baseController
             'getCinemaMovie' => $getCinemaMovie,
             'getAnimeMovies' => $getAnimeMovies,
             'getLoveMovies' => $getLoveMovies,
-            'getHorrorMovies' => $getHorrorMovies
+            'getHorrorMovies' => $getHorrorMovies,
+            'heroIsFavorited' => $heroIsFavorited
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }

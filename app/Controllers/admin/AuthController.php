@@ -353,4 +353,31 @@ class AuthController extends baseController
         ];
         $this->renderView('layout-part/auth/active', $data);
     }
+
+    public function logout()
+    {
+        if (isLogin()) {
+            $token = getSession('tokenLogin');
+            $removeToken = $this->coreModel->delete('token_login', "token = '$token'");
+
+            if ($removeToken) {
+
+                // Bước 3: Hủy session hiện tại
+                session_destroy();
+
+                // Bước 5: Set flash message
+                setSessionFlash('msg', 'Đăng xuất thành công');
+                setSessionFlash('msg_type', 'success');
+                reload('/');
+            } else {
+                setSessionFlash('msg', 'Lỗi hệ thống. Đăng xuất thất bại');
+                setSessionFlash('msg_type', 'danger');
+                reload('/');
+            }
+        } else {
+            setSessionFlash('msg', 'Bạn chưa đăng nhập');
+            setSessionFlash('msg_type', 'warning');
+            reload('/');
+        }
+    }
 }

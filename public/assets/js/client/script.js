@@ -53,6 +53,31 @@ const initHero = () => {
 
     let currentIndex = 0;
 
+    // Track favorited movies in this session
+    // Initialize with movies that already have is-favorited class on page load
+    const favoritedMovies = new Set();
+    if (favBtn && favBtn.classList.contains('is-favorited')) {
+        const initialMovieId = favBtn.getAttribute('data-movie-id');
+        if (initialMovieId) {
+            favoritedMovies.add(initialMovieId);
+        }
+    }
+
+    // Listen to favorite toggle events to update our tracking
+    if (favBtn) {
+        favBtn.addEventListener('click', function () {
+            // Wait a bit for the AJAX to complete and class to be added/removed
+            setTimeout(() => {
+                const movieId = favBtn.getAttribute('data-movie-id');
+                if (favBtn.classList.contains('is-favorited')) {
+                    favoritedMovies.add(movieId);
+                } else {
+                    favoritedMovies.delete(movieId);
+                }
+            }, 500);
+        });
+    }
+
     const updateHeroFromThumb = (thumb) => {
         const data = thumb.dataset;
 
@@ -105,14 +130,31 @@ const initHero = () => {
             }
         }
 
-        // 5.Favorite
+        // 5.Favorite - Update data-movie-id and check if favorited
         if (favBtn && data.id) {
-            // Lấy href hiện tại (VD: /detail?id=10)
-            const currentHref = favBtn.getAttribute('href');
-            if (currentHref) {
-                // Regex thay thế đoạn "id=số_cũ" thành "id=số_mới"
-                const newHref = currentHref.replace(/id=\d+/, `id=${data.id}`);
-                favBtn.setAttribute('href', newHref);
+            // Update the data-movie-id attribute
+            favBtn.setAttribute('data-movie-id', data.id);
+
+            // Check if this movie is in our favorited set
+            const isFavorited = favoritedMovies.has(data.id);
+
+            // Update SVG and class based on favorite status
+            const svgIcon = favBtn.querySelector('svg');
+
+            if (isFavorited) {
+                favBtn.classList.add('is-favorited');
+                if (svgIcon) {
+                    svgIcon.style.fill = '#ef4444';
+                    svgIcon.style.color = '#ef4444';
+                    svgIcon.style.stroke = '#ef4444';
+                }
+            } else {
+                favBtn.classList.remove('is-favorited');
+                if (svgIcon) {
+                    svgIcon.style.fill = '';
+                    svgIcon.style.color = '';
+                    svgIcon.style.stroke = '';
+                }
             }
         }
 

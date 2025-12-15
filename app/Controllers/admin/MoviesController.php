@@ -104,7 +104,7 @@ class MoviesController extends baseController
         $offset = 0;
         $page = 1;
 
-        if (!isset($filter['page'])) {
+        if (isset($filter['page'])) {
             $page = $filter['page'];
         }
 

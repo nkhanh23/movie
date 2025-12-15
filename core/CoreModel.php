@@ -47,10 +47,10 @@ class CoreModel
         return $result;
     }
 
-    public function getOne($sql)
+    public function getOne($sql, $params = [])
     {
         $stm = $this->connect->prepare($sql);
-        $stm->execute();
+        $stm->execute($params);
         $result = $stm->fetch(PDO::FETCH_ASSOC);
         return $result;
     }

@@ -43,7 +43,7 @@ layout('client/header');
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                             <?php if (!empty($getAllActors)): ?>
                                 <?php foreach ($getAllActors as $actor): ?>
-                                    <div class="glass-card rounded-xl p-4 flex flex-col items-center text-center gap-4 group cursor-pointer hover:shadow-neon transition-all">
+                                    <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien/chi_tiet?id=<?php echo $actor['id'] ?>';" class="glass-card rounded-xl p-4 flex flex-col items-center text-center gap-4 group cursor-pointer hover:shadow-neon transition-all">
                                         <div class="relative w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-primary/50 to-secondary/30">
                                             <div class="w-full h-full rounded-full bg-cover bg-center overflow-hidden border-2 border-background-dark"
                                                 style="background-image: url('<?php echo $actor['avatar'] ?? 'default.jpg' ?>');">

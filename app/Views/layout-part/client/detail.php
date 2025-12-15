@@ -3,306 +3,22 @@ if (!defined('_nkhanhh')) {
     die('Truy cập không hợp lệ');
 }
 layout('client/header');
+$favClass = $movieIsFavorited ? 'is-favorited' : '';
+
 // echo '<pre>';
 // print_r($similarMovies);
 // echo '</pre>';
 // die();
 ?>
-<!DOCTYPE html>
-<html class="dark" lang="en">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Streamscape - Movie Details</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <style>
-        .glass-panel {
-            background-color: rgba(26, 26, 26, 0.6);
-            /* #1A1A1A with 60% opacity */
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            /* For Safari */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+<body class="font-display text-white overflow-x-hidden min-h-screen relative">
+    <div class="absolute inset-0 z-0 overflow-hidden">
+        <div class="absolute -top-1/4 -left-1/4 size-1/2 rounded-full bg-primary/10 blur-3xl animate-[spin_20s_linear_infinite]"></div>
+        <div class="absolute -bottom-1/4 -right-1/4 size-1/2 rounded-full bg-secondary/10 blur-3xl animate-[spin_25s_linear_infinite_reverse]"></div>
+    </div>
 
-        .glow-border {
-            position: relative;
-        }
+    <div class="relative min-h-screen w-full flex-col px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8 pt-0">
 
-        .glow-border::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 1rem;
-            /* Matches rounded-xl */
-            background: conic-gradient(from 180deg at 50% 50%, #00C2FF 0deg, #E040FB 180deg, #00C2FF 360deg);
-            z-index: -1;
-            filter: blur(20px);
-            animation: rotate-glow 8s linear infinite;
-        }
-
-        .trailer-glow::before {
-            border-radius: 0.75rem;
-            /* Matches rounded-lg */
-        }
-
-        @keyframes rotate-glow {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .button-glow {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button-glow::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300%;
-            height: 300%;
-            background: radial-gradient(circle, rgba(37, 140, 244, 0.4) 0%, rgba(37, 140, 244, 0) 60%);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s ease, height 0.3s ease;
-            z-index: 0;
-            opacity: 0;
-        }
-
-        .button-glow:hover::before {
-            opacity: 1;
-        }
-
-        .button-glow>* {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Custom scrollbar for Cast/Comments if needed */
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scroll::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        /* Container chính cho phần nền */
-        .movie-hero-container {
-            position: relative;
-            /* Thêm margin âm để bù lại padding của body nếu cần thiết, hoặc để width: 100vw */
-            width: 100vw;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-
-            height: 80vh;
-            overflow: hidden;
-            margin-bottom: -200px;
-            /* Kéo nội dung lên */
-            z-index: 0;
-        }
-
-        /* Phần bao quanh ảnh để xử lý animation */
-        .hero-image-wrapper {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* Ảnh nền */
-        .hero-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Đảm bảo ảnh không bị méo */
-            object-position: center top;
-            /* Căn ảnh lấy phần trên làm trọng tâm */
-            transition: transform 3s ease;
-            /* Hiệu ứng chuyển động mượt trong 3 giây */
-        }
-
-        /* Hiệu ứng khi di chuột vào vùng banner: Zoom nhẹ lên */
-        .movie-hero-container:hover .hero-img {
-            transform: scale(1.1);
-            /* Phóng to 10% */
-        }
-
-        /* Lớp phủ Gradient (Làm mờ ảnh để hòa vào nền đen) */
-        .hero-gradient-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Gradient từ trong suốt -> đen, và từ trái -> phải */
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%),
-                linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0) 50%);
-            pointer-events: none;
-            /* Để chuột vẫn click được vào các nút bên dưới nếu bị che */
-            z-index: 1;
-        }
-
-        /* Container cho các thẻ tags (Hàng 1) */
-        .movie-meta-tags {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 16px;
-            margin-bottom: 16px;
-        }
-
-        /* Base style cho tất cả các thẻ kính */
-        .glass-tag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 32px;
-            padding: 0 12px;
-            border-radius: 8px;
-            /* Bo góc mềm mại */
-            font-size: 14px;
-            font-weight: 600;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.3s ease;
-        }
-
-        /* 1. Thiết kế thẻ IMDb (Premium Gold) */
-        .tag-imdb {
-            background: rgba(255, 216, 117, 0.1);
-            /* Màu primary mờ */
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(255, 216, 117, 0.15);
-            /* Glow nhẹ */
-        }
-
-        .tag-imdb span {
-            color: #fff;
-            margin-left: 6px;
-            font-weight: 700;
-        }
-
-        /* 2. Thiết kế thẻ Độ tuổi (T16) - Nổi bật */
-        .tag-age {
-            background: rgba(255, 255, 255, 0.9);
-            color: #000;
-            font-weight: 800;
-            border: 1px solid #fff;
-        }
-
-        /* 3. Thiết kế Năm & Thời lượng (Glass Classic) */
-        .tag-info {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #e0e0e0;
-        }
-
-        .tag-info:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Container cho Thể loại (Hàng 2) */
-        .movie-genres {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        /* Thiết kế thẻ Thể loại */
-        .genre-pill {
-            display: inline-block;
-            padding: 6px 16px;
-            background: rgba(30, 33, 48, 0.6);
-            /* --top-bg-default mờ */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-base);
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .genre-pill:hover {
-            background: rgba(255, 216, 117, 0.15);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in-down {
-            animation: fadeInDown 0.3s ease-out forwards;
-        }
-    </style>
-</head>
-
-<body class="bg-background-light dark:bg-background-dark font-display">
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#258cf4",
-                        "background-light": "#ffffff",
-                        "background-dark": "#000000",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
-
-    <div class="relative min-h-screen w-full flex-col overflow-x-hidden px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8 pt-0">
-        <div class="absolute inset-0 z-0 overflow-hidden">
-            <div
-                class="absolute -top-1/4 -left-1/4 size-1/2 rounded-full bg-cyan-500/10 blur-3xl animate-[spin_20s_linear_infinite]">
-            </div>
-            <div
-                class="absolute -bottom-1/4 -right-1/4 size-1/2 rounded-full bg-fuchsia-500/10 blur-3xl animate-[spin_25s_linear_infinite_reverse]">
-            </div>
-        </div>
 
         <div class="movie-hero-container">
             <div class="hero-image-wrapper">
@@ -313,7 +29,7 @@ layout('client/header');
             <div class="hero-gradient-overlay"></div>
         </div>
 
-        <div class="relative z-10 mx-auto max-w-7xl">
+        <div class="relative z-20 mx-auto max-w-7xl">
             <main class="mt-32 grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
                 <!-- Movie Poster -->
                 <div class="lg:col-span-1 flex justify-center items-start">
@@ -368,8 +84,9 @@ layout('client/header');
                                 <span class="truncate">Xem Ngay</span>
                             </button>
                             <button
-                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-white/10 hover:bg-white/20 text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105">
-                                <span class="material-symbols-outlined mr-2">add</span>
+                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-white/10 hover:bg-white/20 text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105 js-favorite-btn <?= $favClass ?>"
+                                data-movie-id="<?php echo $movieDetail['id']; ?>">
+                                <span class="material-symbols-outlined mr-2">favorite</span>
                                 <span class="truncate">Thêm vào yêu thích</span>
                             </button>
                         </div>
@@ -510,12 +227,12 @@ layout('client/header');
                         </div>
 
                         <div class="flex flex-col gap-6">
-                            <h3 class="text-white text-xl font-bold px-2">Cast</h3>
+                            <h3 class="text-white text-xl font-bold px-2">Diễn viên</h3>
                             <div class="glass-panel p-4 rounded-xl flex-1 max-h-[300px] overflow-y-auto custom-scroll">
                                 <div class="space-y-1">
                                     <?php foreach ($getCastByMovieId as $item): ?>
 
-                                        <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien?id=<?php echo $item['id'] ?>';" class="group flex items-center gap-3 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-lg cursor-pointer hover:scale-[1.02]">
+                                        <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien/chi_tiet?id=<?php echo $item['id'] ?>';" class="group flex items-center gap-3 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-lg cursor-pointer hover:scale-[1.02]">
 
                                             <img class="size-12 rounded-full object-cover border border-white/10 group-hover:border-primary transition-colors duration-300"
                                                 src="<?php echo $item['avatar'] ?>"
@@ -1330,5 +1047,7 @@ layout('client/header');
             });
     }
 </script>
+<!-- FOOTER -->
+<?php layout('client/footer') ?>
 
 </html>

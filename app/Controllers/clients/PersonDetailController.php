@@ -40,6 +40,16 @@ class PersonDetailController extends baseController
         }
         $getPersonMovies = $this->personModel->getPersonMovies($idPerson, $offset, $perPage);
 
+        // Check favorite status cho TỪNG phim trong danh sách
+        if (!empty($_SESSION['auth']) && !empty($getPersonMovies)) {
+            $userId = $_SESSION['auth']['id'];
+            foreach ($getPersonMovies as &$movie) {
+                $checkFavorite = $this->movieModel->checkIsFavorite($userId, $movie['id']);
+                $movie['is_favorited'] = !empty($checkFavorite);
+            }
+            unset($movie); // Xóa reference để tránh bug
+        }
+
         //Xử lý query
         $queryString = '';
         if (!empty($_SERVER['QUERY_STRING'])) {

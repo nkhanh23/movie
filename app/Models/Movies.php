@@ -292,21 +292,25 @@ class Movies extends CoreModel
         DESC LIMIT 6");
     }
 
+    // Lấy phim Hàn Quốc
     public function getMoviesKorean()
     {
         return $this->getAll("SELECT * FROM movies WHERE country_id = 2 ORDER BY created_at DESC LIMIT 10");
     }
 
+    // Lấy phim Hoa Kỳ
     public function getMoviesUSUK()
     {
         return $this->getAll("SELECT * FROM movies WHERE country_id = 7 ORDER BY created_at DESC LIMIT 10");
     }
 
+    // Lấy phim Trung Quốc
     public function getMoviesChinese()
     {
         return $this->getAll("SELECT * FROM movies WHERE country_id = 4 ORDER BY created_at DESC LIMIT 10");
     }
 
+    // Lấy phim theo loại
     public function getTopDailyByType($typeId)
     {
         return $this->getAll("SELECT m.*
@@ -319,11 +323,13 @@ class Movies extends CoreModel
         ");
     }
 
+    // Lấy phim chiếu rạp
     public function getCinemaMovie()
     {
         return $this->getAll("SELECT * FROM movies WHERE type_id = 3 ORDER BY created_at DESC LIMIT 10");
     }
 
+    // Lấy phim anime
     public function getAnimeMovies()
     {
         return $this->getAll("SELECT m.*,
@@ -339,6 +345,7 @@ class Movies extends CoreModel
         DESC LIMIT 12");
     }
 
+    // Lấy phim lãng mạn
     public function getLoveMovies()
     {
         return $this->getAll("SELECT m.*,
@@ -354,6 +361,7 @@ class Movies extends CoreModel
         DESC LIMIT 12");
     }
 
+    // Lấy phim kinh dị
     public function getHorrorMovies()
     {
         return $this->getAll("SELECT m.*,
@@ -388,6 +396,7 @@ class Movies extends CoreModel
         WHERE m.$condition");
     }
 
+    // Lấy thông tin season
     public function getSeasonDetail($condition)
     {
         return $this->getAll("SELECT s.*,
@@ -397,6 +406,7 @@ class Movies extends CoreModel
         WHERE s.$condition");
     }
 
+    // Lấy thông tin episode
     public function getEpisodeDetail($condition)
     {
         return $this->getAll("SELECT e.*,
@@ -406,6 +416,7 @@ class Movies extends CoreModel
         WHERE e.$condition");
     }
 
+    // Lấy video source
     public function getVideoSources($id)
     {
         return $this->getOne("SELECT m.*, vs.*
@@ -443,5 +454,44 @@ class Movies extends CoreModel
                 LIMIT $limit";
 
         return $this->getAll($sql);
+    }
+
+    // Favorite
+    public function getFavoriteMovies($userId)
+    {
+        return $this->getAll("SELECT m.*
+        FROM favorites f
+        LEFT JOIN movies m ON f.movie_id = m.id
+        WHERE f.user_id = $userId");
+    }
+
+    // Kiểm tra phim đã được yêu thích chưa
+    public function checkIsFavorite($userId, $movieId)
+    {
+        // Giả định bảng favorites có cột user_id và movie_id
+        $sql = "SELECT id 
+        FROM favorites 
+        WHERE user_id = ? AND movie_id = ?";
+        return $this->getOne($sql, [$userId, $movieId]);
+    }
+
+    public function toggleFavorite($userId, $movieId)
+    {
+        $checkFavorite = $this->checkIsFavorite($userId, $movieId);
+        // Nếu đã yêu thích
+        if (!empty($checkFavorite)) {
+            $condition = 'id=' . $checkFavorite['id'];
+            $this->delete('favorites', $condition);
+            return 'removed';
+        } else {
+            // Nếu chưa yêu thích
+            $data = [
+                'user_id' => $userId,
+                'movie_id' => $movieId,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            $this->insert('favorites', $data);
+            return 'added';
+        }
     }
 }

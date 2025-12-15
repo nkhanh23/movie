@@ -1,6 +1,5 @@
 /* =========================================
    1. SETUP VARIABLES & BASE
-   (Bổ sung các biến màu từ thiết kế gốc để dùng cho Horror Section)
    ========================================= */
 :root {
     --primary-color: #FFD875;
@@ -54,7 +53,6 @@ body {
 
 /* =========================================
    2. HORROR SECTION STYLING
-   (Phần code mới thêm vào)
    ========================================= */
 
 /* Layout chung của Section */
@@ -542,4 +540,842 @@ input[type=range]::-webkit-slider-runnable-track {
     cursor: pointer;
     background: #3b4754;
     border-radius: 2px;
+}
+
+/* =========================================
+   USER PROFILE/ABOUT PAGE STYLES
+   ========================================= */
+
+/* Glassmorphic effect for user pages */
+.user-glassmorphic {
+    background: linear-gradient(135deg, rgba(18, 24, 33, 0.7) 0%, rgba(10, 14, 20, 0.8) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-glassmorphic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    opacity: 0.5;
+}
+
+.user-glassmorphic::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.glass-panel-heavy {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.icon-glow {
+    text-shadow: 0 0 15px rgba(217, 108, 22, 0.6);
+}
+
+.kinetic-hover {
+    transition: background 0.5s ease, border-color 0.3s ease;
+}
+
+.kinetic-hover:hover {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse-slow {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+    animation: spin-reverse-slow 15s linear infinite;
+}
+
+/* Sidebar active state */
+.sidebar-item-active {
+    background: rgba(217, 108, 22, 0.2) !important;
+    border: 1px solid rgba(217, 108, 22, 0.3) !important;
+    color: white !important;
+    box-shadow: 0 0 15px rgba(217, 108, 22, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-item-active .material-symbols-outlined {
+    color: #D96C16 !important;
+    text-shadow: 0 0 8px rgba(217, 108, 22, 0.8);
+    font-variation-settings: 'FILL' 1;
+}
+
+.sidebar-item-active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(217, 108, 22, 0.1), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Sidebar specific styling for better contrast */
+.sidebar-glassmorphic {
+    background: linear-gradient(135deg, rgba(25, 30, 40, 0.85) 0%, rgba(15, 20, 28, 0.9) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 2px solid rgba(217, 108, 22, 0.15);
+    border-top: 2px solid rgba(217, 108, 22, 0.25);
+    border-left: 2px solid rgba(217, 108, 22, 0.25);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(217, 108, 22, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-glassmorphic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(217, 108, 22, 0.4), transparent);
+    opacity: 0.7;
+}
+
+.sidebar-glassmorphic::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(217, 108, 22, 0.05), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* =========================================
+   CONTACT PAGE STYLES
+   ========================================= */
+
+/* Contact form inputs */
+.contact-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.contact-input::placeholder {
+    color: rgb(100, 116, 139);
+}
+
+.contact-input:focus {
+    outline: none;
+    border-color: rgba(217, 108, 22, 0.5);
+    box-shadow: 0 0 0 1px rgba(217, 108, 22, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Contact select dropdown */
+.contact-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    color: white;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.3s ease;
+}
+
+.contact-select:focus {
+    outline: none;
+    border-color: rgba(217, 108, 22, 0.5);
+    box-shadow: 0 0 0 1px rgba(217, 108, 22, 0.5);
+}
+
+/* Contact textarea */
+.contact-textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    color: white;
+    resize: none;
+    transition: all 0.3s ease;
+}
+
+.contact-textarea::placeholder {
+    color: rgb(100, 116, 139);
+}
+
+.contact-textarea:focus {
+    outline: none;
+    border-color: rgba(217, 108, 22, 0.5);
+    box-shadow: 0 0 0 1px rgba(217, 108, 22, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Contact input icons */
+.contact-input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(100, 116, 139);
+    transition: color 0.3s ease;
+    font-size: 20px;
+}
+
+.group:focus-within .contact-input-icon {
+    color: #D96C16;
+}
+
+/* Contact submit button */
+.contact-submit-btn {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: linear-gradient(to right, rgba(217, 108, 22, 0.8), rgba(242, 159, 5, 0.8));
+    padding: 1px;
+    box-shadow: 0 0 20px rgba(217, 108, 22, 0.3);
+    transition: box-shadow 0.3s ease;
+}
+
+.contact-submit-btn:hover {
+    box-shadow: 0 0 30px rgba(217, 108, 22, 0.5);
+}
+
+@media (min-width: 768px) {
+    .contact-submit-btn {
+        width: auto;
+    }
+}
+
+/* =========================================
+   FAVORITE PAGE STYLES
+   ========================================= */
+
+/* Favorite movie card */
+.favorite-movie-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: 0;
+    height: 20rem;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(18, 24, 33, 0.7) 0%, rgba(10, 14, 20, 0.8) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.favorite-movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(217, 108, 22, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Favorite heart button */
+.favorite-heart-btn {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-color 0.3s ease;
+}
+
+.favorite-movie-card:hover .favorite-heart-btn {
+    border-color: rgba(217, 108, 22, 0.5);
+}
+
+/* Favorite movie info */
+.favorite-movie-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 20;
+    transform: translateY(0.5rem);
+    transition: transform 0.3s ease;
+}
+
+.favorite-movie-card:hover .favorite-movie-info {
+    transform: translateY(0);
+}
+
+/* Favorite movie metadata */
+.favorite-movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: rgb(148, 163, 184);
+    margin-bottom: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s ease 75ms;
+}
+
+.favorite-movie-card:hover .favorite-movie-meta {
+    opacity: 1;
+}
+
+/* Favorite movie actions */
+.favorite-movie-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease 100ms;
+}
+
+.favorite-movie-card:hover .favorite-movie-actions {
+    opacity: 1;
+}
+
+/* Scroll hide utility */
+.scroll-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* =========================================
+   PROFILE PAGE STYLES
+   ========================================= */
+
+/* Profile avatar container */
+.profile-avatar-container {
+    position: relative;
+    width: 10rem;
+    height: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile avatar rings */
+.profile-avatar-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+}
+
+.profile-avatar-ring-1 {
+    inset: -4px;
+    border-color: rgba(217, 108, 22, 0.3);
+    border-top-color: transparent;
+    border-left-color: transparent;
+    animation: spin-slow 12s linear infinite;
+}
+
+.profile-avatar-ring-2 {
+    inset: -12px;
+    border-width: 1px;
+    border-color: rgba(242, 159, 5, 0.2);
+    border-bottom-color: transparent;
+    border-right-color: transparent;
+    animation: spin-reverse-slow 15s linear infinite;
+}
+
+/* Profile avatar orbits */
+.profile-avatar-orbit {
+    position: absolute;
+    animation: spin 8s linear infinite;
+}
+
+.profile-avatar-orbit-1 {
+    inset: -20px;
+}
+
+.profile-avatar-orbit-2 {
+    inset: -28px;
+    animation-delay: -4s;
+    opacity: 0.6;
+}
+
+/* Profile action card */
+.profile-action-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-action-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================
+   NOTIFICATION PAGE STYLES
+   ========================================= */
+
+/* Notification card */
+.notification-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.notification-card:hover {
+    box-shadow: 0 0 20px rgba(217, 108, 22, 0.15);
+    border-color: rgba(217, 108, 22, 0.3);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+}
+
+/* Notification accent border */
+.notification-accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+}
+
+/* Notification unread state */
+.notification-unread {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Notification read state */
+.notification-read {
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.notification-read:hover {
+    opacity: 1;
+}
+
+/* Notification indicator */
+.notification-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(217, 108, 22, 0.1);
+    border: 1px solid rgba(217, 108, 22, 0.3);
+    box-shadow: 0 0 15px rgba(217, 108, 22, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.notification-card:hover .notification-indicator {
+    transform: scale(1.1);
+}
+
+/* Custom scrollbar for notifications */
+.custom-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(217, 108, 22, 0.3);
+}
+
+/* =========================================
+   SIDEBAR TOGGLE STYLES
+   ========================================= */
+
+/* Sidebar text transitions */
+.sidebar-text,
+.sidebar-user-text {
+    transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+/* Sidebar menu item transitions */
+.sidebar-menu-item {
+    transition: all 0.3s ease;
+}
+
+/* Sidebar user info transitions */
+.sidebar-user-info {
+    transition: justify-content 0.3s ease;
+}
+
+/* Sidebar icon always visible */
+.sidebar-icon {
+    flex-shrink: 0;
+}
+
+/* Sidebar collapsed state utilities */
+.bg-transparent {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+.bg-transparent::after {
+    display: none !important;
+}
+
+.border-0 {
+    border: none !important;
+}
+
+/* =========================================
+   FAVORITE BUTTON ACTIVE STATE
+   ========================================= */
+
+/* Trạng thái active cho nút yêu thích - icon trái tim màu đỏ */
+/* Target cả thẻ i ban đầu và svg sau khi Lucide render */
+.js-favorite-btn.is-favorited i[data-lucide="heart"],
+.js-favorite-btn.is-favorited svg {
+    fill: #ef4444 !important;
+    /* Màu đỏ */
+    color: #ef4444 !important;
+    /* Màu đỏ */
+    stroke: #ef4444 !important;
+    /* Viền màu đỏ */
+}
+
+/* =========================================
+   DETAIL PAGE STYLES
+   ========================================= */
+
+/* Glow border effect for poster */
+.glow-border {
+    position: relative;
+}
+
+.glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 1rem;
+    background: conic-gradient(from 180deg at 50% 50%, #D96C16 0deg, #F29F05 180deg, #D96C16 360deg);
+    z-index: -1;
+    filter: blur(20px);
+    animation: rotate-glow 8s linear infinite;
+}
+
+@keyframes rotate-glow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Button glow effect */
+.button-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.button-glow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(217, 108, 22, 0.4) 0%, rgba(217, 108, 22, 0) 60%);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+    z-index: 0;
+    opacity: 0;
+}
+
+.button-glow:hover::before {
+    opacity: 1;
+}
+
+.button-glow>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Movie hero container */
+.movie-hero-container {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    height: 80vh;
+    overflow: hidden;
+    margin-bottom: -200px;
+}
+
+.hero-image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-image-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(to bottom, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 0.8) 50%, #141414 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 3s ease;
+}
+
+.movie-hero-container:hover .hero-img {
+    transform: scale(1.1);
+}
+
+/* Lớp phủ Gradient (Làm mờ ảnh để hòa vào nền đen) */
+.hero-gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradient từ trong suốt -> đen, và từ trái -> phải */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 80%, #000000 100%),
+        linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0) 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Movie meta tags */
+.movie-meta-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.glass-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+}
+
+.tag-imdb {
+    background: rgba(217, 108, 22, 0.1);
+    border: 1px solid #D96C16;
+    color: #D96C16;
+    box-shadow: 0 0 10px rgba(217, 108, 22, 0.15);
+}
+
+.tag-imdb span {
+    color: #fff;
+    margin-left: 6px;
+    font-weight: 700;
+}
+
+.tag-age {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-weight: 800;
+    border: 1px solid #fff;
+}
+
+.tag-info {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+}
+
+.tag-info:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Genre pills */
+.movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.genre-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(30, 33, 48, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.genre-pill:hover {
+    background: rgba(217, 108, 22, 0.15);
+    border-color: #D96C16;
+    color: #D96C16;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Fade in animation */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-down {
+    animation: fadeInDown 0.3s ease-out forwards;
+}
+
+/* Favorite Button Styling */
+.js-favorite-btn.is-favorited {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.js-favorite-btn.is-favorited .material-symbols-outlined {
+    color: #ef4444 !important;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.js-favorite-btn.is-favorited:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
 }

@@ -6,6 +6,7 @@ $router->get('/', 'HomeController@index');
 $router->get('/auth/google/callback', 'AuthController@googleCallback');
 $router->get('/login', 'AuthController@showLogin');
 $router->post('/login', 'AuthController@login');
+$router->get('/logout', 'AuthController@logout');
 $router->post('/register', 'AuthController@register');
 $router->get('/active', 'AuthController@active');
 // ADMIN POST 
@@ -110,7 +111,7 @@ $router->get('/watch', 'WatchDetailController@showWatch');
 $router->post('/watch', 'WatchDetailController@watch');
 
 // PAGE PERSON
-$router->get('/dien_vien', 'PersonDetailController@showPerson');
+$router->get('/dien_vien/chi_tiet', 'PersonDetailController@showPerson');
 
 //PAGE SEARCH
 $router->get('/tim_kiem', 'HomeController@search');
@@ -132,3 +133,19 @@ $router->get('/quoc_gia', 'HomeController@quocGia');
 
 //PAGE DIEN VIEN
 $router->get('/dien_vien', 'HomeController@dienVien');
+
+//PAGE LIEN HE
+$router->get('/lien_he', 'AccountController@showContact');
+
+//PAGE GIOI THIEU
+$router->get('/gioi_thieu', 'AccountController@showIntroduce');
+
+//PAGE THONG BAO
+$router->get('/thong_bao', 'AccountController@showNotice');
+
+//PAGE TAI KHOAN
+$router->get('/tai_khoan', 'AccountController@showAccount');
+
+//PAGE YEU THICH
+$router->get('/yeu_thich', 'AccountController@showFavorite');
+$router->post('/api/toggle-favorite', 'AccountController@toggleFavoriteApi');
