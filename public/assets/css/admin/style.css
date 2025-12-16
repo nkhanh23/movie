@@ -290,6 +290,102 @@ body {
 .color-blue { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
 .color-green { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
 .color-purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.color-orange { background: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
+
+/* Dashboard Grid - 2 Columns Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Cột trái rộng hơn cột phải */
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* Full height for cards inside grid */
+.dashboard-col-main,
+.dashboard-col-side {
+    display: flex;
+    flex-direction: column;
+}
+
+.h-full {
+    height: 100%;
+}
+
+/* Activity Feed Styles */
+.activity-feed {
+    padding: 15px 0;
+}
+
+.activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon.bg-blue { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+.activity-icon.bg-green { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+.activity-icon.bg-red { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+.activity-icon.bg-purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.fw-bold {
+    font-weight: 600;
+}
+
+.text-highlight {
+    color: var(--accent-blue);
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.view-all-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
 
 .stats-info h3 {
     font-size: 1.5rem;

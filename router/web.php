@@ -90,6 +90,10 @@ $router->post('/admin/role/add', 'RoleController@add');
 
 $router->get('/admin/role/delete', 'RoleController@delete');
 
+//ADMIN COMMENT
+$router->get('/admin/comments', 'CommentController@list');
+$router->get('/admin/comments/delete', 'CommentController@delete');
+
 
 // -----------------------------------------------------------------
 // CLIENT

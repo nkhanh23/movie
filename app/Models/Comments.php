@@ -7,6 +7,16 @@ class Comments extends CoreModel
     }
     // ADMIN
 
+    public function getAllComment($sql)
+    {
+        return $this->getAll($sql);
+    }
+
+    public function countComment($sql)
+    {
+        return $this->getRows($sql);
+    }
+
     // ------------------------------------- CLIENT ------------------------------------------------------
     // Lấy danh sách bình luận của phim (kèm thông tin user)
     public function getCommentsByMovie($movieId, $userId = 0)
