@@ -15,6 +15,11 @@ class Episode extends CoreModel
         }
     }
 
+    public function getLastIdEpisode()
+    {
+        return $this->getLastID();
+    }
+
     public function countAllEpisode($sql = '')
     {
         if (!empty($sql)) {

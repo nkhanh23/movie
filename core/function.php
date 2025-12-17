@@ -222,17 +222,87 @@ function oldData($oldData, $fieldName)
     return (!empty($oldData[$fieldName])) ? $oldData[$fieldName] : NULL;
 }
 
-//Hàm render trình phát video
-// core/function.php
-
 function renderMoviePlayer($url)
 {
     $url = trim($url);
 
-    // 2. [QUAN TRỌNG] Tự động đổi domain myvidplay sang d000d để video chạy mượt hơn
+    // --- TRƯỜNG HỢP 0: URL RỖNG HOẶC NULL (Chưa có link) ---
+    if (empty($url)) {
+        return '
+        <div class="video-container" style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#0f0f0f; border-radius:8px; border:1px solid #333;">
+            <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#ccc; z-index:10;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:15px; opacity:0.6;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                
+                <h3 style="margin:0 0 5px 0; font-size:18px; font-weight:600; color:#fff;">Tập phim đang cập nhật</h3>
+                <p style="margin:0; font-size:14px; opacity:0.7;">Vui lòng quay lại sau hoặc chọn server khác (nếu có).</p>
+                
+                <a href="javascript:void(0)" onclick="alert(\'Đã gửi báo cáo cho Admin!\')" style="margin-top:15px; padding:8px 20px; background:#e50914; color:#fff; text-decoration:none; border-radius:4px; font-size:13px; font-weight:bold;">
+                    <i class="fa fa-flag"></i> Báo lỗi phim
+                </a>
+            </div>
+        </div>';
+    }
+
+    // --- TRƯỜNG HỢP 1: Link HLS (.m3u8) từ API KKPhim ---
+    if (strpos($url, '.m3u8') !== false) {
+        return '
+        <div class="video-container" style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000;">
+            <video id="hls-video" controls style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain;" playsinline>
+                <source src="' . htmlspecialchars($url) . '" type="application/x-mpegURL">
+                Trình duyệt không hỗ trợ phát video này.
+            </video>
+        </div>
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var video = document.getElementById("hls-video");
+                var videoSrc = "' . $url . '";
+
+                if (Hls.isSupported()) {
+                    var hls = new Hls();
+                    hls.loadSource(videoSrc);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        // Tự động phát nếu muốn (lưu ý trình duyệt có thể chặn âm thanh)
+                        // video.play(); 
+                    });
+                    
+                    // Xử lý lỗi load stream
+                    hls.on(Hls.Events.ERROR, function (event, data) {
+                        if (data.fatal) {
+                            switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("Lỗi mạng, đang thử load lại...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("Lỗi media, đang thử phục hồi...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                console.log("Lỗi không thể phục hồi, hủy phát.");
+                                hls.destroy();
+                                break;
+                            }
+                        }
+                    });
+                }
+                // Hỗ trợ Safari (iOS/Mac)
+                else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+                    video.src = videoSrc;
+                }
+            });
+        </script>';
+    }
+
+    // --- TRƯỜNG HỢP 2: Link Embed Iframe (Dữ liệu cũ) ---
+    // Fix link myvidplay sang d000d cho mượt (nếu cần)
     $url = str_replace('myvidplay.com', 'd000d.com', $url);
 
-    // 3. Xuất Player
     return '<div class="video-container" style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
                 <iframe src="' . htmlspecialchars($url) . '" 
                         style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
@@ -312,4 +382,19 @@ function getUrlParams($key, $value)
 
     //Nối lại url
     return '?' . http_build_query($params);
+}
+
+//Hàm tính thời gian trước
+function timeAgo($datetime)
+{
+    $time = strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+
+    if ($diff < 60) return 'Vừa xong';
+    if ($diff < 3600) return floor($diff / 60) . ' phút trước';
+    if ($diff < 86400) return floor($diff / 3600) . ' giờ trước';
+    if ($diff < 604800) return floor($diff / 86400) . ' ngày trước';
+
+    return date('d/m/Y H:i', $time);
 }

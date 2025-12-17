@@ -17,6 +17,8 @@ if (!$is_logged) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- CSS Tùy chỉnh -->
     <link rel="stylesheet" href="<?php echo _HOST_URL_PUBLIC; ?>/assets/css/admin/style.css">
+    <!-- Thư viện HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 
 <body>

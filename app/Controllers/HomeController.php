@@ -4,16 +4,24 @@ class HomeController extends baseController
     private $moviesModel;
     private $genresModel;
     private $personModel;
+    private $activityModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
         $this->genresModel = new Genres;
         $this->personModel = new Person;
+        $this->activityModel = new Activity;
     }
 
     public function adminDashboard()
     {
-        $this->renderView('/layout-part/admin/dashboard');
+        $getLatestMoviesLogs = $this->activityModel->getLatestMoviesLogs(5);
+        $logs = $this->activityModel->getLatestLogs(5);
+        $data = [
+            'logs' => $logs,
+            'getLatestMoviesLogs' => $getLatestMoviesLogs
+        ];
+        $this->renderView('/layout-part/admin/dashboard', $data);
     }
 
     public function index()

@@ -40,15 +40,15 @@ class MovieDetailController extends baseController
         $filter = filterData();
         $idMovie = $filter['id'];
 
-        // Lấy ID user đang đăng nhập
+        // Lấy ID user
         if (isset($_SESSION['auth']['id'])) {
             $currentUserId = $_SESSION['auth']['id'];
         } else {
             $currentUserId = 0;
         }
 
-        // Lấy thông tin phim
-        $condition = 'id=' . $idMovie;
+        // 1. Lấy thông tin phim
+        $condition = 'm.id=' . $idMovie;
         $movieDetail = $this->moviesModel->getMovieDetail($condition);
 
         // Lấy thông tin season
@@ -59,46 +59,42 @@ class MovieDetailController extends baseController
         $episodeDetail = [];
         $currentSeasonId = 0;
 
+        // CHECK LOẠI PHIM
+        // type_id = 2 là Phim Bộ (Series)
         if ($movieDetail['type_id'] == 2) {
             if (!empty($seasonDetail) && is_array($seasonDetail)) {
-
                 $firstSeason = $seasonDetail[0];
-
                 $currentSeasonId = $firstSeason['id'];
-
                 $conditionEpisode = 'season_id=' . $currentSeasonId;
                 $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
             } else {
-                $episodeDetail = $this->moviesModel->getAll("SELECT * 
-                FROM episodes 
-                WHERE movie_id = $idMovie 
-                ORDER BY id ASC");
+                $episodeDetail = $this->moviesModel->getAll("SELECT * FROM episodes WHERE movie_id = $idMovie ORDER BY id ASC");
             }
         } else {
-            $sourceInfo = $this->moviesModel->getVideoSources($idMovie);
+            // --- LOGIC PHIM LẺ --
+
+            $sourceInfo = $this->moviesModel->getSingleMovieSource($idMovie);
 
             if (!empty($sourceInfo)) {
                 $episodeDetail[] = [
                     'id' => $sourceInfo['id'],
-                    'name' => $sourceInfo['voice_type'],
+                    'name' => $sourceInfo['voice_type'] ?? 'Vietsub', // Fallback tên
                     'link' => $sourceInfo['source_url'],
                 ];
+            } else {
+                // Trường hợp dự phòng: Nếu chưa crawl được link
+                $episodeDetail = [];
             }
         }
-        // Lấy thông tin diễn viên
+
+        // ... (Các phần code bên dưới như lấy diễn viên, comment... giữ nguyên) ...
+
         $getCastByMovieId = $this->personModel->getCastByMovieId($idMovie);
-
-        // Lấy danh sách bình luận
         $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId);
-        // Xử lý Phân cấp Cha - Con (Tree Structure)
         $commentsTree = $this->buildTree($comments, 0);
-        // ĐẾM SỐ LƯỢNG COMMENT CHA 
         $totalComments = count($commentsTree);
-
-        // Lấy phim tương tự
         $similarMovies = $this->moviesModel->getSimilarMovies($idMovie, 12);
 
-        // Kiểm tra trạng thái favorite cho movie hiện tại
         $movieIsFavorited = false;
         if (!empty($_SESSION['auth'])) {
             $userId = $_SESSION['auth']['id'];

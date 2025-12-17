@@ -196,7 +196,6 @@ class Movies extends CoreModel
                 LEFT JOIN release_year ry ON m.release_year = ry.id
                 LEFT JOIN qualities q ON m.quality_id = q.id
                 LEFT JOIN age a ON m.age = a.id
-                LEFT JOIN video_sources vs ON m.video_source_id = vs.id
                 $chuoiWhere
                 GROUP BY m.id
                 ";
@@ -236,7 +235,6 @@ class Movies extends CoreModel
         LEFT JOIN release_year ry ON m.release_year = ry.id
         LEFT JOIN qualities q ON m.quality_id = q.id
         LEFT JOIN age a ON m.age = a.id
-        LEFT JOIN video_sources vs ON m.video_source_id = vs.id
         $chuoiWhere";
 
         $maxData = $this->exactlyCount($sqlCount, $params);
@@ -380,20 +378,33 @@ class Movies extends CoreModel
     // Page Detail
     public function getMovieDetail($condition)
     {
-        return $this->getOne("SELECT m.*,
-        GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
-        q.name as quality_name,
-        c.name as country_name,
-        vs.source_url as source_url,
-        mt.name as type_name
-        FROM movies m
-        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
-        LEFT JOIN genres g ON mg.genre_id = g.id
-        LEFT JOIN movie_types mt ON m.id = mt.id
-        LEFT JOIN qualities q ON m.quality_id = q.id
-        LEFT JOIN countries c ON m.country_id = c.id
-        LEFT JOIN video_sources vs ON m.video_source_id = vs.id
-        WHERE m.$condition");
+        $sql = "SELECT m.*, 
+                GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
+                q.name as quality_name,
+                c.name as country_name,
+                mt.name as type_name
+                FROM movies m
+                LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+                LEFT JOIN genres g ON mg.genre_id = g.id
+                LEFT JOIN movie_types mt ON m.type_id = mt.id
+                LEFT JOIN qualities q ON m.quality_id = q.id
+                LEFT JOIN countries c ON m.country_id = c.id
+                WHERE $condition
+                GROUP BY m.id";
+
+        return $this->getOne($sql);
+    }
+
+    // Hàm lấy link từ bảng episodes và video_sources
+    public function getSingleMovieSource($movieId)
+    {
+        // Logic mới: Phim lẻ -> Tìm trong bảng episodes -> Tìm trong video_sources
+        $sql = "SELECT vs.id, vs.source_url, vs.voice_type 
+                FROM episodes e
+                JOIN video_sources vs ON e.id = vs.episode_id
+                WHERE e.movie_id = $movieId
+                LIMIT 1"; // Phim lẻ chỉ cần lấy 1 link chính
+        return $this->getOne($sql);
     }
 
     // Lấy thông tin season
@@ -409,20 +420,21 @@ class Movies extends CoreModel
     // Lấy thông tin episode
     public function getEpisodeDetail($condition)
     {
-        return $this->getAll("SELECT e.*,
-        s.name as season_name
-        FROM episodes e
-        LEFT JOIN seasons s ON e.season_id = s.id
-        WHERE e.$condition");
+        return $this->getAll("SELECT e.*, vs.source_url, vs.voice_type
+                FROM episodes e
+                LEFT JOIN video_sources vs ON e.id = vs.episode_id
+                WHERE e.$condition 
+                ORDER BY e.id ASC");
     }
 
     // Lấy video source
     public function getVideoSources($id)
     {
-        return $this->getOne("SELECT m.*, vs.*
-        FROM movies m
-        LEFT JOIN video_sources vs ON m.video_source_id = vs.id 
-        WHERE m.id = '$id'");
+        return $this->getOne("SELECT vs.* FROM episodes e
+        JOIN video_sources vs ON e.id = vs.episode_id
+        WHERE e.movie_id = '$id'
+        LIMIT 1");
+        // LIMIT 1: Vì phim lẻ thường chỉ cần lấy 1 link chính để phát
     }
 
     public function getSimilarMovies($currentMovieId, $limit = 6)

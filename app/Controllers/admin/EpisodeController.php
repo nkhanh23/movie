@@ -4,11 +4,13 @@ class EpisodeController extends baseController
     private $episodeModel;
     private $moviesModel;
     private $seasonsModel;
+    private $activityModel;
     public function __construct()
     {
         $this->episodeModel = new Episode;
         $this->moviesModel = new Movies;
         $this->seasonsModel = new Season;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -55,7 +57,7 @@ class EpisodeController extends baseController
                 } else {
                     $chuoiWhere .= ' AND ';
                 }
-                $chuoiWhere .= "e.name LIKE  '$cleanKeyword'";
+                $chuoiWhere .= "e.name LIKE  '$cleanKeyword' OR m.tittle LIKE '$cleanKeyword'";
             }
         }
 
@@ -213,6 +215,20 @@ class EpisodeController extends baseController
                     ];
                     $checkInsert = $this->episodeModel->insertEpisode($data);
                     if ($checkInsert) {
+                        $idEpisode = $this->episodeModel->getLastIdEpisode();
+                        // Ghi log
+                        $logData = [
+                            'tittle' => $data['tittle'],
+                            'slug' => $data['slug']
+                        ];
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'create',
+                            'episodes',
+                            $idEpisode,
+                            null,
+                            $logData
+                        );
                         setSessionFlash('msg', 'Thêm tập mới thành công');
                         setSessionFlash('msg_type', 'success');
                         // Nếu có season thì redirect kèm season, không thì chỉ redirect về phim
@@ -281,8 +297,30 @@ class EpisodeController extends baseController
                 'updated_at' => date('Y:m:d H:i:s'),
             ];
             $condition = 'id=' . $filter['idEpisode'];
+            $oldData = $this->episodeModel->getOneEpisode($condition);
             $checkUpdate = $this->episodeModel->updateEpisode($data, $condition);
             if ($checkUpdate) {
+                // Lặp qua dataUpdate để xem trường nào thay đổi
+                $changes = [];
+                foreach ($data as $key => $value) {
+                    if ($oldData[$key] != $value) {
+                        $changes[$key] = [
+                            'from' => $oldData[$key],
+                            'to' => $value
+                        ];
+                    }
+                }
+                //ghi log
+                if (!empty($changes)) {
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'update',
+                        'episodes',
+                        $filter['idEpisode'],
+                        $oldData,
+                        $data
+                    );
+                }
                 setSessionFlash('msg', 'Cập nhật thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/episode');
@@ -305,14 +343,24 @@ class EpisodeController extends baseController
         if (!empty($filter)) {
             $episode_id = $filter['id'];
             $condition = 'id=' . $episode_id;
+            $getOneEpisode = $this->episodeModel->getOneEpisode($condition);
             $checkDelete = $this->episodeModel->deleteEpisode($condition);
             if ($checkDelete) {
+                // GHI LOG
+                $this->activityModel->log(
+                    $_SESSION['auth']['id'],
+                    'delete',
+                    'episodes',
+                    $episode_id,
+                    $getOneEpisode,
+                    null
+                );
                 setSessionFlash('msg', 'Xóa tập phim thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/episode');
             } else {
-                setSessionFlash('msg', 'Xóa tập phim thành công');
-                setSessionFlash('msg_type', 'success');
+                setSessionFlash('msg', 'Xóa tập phim thất bại');
+                setSessionFlash('msg_type', 'danger');
                 reload('/admin/episode');
             }
         } else {

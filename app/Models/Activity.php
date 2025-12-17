@@ -1,0 +1,59 @@
+<?php
+
+class Activity extends CoreModel
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    //insert log
+    public function log($userId, $action, $entityType, $entityId = null, $oldData = null, $newData = null)
+    {
+        // Lấy IP và User Agent
+        $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
+        $data = [
+            'user_id'     => $userId,
+            'action'      => $action,
+            'entity_type' => $entityType,
+            'entity_id'   => $entityId,
+            // JSON_UNESCAPED_UNICODE để sử dụng được Tiếng Việt
+            'old_values'  => !empty($oldData) ? json_encode($oldData, JSON_UNESCAPED_UNICODE) : null,
+            'new_values'  => !empty($newData) ? json_encode($newData, JSON_UNESCAPED_UNICODE) : null,
+            'ip_address'  => $ip,
+            'user_agent'  => $userAgent,
+            'created_at'  => date('Y:m:d H:i:s')
+        ];
+
+        return $this->insert('activity_logs', $data);
+    }
+
+    // Lấy danh sách log để hiển thị Admin (kèm tên User)
+    public function getLatestLogs($limit = 20)
+    {
+        $sql = "SELECT l.*, u.fullname 
+            FROM activity_logs l
+            LEFT JOIN users u ON l.user_id = u.id
+            ORDER BY l.created_at DESC 
+            LIMIT $limit";
+        return $this->getAll($sql);
+    }
+
+    // Lấy danh sách log của phim
+    public function getLatestMoviesLogs($limit = 5)
+    {
+        $sql = "SELECT l.*, m.tittle as movie_name,m.created_at, 
+            e.name as episode_name,
+            s.name as season_name
+            FROM activity_logs l
+            LEFT JOIN movies m ON l.entity_id = m.id
+            LEFT JOIN episodes e ON l.entity_id = e.id
+            LEFT JOIN seasons s ON e.season_id = s.id
+            WHERE l.entity_type = 'movies' AND l.action = 'create'
+            ORDER BY l.created_at DESC 
+            LIMIT $limit";
+        return $this->getAll($sql);
+    }
+}

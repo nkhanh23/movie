@@ -6,7 +6,7 @@ layout('client/header');
 $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
 // echo '<pre>';
-// print_r($similarMovies);
+// print_r($movieDetail);
 // echo '</pre>';
 // die();
 ?>
@@ -154,7 +154,10 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                             <div class="flex-1 max-h-[450px] overflow-y-auto custom-scroll pr-1">
                                 <!-- Phim bộ  -->
                                 <?php
-                                $layoutClass = $isSeries
+
+                                // Phim bộ (type_id = 2) → Grid layout (bất kể có season hay không)
+                                // Phim lẻ (type_id != 2) → List layout
+                                $layoutClass = ($movieDetail['type_id'] == 2)
                                     ? 'grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2'
                                     : 'flex flex-col gap-3';
                                 ?>
@@ -165,7 +168,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
                                         <?php if ($isSeries): ?>
                                             <?php foreach ($episodeDetail as $item): ?>
-                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>"
+                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>"
                                                     class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
 
                                                     <span class="text-sm font-semibold truncate">
@@ -176,44 +179,36 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
                                         <?php else: ?>
                                             <?php foreach ($episodeDetail as $item): ?>
-                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>"
+                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>"
                                                     class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
-                                                    <div
-                                                        class="relative w-[70px] h-[95px] shrink-0 rounded-lg overflow-hidden border border-white/5">
+                                                    <div class="relative w-[70px] h-[95px] shrink-0 rounded-lg overflow-hidden border border-white/5">
                                                         <img src="<?php echo $movieDetail['thumbnail']; ?>"
                                                             alt="<?php echo $movieDetail['tittle']; ?>" loading="lazy"
                                                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                                        <div
-                                                            class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors">
-                                                        </div>
-                                                        <span
-                                                            class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 text-3xl drop-shadow-md">
+                                                        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors"></div>
+                                                        <span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 text-3xl drop-shadow-md">
                                                             play_circle
                                                         </span>
                                                     </div>
 
                                                     <div class="flex-1 min-w-0 py-1">
                                                         <div class="flex items-center gap-2 mb-1.5">
-                                                            <span
-                                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
-                                                                <span
-                                                                    class="material-symbols-outlined text-[12px]">closed_caption</span>
+                                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
+                                                                <span class="material-symbols-outlined text-[12px]">closed_caption</span>
                                                                 <?php echo !empty($item['voice_type']) ? $item['voice_type'] : 'Vietsub'; ?>
                                                             </span>
                                                         </div>
-                                                        <h4
-                                                            class="text-white font-bold text-sm leading-tight truncate group-hover:text-primary transition-colors mb-1">
+                                                        <h4 class="text-white font-bold text-sm leading-tight truncate group-hover:text-primary transition-colors mb-1">
                                                             <?php echo $movieDetail['tittle']; ?>
                                                         </h4>
                                                         <div class="flex items-center justify-between mt-1">
                                                             <span class="text-xs text-gray-400 font-medium">
                                                                 Server: <span class="text-white"><?php echo $item['name']; ?></span>
                                                             </span>
-                                                            <span onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $item['id']; ?>'"
-                                                                class="text-[11px] bg-white/5 text-gray-300 px-2 py-1 rounded group-hover:bg-primary group-hover:text-[#191B24] transition-colors font-bold flex items-center gap-1">
-                                                                Xem ngay <span
-                                                                    class="material-symbols-outlined text-[10px]">arrow_forward</span>
+                                                            <span onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>'"
+                                                                class="text-[11px] bg-white/5 text-gray-300 px-2 py-1 rounded group-hover:bg-primary group-hover:text-[#191B24] transition-colors font-bold flex items-center gap-1 cursor-pointer">
+                                                                Xem ngay <span class="material-symbols-outlined text-[10px]">arrow_forward</span>
                                                             </span>
                                                         </div>
                                                     </div>

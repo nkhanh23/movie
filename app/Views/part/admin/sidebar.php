@@ -50,8 +50,18 @@ if (!defined('_nkhanhh')) {
             <span>Bình luận (Comments)</span>
         </a>
 
+        <div class="nav-divider">Tool</div>
+        <a href="<?php echo _HOST_URL; ?>/admin/crawler?page=1" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Cập nhật phim mới</span>
+        </a>
+        <a href="<?php echo _HOST_URL; ?>/tool_update_avatar.php?page=1" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Cập nhật avatar diễn viên</span>
+        </a>
+
         <div class="nav-divider">Hệ thống</div>
-        <a href="#" class="nav-item">
+        <a href="<?php echo _HOST_URL; ?>/admin/logs" class="nav-item">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Nhật ký hoạt động</span>
         </a>
@@ -59,6 +69,7 @@ if (!defined('_nkhanhh')) {
             <i class="fa-solid fa-gear"></i>
             <span>Cài đặt</span>
         </a>
+
         <a href="<?php echo _HOST_URL; ?>/admin/logout" class="nav-item">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Đăng xuất</span>

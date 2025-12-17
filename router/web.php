@@ -94,6 +94,14 @@ $router->get('/admin/role/delete', 'RoleController@delete');
 $router->get('/admin/comments', 'CommentController@list');
 $router->get('/admin/comments/delete', 'CommentController@delete');
 
+//ADMIN LOG
+$router->get('/admin/logs', 'ActivityController@list');
+
+//ADMIN CRAWLER
+$router->get('/admin/crawler', 'CrawlerController@list');
+$router->get('/admin/crawler/sync-api', 'CrawlerController@syncApi');
+
+
 
 // -----------------------------------------------------------------
 // CLIENT

@@ -40,8 +40,15 @@ class WatchDetailController extends baseController
         $idMovie = $filter['id'];
 
         // Lấy thông tin phim chi tiết
-        $condition = 'id=' . $idMovie;
+        $condition = 'm.id=' . $idMovie;
         $movieDetail = $this->moviesModel->getMovieDetail($condition);
+
+        // Nếu không tìm thấy phim (hoặc ID sai), biến $movieDetail sẽ là false -> Chặn lại ngay
+        if (!$movieDetail) {
+            // Cách 1: Chuyển hướng về trang chủ
+            echo "Phim không tồn tại!";
+            die();
+        }
 
         // Lấy ID user đang đăng nhập
         if (isset($_SESSION['auth']['id'])) {
@@ -68,10 +75,8 @@ class WatchDetailController extends baseController
                 $conditionEpisode = 'season_id=' . $currentSeasonId;
                 $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
             } else {
-                $episodeDetail = $this->moviesModel->getAll("SELECT * 
-                FROM episodes 
-                WHERE movie_id = $idMovie 
-                ORDER BY id ASC");
+                $conditionEpisode = 'movie_id=' . $idMovie;
+                $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
             }
         } else {
             $sourceInfo = $this->moviesModel->getVideoSources($idMovie);

@@ -5,12 +5,14 @@ class MoviesController extends baseController
     private $genresModel;
     private $personModel;
     private $roleModel;
+    private $activityModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
         $this->genresModel = new Genres;
         $this->personModel = new Person;
         $this->roleModel = new Role;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -99,7 +101,7 @@ class MoviesController extends baseController
         $countMovies = $this->moviesModel->getRowMovies($sqlCount);
         $countResult = $this->moviesModel->getAllMovies($sqlCount);
         $maxData = $countResult[0]['total'];
-        $perPage = 20;
+        $perPage = 50;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;
@@ -238,47 +240,50 @@ class MoviesController extends baseController
                 if ($checkInsert) {
                     $movie_id = $this->moviesModel->getLastIdMovies();
                     $genre_id = $filter['genre_id'];
+                    // --- XỬ LÝ THỂ LOẠI ---
                     if (!empty($genre_id)) {
                         foreach ($genre_id as $item) {
-                            $data = [
+                            $dataGenre = [
                                 'movie_id' => $movie_id,
                                 'genre_id' => $item
                             ];
-                            $checkInsertMovie_Genres = $this->moviesModel->insertMoviesGenres($data);
-                            if ($checkInsertMovie_Genres) {
-                                $person_id = $filter['person_id'];
-                                if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
-                                    $persons = $filter['cast_person']; // Mảng ID diễn viên
-                                    $roles   = $filter['cast_role'];   // Mảng ID vai trò tương ứng
+                            $this->moviesModel->insertMoviesGenres($dataGenre);
+                        }
+                    }
 
-                                    for ($i = 0; $i < count($persons); $i++) {
-                                        if (!empty($persons[$i]) && !empty($roles[$i])) {
-                                            $dataCast = [
-                                                'movie_id'  => $movie_id,
-                                                'person_id' => $persons[$i],
-                                                'role_id'   => $roles[$i]
-                                            ];
-                                            $checkInsertPerson = $this->personModel->insertMoviePerson($dataCast);
-                                            if ($checkInsertPerson) {
-                                                setSessionFlash('msg', 'Thêm phim mới thất bại');
-                                                setSessionFlash('msg_type', 'danger');
-                                            } else {
-                                                setSessionFlash('msg', 'Thêm phim mới thất bại');
-                                                setSessionFlash('msg_type', 'danger');
-                                                setSessionFlash('oldData', $filter);
-                                                setSessionFlash('errors', $errors);
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                setSessionFlash('msg', 'Thêm phim mới thất bại');
-                                setSessionFlash('msg_type', 'danger');
-                                setSessionFlash('oldData', $filter);
-                                setSessionFlash('errors', $errors);
+                    // --- XỬ LÝ CAST ---
+                    $person_id = $filter['person_id'];
+                    if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
+                        $persons = $filter['cast_person']; // Mảng ID diễn viên
+                        $roles   = $filter['cast_role'];   // Mảng ID vai trò tương ứng
+
+                        for ($i = 0; $i < count($persons); $i++) {
+                            if (!empty($persons[$i]) && !empty($roles[$i])) {
+                                $dataCast = [
+                                    'movie_id'  => $movie_id,
+                                    'person_id' => $persons[$i],
+                                    'role_id'   => $roles[$i]
+                                ];
+                                $this->personModel->insertMoviePerson($dataCast);
                             }
                         }
                     }
+                    // Ghi log
+                    $logData = [
+                        'tittle' => $data['tittle'],
+                        'slug' => $data['slug']
+                    ];
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'create',
+                        'movies',
+                        $movie_id,
+                        null,
+                        $logData
+                    );
+                    setSessionFlash('msg', 'Thêm phim mới thành công');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/film/list');
                 } else {
                     setSessionFlash('msg', 'Thêm phim mới thất bại');
                     setSessionFlash('msg_type', 'danger');
@@ -389,7 +394,7 @@ class MoviesController extends baseController
                 // ID phim cần sửa
                 $idMovie = $filter['idMovie'];
                 $conditionUpdate = 'id=' . $idMovie;
-
+                $oldData = $this->moviesModel->getOneMovie($conditionUpdate);
                 $checkUpdate = $this->moviesModel->updateMovies($dataUpdate, $conditionUpdate);
 
                 if ($checkUpdate) {
@@ -407,7 +412,7 @@ class MoviesController extends baseController
                     }
                     $this->personModel->deleteMoviePerson("movie_id = $idMovie");
 
-                    // 2. Thêm dữ liệu mới
+                    // Thêm dữ liệu mới
                     if (!empty($filter['cast_person']) && !empty($filter['cast_role'])) {
                         $persons = $filter['cast_person'];
                         $roles   = $filter['cast_role'];
@@ -422,6 +427,28 @@ class MoviesController extends baseController
                                 $this->personModel->insertMoviePerson($dataCast);
                             }
                         }
+                    }
+
+                    // Lặp qua dataUpdate để xem trường nào thay đổi
+                    $changes = [];
+                    foreach ($dataUpdate as $key => $value) {
+                        if ($oldData[$key] != $value) {
+                            $changes[$key] = [
+                                'from' => $oldData[$key],
+                                'to' => $value
+                            ];
+                        }
+                    }
+                    //ghi log
+                    if (!empty($changes)) {
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'update',
+                            'movies',
+                            $idMovie,
+                            $oldData,
+                            $dataUpdate
+                        );
                     }
                     setSessionFlash('msg', 'Cập nhật thành công');
                     setSessionFlash('msg_type', 'success');
@@ -444,34 +471,79 @@ class MoviesController extends baseController
     public function delete()
     {
         $filter = filterData('get');
-        if (!empty($filter)) {
+        if (!empty($filter['id'])) {
             $movie_id = $filter['id'];
+
+            // 1. Kiểm tra phim có tồn tại không
             $condition = 'id=' . $movie_id;
             $checkID = $this->moviesModel->getOneMovie($condition);
+
             if (!empty($checkID)) {
-                $conditionDeleteMovieGenres = 'movie_id=' . $movie_id;
-                $deleteMovieGenres = $this->moviesModel->deleteMovieGenres($conditionDeleteMovieGenres);
-                if ($deleteMovieGenres) {
-                    $condionDeleteMovie = 'id=' . $movie_id;
-                    $deleteMovie = $this->moviesModel->deleteMovie($condionDeleteMovie);
-                    if ($deleteMovie) {
-                        setSessionFlash('msg', 'Xoá bài viết thành công.');
-                        setSessionFlash('msg_type', 'success');
-                        reload('/admin/film/list');
-                    }
+                // --- BẮT ĐẦU QUY TRÌNH XÓA SẠCH (CLEANUP) ---
+                // Phải xóa dữ liệu ở các bảng con trước khi xóa bảng cha (movies)
+
+                $condDelete = "movie_id = $movie_id";
+
+                // 1. Xóa Thể loại (movie_genres)
+                $this->moviesModel->delete('movie_genres', $condDelete);
+
+                // 2. Xóa Diễn viên/Đạo diễn (movie_person) - Nguyên nhân gây lỗi hiện tại của bạn
+                $this->moviesModel->delete('movie_person', $condDelete);
+
+                // 3. Xóa Bình luận (comments) & Like bình luận
+                // Lưu ý: Cần xóa comment_likes trước nếu có ràng buộc, nhưng ở đây ta xóa comments trước
+                // Nếu comments có khóa ngoại self-referencing (parent_id), delete có thể phức tạp hơn, 
+                // nhưng với cấu trúc hiện tại, xóa theo movie_id là ổn.
+                $this->moviesModel->delete('comments', $condDelete);
+
+                // 4. Xóa Tập phim (episodes)
+                $this->moviesModel->delete('episodes', $condDelete);
+
+                // 5. Xóa Mùa phim (seasons)
+                $this->moviesModel->delete('seasons', $condDelete);
+
+                // 6. Xóa Yêu thích (favorites)
+                $this->moviesModel->delete('favorites', $condDelete);
+
+                // 7. Xóa Thống kê view (movie_views_daily)
+                $this->moviesModel->delete('movie_views_daily', $condDelete);
+
+                // 8. Xóa Đánh giá (ratings)
+                $this->moviesModel->delete('ratings', $condDelete);
+
+                // --- KẾT THÚC CLEANUP ---
+
+                // 9. Cuối cùng: Xóa Phim (movies)
+                $deleteMovie = $this->moviesModel->deleteMovie($condition);
+
+                if ($deleteMovie) {
+                    // GHI LOG
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'delete',
+                        'movies',
+                        $movie_id,
+                        $checkID, // Lưu data cũ để audit
+                        null
+                    );
+
+                    setSessionFlash('msg', 'Xoá phim và toàn bộ dữ liệu liên quan thành công.');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/admin/film/list');
                 } else {
-                    setSessionFlash('msg', 'Xoá bài viết thất bại.');
+                    setSessionFlash('msg', 'Xoá phim thất bại (Lỗi Database).');
                     setSessionFlash('msg_type', 'danger');
                     reload('/admin/film/list');
                 }
             } else {
-                setSessionFlash('msg', 'Bài viết không tồn tại.');
+                setSessionFlash('msg', 'Phim không tồn tại.');
                 setSessionFlash('msg_type', 'danger');
                 reload('/admin/film/list');
             }
         } else {
-            setSessionFlash('msg', 'Xoá bài viết thất bại.');
+            setSessionFlash('msg', 'Dữ liệu không hợp lệ.');
             setSessionFlash('msg_type', 'danger');
+            reload('/admin/film/list');
         }
     }
 

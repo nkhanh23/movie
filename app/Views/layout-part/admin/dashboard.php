@@ -1,3 +1,9 @@
+<?php
+// echo '<pre>';
+// print_r($getLatestMoviesLogs);
+// echo '</pre>';
+// die();
+?>
 <!-- HEADER -->
 <?php layout('admin/header'); ?>
 
@@ -114,55 +120,76 @@
                     </div>
 
                     <div class="activity-feed">
-                        <div class="activity-item">
-                            <div class="activity-icon bg-blue">
-                                <i class="fa-solid fa-plus"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p class="activity-text"><span class="fw-bold">Admin</span> đã thêm phim mới <span class="text-highlight">The Marvels</span></p>
-                                <span class="activity-time">5 phút trước</span>
-                            </div>
-                        </div>
+                        <?php if (!empty($logs)): ?>
+                            <?php foreach ($logs as $log) : ?>
+                                <?php
+                                // 1. Xử lý dữ liệu JSON
+                                $logData = json_decode($log['new_values'], true) ?? json_decode($log['old_values'], true);
 
-                        <div class="activity-item">
-                            <div class="activity-icon bg-green">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p class="activity-text"><span class="fw-bold">Editor_Huy</span> cập nhật tập 5 <span class="text-highlight">One Piece Live Action</span></p>
-                                <span class="activity-time">30 phút trước</span>
-                            </div>
-                        </div>
+                                // Tìm tên hiển thị mặc định
+                                $targetName = $logData['tittle'] ?? $logData['name'] ?? $logData['fullname'] ?? ('ID: ' . $log['entity_id']);
 
-                        <div class="activity-item">
-                            <div class="activity-icon bg-red">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p class="activity-text"><span class="fw-bold">System</span> đã xóa bình luận spam của user <span class="fw-bold">bot_123</span></p>
-                                <span class="activity-time">2 giờ trước</span>
-                            </div>
-                        </div>
+                                // Định nghĩa Entity Map (Đưa lên trước switch để có thể ghi đè trong case login)
+                                $entityMap = [
+                                    'movies'   => 'phim',
+                                    'users'    => 'người dùng',
+                                    'episodes' => 'tập phim',
+                                    'seasons'  => 'mùa phim',
+                                    'genres'   => 'thể loại',
+                                    'actors'   => 'diễn viên',
+                                    'comments' => 'bình luận'
+                                ];
+                                $entityName = $entityMap[$log['entity_type']] ?? $log['entity_type'];
 
-                        <div class="activity-item">
-                            <div class="activity-icon bg-purple">
-                                <i class="fa-solid fa-user-plus"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p class="activity-text"><span class="fw-bold">User_New</span> vừa đăng ký tài khoản VIP</p>
-                                <span class="activity-time">5 giờ trước</span>
-                            </div>
-                        </div>
+                                // 2. Cấu hình giao diện theo hành động
+                                $iconClass = 'fa-info';
+                                $bgClass = 'bg-gray';
+                                $actionText = 'thao tác';
 
-                        <div class="activity-item">
-                            <div class="activity-icon bg-blue">
-                                <i class="fa-solid fa-plus"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p class="activity-text"><span class="fw-bold">Admin</span> đã thêm thể loại <span class="text-highlight">Phim Tài Liệu</span></p>
-                                <span class="activity-time">1 ngày trước</span>
-                            </div>
-                        </div>
+                                switch ($log['action']) {
+                                    case 'create':
+                                        $iconClass = 'fa-plus';
+                                        $bgClass = 'bg-blue';
+                                        $actionText = 'đã thêm mới';
+                                        break;
+                                    case 'update':
+                                        $iconClass = 'fa-pen-to-square';
+                                        $bgClass = 'bg-green';
+                                        $actionText = 'đã cập nhật';
+                                        break;
+                                    case 'delete':
+                                        $iconClass = 'fa-trash-can';
+                                        $bgClass = 'bg-red';
+                                        $actionText = 'đã xóa';
+                                        break;
+                                    // --- XỬ LÝ RIÊNG CHO LOGIN ---
+                                    case 'login':
+                                        $iconClass = 'fa-right-to-bracket';
+                                        $bgClass = 'bg-purple';
+                                        $actionText = 'đã đăng nhập tại IP:';
+                                        $entityName = '';
+                                        $targetName = $log['ip_address'] ?? 'Unknown IP';
+                                        break;
+                                }
+                                ?>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon <?= $bgClass ?>">
+                                        <i class="fa-solid <?= $iconClass ?>"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="activity-text">
+                                            <span class="fw-bold"><?= htmlspecialchars($log['fullname'] ?? 'Unknown') ?></span>
+                                            <?= $actionText ?> <?= $entityName ?>
+                                            <span class="text-highlight"><?= htmlspecialchars($targetName) ?></span>
+                                        </p>
+                                        <span class="activity-time"><?= timeAgo($log['created_at']) ?></span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-center text-muted" style="padding: 20px;">Chưa có hoạt động nào.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

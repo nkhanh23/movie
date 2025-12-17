@@ -1,11 +1,9 @@
 <?php
-
-use GuzzleHttp\Promise\Is;
-
 class AuthController extends baseController
 {
     private $coreModel;
     private $client;
+    private $activityModel;
     public function __construct()
     {
         $this->coreModel = new CoreModel;
@@ -16,6 +14,7 @@ class AuthController extends baseController
         $this->client->setRedirectUri(_GOOGLE_REDIRECT_URL);
         $this->client->addScope("email");
         $this->client->addScope("profile");
+        $this->activityModel = new Activity;
     }
     public function showLogin()
     {
@@ -78,7 +77,21 @@ class AuthController extends baseController
                                     'token' => $tokenLogin
                                 ];
                                 $checkInsert = $this->coreModel->insert('token_login', $dataToken);
+                                $getOne = $this->coreModel->getOne("SELECT * FROM users WHERE id = $user_id");
                                 if ($checkInsert) {
+                                    // Ghi log
+                                    $logData = [
+                                        'name' => $getOne['name'],
+                                        'email' => $getOne['email']
+                                    ];
+                                    $this->activityModel->log(
+                                        $user_id,
+                                        'login',
+                                        'users',
+                                        $user_id,
+                                        null,
+                                        $logData
+                                    );
                                     if ($checkStatus['group_id'] == 1) {
                                         setSession('tokenLogin', $tokenLogin);
                                         reload('/');
@@ -281,10 +294,21 @@ class AuthController extends baseController
                         'user_id' => $user_id,
                         'token' => $tokenLogin
                     ];
-
                     $checkInsert = $this->coreModel->insert('token_login', $dataLogin);
-
                     if ($checkInsert) {
+                        // Ghi log
+                        $logData = [
+                            'name' => $checkUser['name'],
+                            'email' => $checkUser['email']
+                        ];
+                        $this->activityModel->log(
+                            $user_id,
+                            'login',
+                            'users',
+                            $user_id,
+                            null,
+                            $logData
+                        );
                         if ($checkUser['group_id'] == 1) {
                             setSession('tokenLogin', $tokenLogin);
                             reload('/');
@@ -327,8 +351,20 @@ class AuthController extends baseController
                             ];
 
                             $checkInsertRegister = $this->coreModel->insert('token_login', $dataLogin);
-
                             if ($checkInsertRegister) {
+                                // Ghi log
+                                $logData = [
+                                    'name' => $checkUser['name'],
+                                    'email' => $checkUser['email']
+                                ];
+                                $this->activityModel->log(
+                                    $user_id,
+                                    'login',
+                                    'users',
+                                    $user_id,
+                                    null,
+                                    $logData
+                                );
                                 setSession('tokenLogin', $tokenLogin);
                                 reload('/');
                             } else {

@@ -7,6 +7,16 @@ layout('client/header');
 // print_r($movieDetail);
 // echo '</pre>';
 // die();
+
+if (isset($_GET['debug']) && $_GET['debug'] == 1) {
+    echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative;'>";
+    echo "<h3>DEBUG DỮ LIỆU TẬP PHIM:</h3>";
+    echo "<pre>";
+    print_r($episodeDetail);
+    echo "</pre>";
+    echo "</div>";
+    die(); // Dừng trang web để xem
+}
 ?>
 <!DOCTYPE html>
 
@@ -83,7 +93,42 @@ layout('client/header');
                         <div
                             class="relative w-full rounded-xl shadow-2xl shadow-primary/20 border border-primary/50 p-1 bg-black/50 overflow-hidden">
                             <?php
-                            $movieUrl = $movieDetail['source_url'];
+                            // KHỞI TẠO URL MẶC ĐỊNH
+                            $movieUrl = '';
+
+                            // LOGIC LẤY LINK THÔNG MINH
+                            if (!empty($episodeDetail) && is_array($episodeDetail)) {
+
+                                // 1. Lấy ID tập đang xem từ URL (nếu có)
+                                $currentEpisodeId = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
+
+                                // Biến tạm để lưu tập đầu tiên (dùng làm backup)
+                                $firstEpLink = '';
+
+                                foreach ($episodeDetail as $index => $ep) {
+                                    // Lấy link từ các key có thể có (source_url hoặc link)
+                                    $link = isset($ep['source_url']) ? $ep['source_url'] : ($ep['link'] ?? '');
+
+                                    // Lưu link tập đầu tiên để dự phòng
+                                    if ($index === 0) {
+                                        $firstEpLink = $link;
+                                    }
+
+                                    // Nếu ID trùng với URL -> Lấy link này và dừng vòng lặp
+                                    if ($currentEpisodeId && $ep['id'] == $currentEpisodeId) {
+                                        $movieUrl = $link;
+                                        break;
+                                    }
+                                }
+
+                                // 2. Nếu không tìm thấy link theo ID (hoặc mới vào trang chưa chọn tập)
+                                // -> Lấy link của tập đầu tiên
+                                if (empty($movieUrl)) {
+                                    $movieUrl = $firstEpLink;
+                                }
+                            }
+
+                            // 3. Render Player
                             echo renderMoviePlayer($movieUrl);
                             ?>
                         </div>
