@@ -81,7 +81,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                     data-subtitle="<?php echo htmlspecialchars($value['original_tittle'], ENT_QUOTES); ?>"
                     data-desc="<?php echo htmlspecialchars($value['description'], ENT_QUOTES); ?>">
 
-                    <img src="<?php echo $value['thumbnail'] ?>" class="w-full h-full object-cover">
+                    <img loading="lazy" src="<?php echo $value['poster_url'] ?>" class="w-full h-full object-cover">
                 </div>
             <?php endforeach; ?>
         </div>
@@ -260,7 +260,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                                     <div class="line-center line-tm">Vietsub</div>
                                                 </div>
                                                 <div class="image-wrapper">
-                                                    <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                    <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                     <div class="play-overlay">
                                                         <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                         <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
@@ -318,7 +318,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                                     <div class="line-center line-tm">Vietsub</div>
                                                 </div>
                                                 <div class="image-wrapper">
-                                                    <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                    <img loading="lazy" class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                     <div class="play-overlay">
                                                         <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                         <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
@@ -376,7 +376,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                                     <div class="line-center line-tm">Vietsub</div>
                                                 </div>
                                                 <div class="image-wrapper">
-                                                    <img class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                    <img loading="lazy" class="movie-thumb" src="<?php echo $item['thumbnail']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                     <div class="play-overlay">
                                                         <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                         <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
@@ -442,7 +442,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                                         <!-- Card Content -->
                                         <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-yellow-500/50 group-hover/card:shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-background-dark/50">
-                                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+                                            <img loading="lazy" src="<?php echo $item['poster_url']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
 
                                             <!-- Premium Shine Effect -->
                                             <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
@@ -513,7 +513,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                                         <!-- Card Content -->
                                         <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover/card:ring-red-500/50 group-hover/card:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-500 transform group-hover/card:-translate-y-2 bg-background-dark/50">
-                                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
+                                            <img loading="lazy" src="<?php echo $item['poster_url']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out filter brightness-90 group-hover/card:brightness-110">
 
                                             <!-- Premium Shine Effect -->
                                             <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
@@ -576,10 +576,10 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             <?php foreach ($getCinemaMovie as $item) : ?>
                                 <div class="swiper-slide">
                                     <div class="movie-card-wrapper relative flex-shrink-0 w-full snap-start group/card cursor-pointer"
-                                        data-title="<?php echo $item['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $item['thumbnail']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất."> <!-- Removed fixed width -->
+                                        data-title="<?php echo $item['tittle']; ?>" data-year="2024" data-genre="Action" data-image="<?php echo $item['poster_url']; ?>" data-desc="Kong và Godzilla phải hợp tác chống lại một mối đe dọa khổng lồ ẩn sâu trong Trái Đất."> <!-- Removed fixed width -->
 
                                         <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden bg-background-dark/50 ring-1 ring-white/10 group-hover/card:ring-amber-500 transition-all duration-500 shadow-lg group-hover/card:shadow-[0_0_25px_rgba(245,158,11,0.3)]">
-                                            <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
+                                            <img loading="lazy" src="<?php echo $item['poster_url']; ?>" class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700 ease-out">
 
                                             <div class="absolute top-2 left-2 flex flex-col gap-1">
                                                 <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md uppercase tracking-wider">Hot</span>
@@ -641,7 +641,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                         <div class="anime-slide absolute inset-0 transition-all duration-700 ease-in-out <?php echo $activeClass; ?>" data-index="<?php echo $key; ?>">
                             <!-- Background Image -->
                             <div class="absolute inset-0">
-                                <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
+                                <img loading="lazy" src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
                                 <!-- Gradient Overlay -->
                                 <div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/60 to-transparent"></div>
@@ -704,7 +704,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             <div class="anime-thumb flex-shrink-0 w-[60px] h-[90px] md:w-[80px] md:h-[120px] rounded-lg overflow-hidden cursor-pointer border-2 <?php echo $activeThumb; ?> transition-all duration-300 shadow-xl bg-background-dark/50"
                                 onclick="changeAnimeSlide(<?php echo $key; ?>)"
                                 data-index="<?php echo $key; ?>">
-                                <img src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
+                                <img loading="lazy" src="<?php echo $item['poster_url']; ?>" class="w-full h-full object-cover">
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -748,7 +748,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                                 <div class="line-center line-pd">Full HD</div>
                                             </div>
                                             <div class="image-wrapper">
-                                                <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
                                                     <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
                                                     <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
@@ -808,7 +808,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                                 <div class="line-center line-tm">Vietsub</div>
                                             </div>
                                             <div class="image-wrapper">
-                                                <img class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
+                                                <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
                                                     <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
                                                     <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>

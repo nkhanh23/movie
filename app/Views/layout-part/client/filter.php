@@ -19,7 +19,7 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
 // die();
 ?>
 
-<!-- Filter Toggle Button (Always Visible) -->
+<!-- Filter Toggle Button-->
 <button id="filterToggle"
     class="glass-panel rounded-full p-4 mb-4 border border-glass-border hover:bg-primary/20 hover:shadow-neon-sm transition-all cursor-pointer group">
     <div class="flex items-center gap-2">
@@ -31,198 +31,282 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
 <!-- Filter Panel (Collapsible) -->
 <div id="filterPanel" class="glass-panel rounded-2xl p-6 md:p-10 mb-8 border border-glass-border hidden">
 
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">tune</span>
-            Bộ lọc
-        </h2>
-    </div>
+    <form method="GET" id="filterForm">
+        <!-- Hidden fields để giữ route -->
+        <input type="hidden" name="mod" value="<?= $_GET['mod'] ?? '' ?>">
+        <input type="hidden" name="act" value="<?= $_GET['act'] ?? '' ?>">
+        <div class="space-y-6 mb-6">
 
-    <div class="space-y-6 mb-6">
-
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">movie_filter</span>
-                <span class="text-sm font-semibold text-white">Thể loại</span>
+            <!-- Thể loại (Multi-select) -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">movie_filter</span>
+                    <span class="text-sm font-semibold text-white">Thể loại</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <?php foreach ($getAllGenres as $genre) :
+                        $checked = in_array($genre['id'], (array)($filters['genres'] ?? [])) ? 'checked' : '';
+                    ?>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="genres[]" value="<?= $genre['id'] ?>" <?= $checked ?>>
+                            <span class="filter-label"><?= $genre['name'] ?></span>
+                        </label>
+                    <?php endforeach ?>
+                </div>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= getUrlParams('genres', '') ?>"
-                    class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= empty($currentGenre) ? $clsActive : $clsInactive ?>">
-                    Tất cả
-                </a>
-                <?php foreach ($getAllGenres as $genre) : ?>
-                    <a href="<?= getUrlParams('genres', $genre['id']) ?>"
-                        class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentGenre == $genre['id']) ? $clsActive : $clsInactive ?>">
-                        <?= $genre['name'] ?>
-                    </a>
-                <?php endforeach ?>
-            </div>
-        </div>
 
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">public</span>
-                <span class="text-sm font-semibold text-white">Quốc gia</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= getUrlParams('countries', '') ?>"
-                    class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= empty($currentCountry) ? $clsActive : $clsInactive ?>">
-                    Tất cả
-                </a>
-                <?php foreach ($getAllCountries as $country) : ?>
-                    <a href="<?= getUrlParams('countries', $country['id']) ?>"
-                        class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentCountry == $country['id']) ? $clsActive : $clsInactive ?>">
-                        <?= $country['name'] ?>
-                    </a>
-                <?php endforeach ?>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">theaters</span>
-                <span class="text-sm font-semibold text-white">Loại phim</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <?php foreach ($getAllTypes as $type) : ?>
-                    <a href="<?= getUrlParams('types', $type['id']) ?>"
-                        class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentType == $type['id']) ? $clsActive : $clsInactive ?>"><?= $type['name'] ?></a>
-                <?php endforeach ?>
-
+            <!-- Quốc gia (Multi-select) -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">public</span>
+                    <span class="text-sm font-semibold text-white">Quốc gia</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <?php foreach ($getAllCountries as $country) :
+                        $checked = in_array($country['id'], (array)($filters['countries'] ?? [])) ? 'checked' : '';
+                    ?>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="countries[]" value="<?= $country['id'] ?>" <?= $checked ?>>
+                            <span class="filter-label"><?= $country['name'] ?></span>
+                        </label>
+                    <?php endforeach ?>
+                </div>
             </div>
         </div>
 
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">calendar_month</span>
-                <span class="text-sm font-semibold text-white">Năm phát hành</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= getUrlParams('release_year', '') ?>"
-                    class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= empty($currentYear) ? $clsActive : $clsInactive ?>">
-                    Tất cả
-                </a>
-                <?php
-                // Kiểm tra xem có đang hiển thị tất cả năm không
-                $showAllYears = isset($_GET['show_all_years']);
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                // Lấy 13 năm đầu tiên hoặc tất cả năm
-                $yearsToShow = $showAllYears ? $getAllReleaseYear : array_slice($getAllReleaseYear, 0, 13);
-                $hasMoreYears = count($getAllReleaseYear) > 13;
-
-                foreach ($yearsToShow as $year) :
-                ?>
-                    <a href="<?= getUrlParams('release_year', $year['id']) ?>"
-                        class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentYear == $year['id']) ? $clsActive : $clsInactive ?>">
-                        <?= $year['year'] ?>
-                    </a>
-                <?php endforeach; ?>
-
-                <?php if ($hasMoreYears && !$showAllYears): ?>
-                    <a href="<?= getUrlParams('show_all_years', '1') ?>"
-                        class="px-2 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-primary transition-colors">
-                        Khác
-                    </a>
-                <?php elseif ($showAllYears): ?>
-                    <a href="<?= getUrlParams('show_all_years', '') ?>"
-                        class="px-2 py-1.5 rounded-full text-xs font-medium text-primary hover:text-secondary transition-colors">
-                        Thu gọn
-                    </a>
-                <?php endif; ?>
+            <!-- Loại phim -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">theaters</span>
+                    <span class="text-sm font-semibold text-white">Loại phim</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <?php foreach ($getAllTypes as $type) :
+                        $checked = ($currentType == $type['id']) ? 'checked' : '';
+                    ?>
+                        <label class="filter-checkbox">
+                            <input type="radio" name="types" value="<?= $type['id'] ?>" <?= $checked ?>>
+                            <span class="filter-label"><?= $type['name'] ?></span>
+                        </label>
+                    <?php endforeach ?>
+                </div>
             </div>
-        </div>
 
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
-                <span class="text-sm font-semibold text-white">Xếp hạng</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= getUrlParams('age', '') ?>"
-                    class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= empty($currentAge) ? $clsActive : $clsInactive ?>">
-                    Tất cả
-                </a>
-                <?php if (isset($getAllAge)): foreach ($getAllAge as $age) : ?>
-                        <a href="<?= getUrlParams('age', $age['id']) ?>"
-                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentAge == $age['id']) ? $clsActive : $clsInactive ?>">
-                            <?= $age['age'] ?> </a>
-                <?php endforeach;
-                endif; ?>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">language</span>
-                <span class="text-sm font-semibold text-white">Phiên bản</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= getUrlParams('language', '') ?>"
-                    class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= empty($currentLang) ? $clsActive : $clsInactive ?>">
-                    Tất cả
-                </a>
-                <?php if (isset($getAllVoiceType)): foreach ($getAllVoiceType as $voice) : ?>
-                        <a href="<?= getUrlParams('language', $voice['id']) ?>"
-                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= ($currentLang == $voice['voice_type']) ? $clsActive : $clsInactive ?>">
-                            <?= $voice['voice_type'] ?>
-                        </a>
-                <?php endforeach;
-                endif; ?>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">settings</span>
-                <span class="text-sm font-semibold text-white">Chất lượng</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <?php
-                // Xử lý hiển thị mảng chất lượng (tương tự như code cũ của bạn nhưng chuyển thành Link)
-                // Lưu ý: Nếu $getAllQuality có dữ liệu động thì dùng foreach, ở đây tôi demo theo code cũ của bạn
-                $qualities = isset($getAllQuality) ? $getAllQuality : [];
-                foreach ($qualities as $q):
-                    $isActive = ($currentQuality == $q['id']);
-                    $icon = 'videocam';
-                    if (strpos($q['name'], '4K') !== false) $icon = '4k';
-                    if (strpos($q['name'], 'HD') !== false) $icon = 'hd';
-                ?>
-                    <a href="<?= getUrlParams('quality', $isActive ? '' : $q['id']) ?>"
-                        class="group flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all <?= $isActive ? 'bg-primary/20 border-primary/30' : 'bg-white/5 border-white/10 hover:border-primary/30' ?>">
-
-                        <span class="material-symbols-outlined text-[16px] <?= $isActive ? 'text-primary' : 'text-gray-400' ?>"><?= $icon ?></span>
-                        <span class="text-xs font-medium <?= $isActive ? 'text-primary' : 'text-gray-400' ?>"><?= $q['name'] ?></span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-primary text-[20px]">sort</span>
-                <span class="text-sm font-semibold text-white">Sắp xếp</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <select onchange="window.location.href=this.value"
-                    class="px-4 py-2 rounded-lg bg-white/5 text-gray-300 border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 hover:border-primary/30 transition-all text-sm cursor-pointer w-full">
-
-                    <option value="<?= getUrlParams('sort', 'newest') ?>" <?= ($currentSort == 'newest') ? 'selected' : '' ?>>Mới nhất</option>
-                    <option value="<?= getUrlParams('sort', 'rating') ?>" <?= ($currentSort == 'rating') ? 'selected' : '' ?>>Đánh giá cao</option>
-                    <option value="<?= getUrlParams('sort', 'views') ?>" <?= ($currentSort == 'views') ? 'selected' : '' ?>>Lượt xem nhiều</option>
-                    <option value="<?= getUrlParams('sort', 'name_asc') ?>" <?= ($currentSort == 'name_asc') ? 'selected' : '' ?>>Tên A-Z</option>
-                    <option value="<?= getUrlParams('sort', 'name_desc') ?>" <?= ($currentSort == 'name_desc') ? 'selected' : '' ?>>Tên Z-A</option>
-                    <option value="<?= getUrlParams('sort', 'year_desc') ?>" <?= ($currentSort == 'year_desc') ? 'selected' : '' ?>>Năm giảm dần</option>
-                    <option value="<?= getUrlParams('sort', 'year_asc') ?>" <?= ($currentSort == 'year_asc') ? 'selected' : '' ?>>Năm tăng dần</option>
+            <!-- Năm phát hành -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">calendar_month</span>
+                    <span class="text-sm font-semibold text-white">Năm phát hành</span>
+                </div>
+                <select name="release_year" class="filter-select">
+                    <option value="">Tất cả</option>
+                    <?php foreach ($getAllReleaseYear as $year) : ?>
+                        <option value="<?= $year['id'] ?>" <?= ($currentYear == $year['id']) ? 'selected' : '' ?>>
+                            <?= $year['year'] ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
+            <!-- Xếp hạng -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+                    <span class="text-sm font-semibold text-white">Xếp hạng</span>
+                </div>
+                <select name="age" class="filter-select">
+                    <option value="">Tất cả</option>
+                    <?php if (isset($getAllAge)): foreach ($getAllAge as $age) : ?>
+                            <option value="<?= $age['id'] ?>" <?= ($currentAge == $age['id']) ? 'selected' : '' ?>>
+                                <?= $age['age'] ?>
+                            </option>
+                    <?php endforeach;
+                    endif; ?>
+                </select>
+            </div>
+
+            <!-- Phiên bản -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">language</span>
+                    <span class="text-sm font-semibold text-white">Phiên bản</span>
+                </div>
+                <select name="language" class="filter-select">
+                    <option value="">Tất cả</option>
+                    <?php if (isset($getAllVoiceType)): foreach ($getAllVoiceType as $voice) : ?>
+                            <option value="<?= $voice['voice_type'] ?>" <?= ($currentLang == $voice['voice_type']) ? 'selected' : '' ?>>
+                                <?= $voice['voice_type'] ?>
+                            </option>
+                    <?php endforeach;
+                    endif; ?>
+                </select>
+            </div>
+
+            <!-- Chất lượng -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">settings</span>
+                    <span class="text-sm font-semibold text-white">Chất lượng</span>
+                </div>
+                <select name="quality" class="filter-select">
+                    <option value="">Tất cả</option>
+                    <?php
+                    $qualities = isset($getAllQuality) ? $getAllQuality : [];
+                    foreach ($qualities as $q):
+                    ?>
+                        <option value="<?= $q['id'] ?>" <?= ($currentQuality == $q['id']) ? 'selected' : '' ?>>
+                            <?= $q['name'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- Sắp xếp -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-[20px]">sort</span>
+                    <span class="text-sm font-semibold text-white">Sắp xếp</span>
+                </div>
+                <select name="sort" class="filter-select">
+                    <option value="newest" <?= ($currentSort == 'newest') ? 'selected' : '' ?>>Mới nhất</option>
+                    <option value="rating" <?= ($currentSort == 'rating') ? 'selected' : '' ?>>Đánh giá cao</option>
+                    <option value="views" <?= ($currentSort == 'views') ? 'selected' : '' ?>>Lượt xem nhiều</option>
+                    <option value="name_asc" <?= ($currentSort == 'name_asc') ? 'selected' : '' ?>>Tên A-Z</option>
+                    <option value="name_desc" <?= ($currentSort == 'name_desc') ? 'selected' : '' ?>>Tên Z-A</option>
+                    <option value="year_desc" <?= ($currentSort == 'year_desc') ? 'selected' : '' ?>>Năm giảm dần</option>
+                    <option value="year_asc" <?= ($currentSort == 'year_asc') ? 'selected' : '' ?>>Năm tăng dần</option>
+                </select>
+            </div>
+
         </div>
 
-    </div>
+        <!-- Action Buttons -->
+        <div class="flex gap-3 justify-end mt-8">
+            <button type="button" onclick="resetFilters()" class="btn-reset">
+                <span class="material-symbols-outlined text-[18px]">refresh</span>
+                Xóa bộ lọc
+            </button>
+            <button type="submit" class="btn-submit">
+                <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+                Áp Dụng Bộ Lọc
+            </button>
+        </div>
+    </form>
 </div>
+
+<style>
+    /* Filter Checkbox/Radio Styles */
+    .filter-checkbox {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .filter-checkbox input[type="checkbox"],
+    .filter-checkbox input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .filter-label {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        /* Inactive: bg-white/5 text-gray-400 border-white/10 */
+        background: rgba(255, 255, 255, 0.05);
+        color: #9ca3af;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-checkbox input:checked~.filter-label {
+        /* Active: bg-primary/20 text-primary border-primary/30 - Using orange/yellow theme */
+        background: rgba(251, 146, 60, 0.2);
+        color: #fb923c;
+        border-color: rgba(251, 146, 60, 0.3);
+        box-shadow: 0 0 10px rgba(251, 146, 60, 0.3);
+    }
+
+    .filter-checkbox:hover .filter-label {
+        /* Hover: border-primary/30 text-primary */
+        border-color: rgba(251, 146, 60, 0.3);
+        color: #fb923c;
+    }
+
+    /* Select Styles */
+    .filter-select {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 8px;
+        background: #0a0a0a;
+        color: #e5e7eb;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-select option {
+        background: #0a0a0a;
+        color: #e5e7eb;
+        padding: 10px;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+    }
+
+    .filter-select:hover {
+        border-color: rgba(var(--primary-rgb), 0.3);
+    }
+
+    /* Button Styles */
+    .btn-reset {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-reset:hover {
+        background: rgba(239, 68, 68, 0.2);
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-submit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.4);
+    }
+</style>
 
 <script>
     const filterToggle = document.getElementById('filterToggle');
@@ -241,4 +325,13 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
             }, 100);
         }
     });
+
+    // Reset filters - redirect to base URL
+    function resetFilters() {
+        const mod = '<?= $_GET['mod'] ?? '' ?>';
+        const act = '<?= $_GET['act'] ?? '' ?>';
+
+        // Redirect về base URL tương ứng
+        window.location.href = `<?= _HOST_URL ?>/${mod}/${act}`;
+    }
 </script>

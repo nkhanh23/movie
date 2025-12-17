@@ -213,7 +213,7 @@ layout('client/header');
                 <?php if (!empty($getAllMovies) && is_array($getAllMovies)) : ?>
 
                     <?php foreach ($getAllMovies as $movie) : ?>
-                        <div class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[420px]">
+                        <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[420px]">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90 z-10"></div>
 
                             <img
