@@ -38,17 +38,11 @@ class WatchDetailController extends baseController
     {
         $filter = filterData();
         $idMovie = $filter['id'];
+        $idEpisode = $filter['episode_id'];
 
         // Lấy thông tin phim chi tiết
         $condition = 'm.id=' . $idMovie;
         $movieDetail = $this->moviesModel->getMovieDetail($condition);
-
-        // Nếu không tìm thấy phim (hoặc ID sai), biến $movieDetail sẽ là false -> Chặn lại ngay
-        if (!$movieDetail) {
-            // Cách 1: Chuyển hướng về trang chủ
-            echo "Phim không tồn tại!";
-            die();
-        }
 
         // Lấy ID user đang đăng nhập
         if (isset($_SESSION['auth']['id'])) {
@@ -90,8 +84,22 @@ class WatchDetailController extends baseController
             }
         }
 
+        // =====================================================================
+        // AUTO-REDIRECT: Nếu URL không có episode_id, redirect sang tập đầu tiên
+        // =====================================================================
+        if (empty($idEpisode) && !empty($episodeDetail)) {
+            // Lấy ID tập đầu tiên
+            $firstEpisodeId = $episodeDetail[0]['id'];
+
+            // Tạo URL mới với episode_id
+            $redirectUrl = _HOST_URL . '/watch?id=' . $idMovie . '&episode_id=' . $firstEpisodeId;
+
+            // Redirect
+            header("Location: $redirectUrl");
+            exit;
+        }
         // Lấy danh sách bình luận
-        $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId);
+        $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId, $idEpisode);
         // Xử lý Phân cấp Cha - Con (Tree Structure)
         $commentsTree = $this->buildTree($comments, 0);
         // ĐẾM SỐ LƯỢNG COMMENT CHA 
@@ -105,6 +113,7 @@ class WatchDetailController extends baseController
 
         $data = [
             'idMovie' => $idMovie,
+            'idEpisode' => $idEpisode,
             'movieDetail' => $movieDetail,
             'seasonDetail' => $seasonDetail,
             'episodeDetail' => $episodeDetail,

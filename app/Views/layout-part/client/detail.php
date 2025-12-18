@@ -6,7 +6,7 @@ layout('client/header');
 $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
 // echo '<pre>';
-// print_r($movieDetail);
+// print_r($idEpisode);
 // echo '</pre>';
 // die();
 ?>
@@ -78,7 +78,14 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                         <p class="text-white/80 mt-4 text-base leading-relaxed">
                             <?php echo $movieDetail['description']; ?></p>
                         <div class="flex flex-wrap gap-3 mt-6">
-                            <button onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>'"
+                            <?php
+                            // Tạo URL xem phim với episode_id của tập đầu tiên
+                            $watchUrl = _HOST_URL . '/watch?id=' . $movieDetail['id'];
+                            if (!empty($episodeDetail) && isset($episodeDetail[0]['id'])) {
+                                $watchUrl .= '&episode_id=' . $episodeDetail[0]['id'];
+                            }
+                            ?>
+                            <button onclick="window.location.href='<?php echo $watchUrl; ?>'"
                                 class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105">
                                 <span class="material-symbols-outlined mr-2">play_arrow</span>
                                 <span class="truncate">Xem Ngay</span>
@@ -283,11 +290,13 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                         <?php endforeach; ?>
                     </div>
                 </div>
-
+                <!-- ============================================= -->
                 <!-- Review & Comments -->
+                <!-- ============================================= -->
                 <?php
                 $data = [
                     'idMovie' => $idMovie,
+                    'idEpisode' => $idEpisode,
                     'comments' => $comments,
                     'listComments' => $listComments,
                     'totalComments' => $totalComments,
@@ -833,25 +842,21 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const icon = btnElement.querySelector('.material-symbols-outlined');
-                    const textSpan = btnElement.querySelector('.like-text');
                     const countSpan = btnElement.querySelector('.like-count');
 
                     if (data.action === 'liked') {
                         // Cập nhật giao diện: Đã Like
                         btnElement.classList.remove('text-white/40');
                         btnElement.classList.add('text-primary');
-                        textSpan.innerText = 'Liked';
                     } else {
                         // Cập nhật giao diện: Bỏ Like
                         btnElement.classList.add('text-white/40');
                         btnElement.classList.remove('text-primary');
-                        textSpan.innerText = 'Helpful';
                     }
 
                     // Cập nhật số lượng
                     if (data.likes > 0) {
-                        countSpan.innerText = '(' + data.likes + ')';
+                        countSpan.innerText = data.likes;
                         countSpan.classList.remove('hidden');
                     } else {
                         countSpan.classList.add('hidden');

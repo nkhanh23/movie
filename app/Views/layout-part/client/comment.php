@@ -18,6 +18,7 @@
                                 <div class="flex-1">
                                     <form id="commentForm" onsubmit="postComment(event)">
                                         <input type="hidden" name="movie_id" value="<?php echo $idMovie; ?>">
+                                        <input type="hidden" name="episode_id" value="<?php echo $idEpisode; ?>">
 
                                         <textarea name="content" id="commentContent"
                                             class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-white/40 focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-colors resize-none"
@@ -113,14 +114,13 @@
                                                 $likeBtnClass = $isLiked ? 'text-primary' : 'text-white/40 hover:text-primary';
                                                 $likeIconType = $isLiked ? 'thumb_up_filled' : 'thumb_up';
                                                 ?>
-                                                <div class="flex gap-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div class="flex gap-4 mt-2">
                                                     <button onclick="toggleLike(<?php echo $item['id']; ?>, this)"
                                                         class="btn-like <?php echo $likeBtnClass; ?> text-xs flex items-center gap-1 transition-colors"
                                                         data-id="<?php echo $item['id']; ?>">
                                                         <span class="material-symbols-outlined text-[14px]">thumb_up</span>
-                                                        <span class="like-text"><?php echo $isLiked ? 'Liked' : 'Helpful'; ?></span>
-                                                        <span class="like-count ml-1 font-bold <?php echo ($item['like_count'] > 0) ? '' : 'hidden'; ?>">
-                                                            (<?php echo $item['like_count']; ?>)
+                                                        <span class="like-count font-bold <?php echo ($item['like_count'] > 0) ? '' : 'hidden'; ?>">
+                                                            <?php echo $item['like_count']; ?>
                                                         </span>
                                                     </button>
                                                     <button class="btn-reply text-white/40 hover:text-white text-xs flex items-center gap-1"

@@ -19,18 +19,30 @@ class Comments extends CoreModel
 
     // ------------------------------------- CLIENT ------------------------------------------------------
     // Lấy danh sách bình luận của phim (kèm thông tin user)
-    public function getCommentsByMovie($movieId, $userId = 0)
+    public function getCommentsByMovie($movieId, $userId = 0, $episodeId = null)
     {
-        // Chỉ lấy những bình luận có status = 1 (được hiển thị)
-        $sql = "SELECT c.*, u.fullname as fullname, u.avartar as avartar,
-        (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) as like_count,
-        (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.user_id = $userId) as is_liked
-        FROM comments c 
-        JOIN users u ON c.user_id = u.id 
-        WHERE c.movie_id = ? AND c.status = 1 
-        ORDER BY c.created_at DESC";
 
-        return $this->query($sql, [$movieId]);
+        $sql = "SELECT c.*, 
+                       u.fullname as fullname, 
+                       u.avartar as avartar,
+                       e.name as episode_name, 
+                       (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) as like_count,
+                       (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.user_id = $userId) as is_liked
+                FROM comments c 
+                JOIN users u ON c.user_id = u.id 
+                LEFT JOIN episodes e ON c.episode_id = e.id 
+                WHERE c.movie_id = :movie_id AND c.status = 1";
+
+        $params = ['movie_id' => $movieId];
+
+        if ($episodeId !== null && $episodeId > 0) {
+            $sql .= " AND c.episode_id = :episode_id";
+            $params['episode_id'] = $episodeId;
+        }
+
+        $sql .= " ORDER BY c.created_at DESC";
+
+        return $this->query($sql, $params);
     }
 
     // Nếu like rồi thì xóa, chưa thì thêm
@@ -101,5 +113,18 @@ class Comments extends CoreModel
 
         // 3. Xóa chính nó
         $this->delete('comments', "id = $id");
+    }
+
+    //Lấy thông tin của người cmt
+    public function getCmtOwner($id)
+    {
+        $sql = "SELECT c.*,u.id as user_id, u.fullname as fullname, u.avartar as avartar 
+        FROM comments c 
+        JOIN users u ON c.user_id = u.id 
+        WHERE c.id = :id";
+        $params = [
+            'id' => $id,
+        ];
+        return $this->getOne($sql, $params);
     }
 }

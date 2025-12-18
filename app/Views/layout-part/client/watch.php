@@ -284,6 +284,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                         <?php
                         $data = [
                             'idMovie' => $idMovie,
+                            'idEpisode' => $idEpisode,
                             'comments' => $comments,
                             'listComments' => $listComments,
                             'totalComments' => $totalComments,
@@ -871,32 +872,28 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
         const formData = new FormData();
         formData.append('comment_id', commentId);
 
-        fetch('/movie/api/like-comment', { // Đảm bảo route này trỏ đúng vào function likeCommentApi trong Controller
+        fetch('/movie/api/like-comment', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const icon = btnElement.querySelector('.material-symbols-outlined');
-                    const textSpan = btnElement.querySelector('.like-text');
                     const countSpan = btnElement.querySelector('.like-count');
 
                     if (data.action === 'liked') {
                         // Cập nhật giao diện: Đã Like
                         btnElement.classList.remove('text-white/40');
                         btnElement.classList.add('text-primary');
-                        textSpan.innerText = 'Liked';
                     } else {
                         // Cập nhật giao diện: Bỏ Like
                         btnElement.classList.add('text-white/40');
                         btnElement.classList.remove('text-primary');
-                        textSpan.innerText = 'Helpful';
                     }
 
                     // Cập nhật số lượng
                     if (data.likes > 0) {
-                        countSpan.innerText = '(' + data.likes + ')';
+                        countSpan.innerText = data.likes;
                         countSpan.classList.remove('hidden');
                     } else {
                         countSpan.classList.add('hidden');

@@ -6,6 +6,7 @@ class CommentUserController extends baseController
     private $episodesModel;
     private $personModel;
     private $commentsModel;
+    private $notificationsModel;
     public function __construct()
     {
         $this->moviesModel = new Movies();
@@ -13,6 +14,7 @@ class CommentUserController extends baseController
         $this->episodesModel = new Episode();
         $this->personModel = new Person();
         $this->commentsModel = new Comments();
+        $this->notificationsModel = new Notifications();
     }
 
     // API Thêm bình luận
@@ -34,6 +36,7 @@ class CommentUserController extends baseController
             if (isPost()) {
                 $filter = filterData();
                 $movieId = $filter['movie_id'] ?? 0;
+                $episodeId = $filter['episode_id'] > 0 ? $filter['episode_id'] : null;
                 $content = isset($filter['content']) ? trim($filter['content']) : '';
 
                 // Kiểm tra key 'id' tồn tại
@@ -48,13 +51,16 @@ class CommentUserController extends baseController
                     exit;
                 }
 
+
+
                 $data = [
                     'movie_id' => $movieId,
                     'user_id' => $userId,
                     'content' => $content,
                     'parent_id' => null,
+                    'episode_id' => $episodeId,
                     'status' => 1,
-                    'created_at' => date('Y-m-d H:i:s'), // Format chuẩn
+                    'created_at' => date('Y:m:d H:i:s'),
                 ];
 
                 $isInserted = $this->commentsModel->addComment($data);
@@ -62,7 +68,6 @@ class CommentUserController extends baseController
                 if ($isInserted) {
                     // Lấy ID vừa insert
                     $insertId = $this->commentsModel->getLastID();
-
                     ob_clean(); // Xóa mọi output rác có thể đã xuất hiện trước đó
                     // Trả về dữ liệu để JS append vào giao diện ngay lập tức
                     echo json_encode([
@@ -123,6 +128,27 @@ class CommentUserController extends baseController
                 // Lấy số like mới nhất
                 $newCount = $this->commentsModel->countLikes($commentId);
 
+                //-----------------------------------------------------------
+                //Thong bao cho nguoi dung
+                //-----------------------------------------------------------
+                if ($action == 'liked') {
+                    //tim thong tin cua nguoi duoc like
+                    $targetComment = $this->commentsModel->getCmtOwner($commentId);
+                    //Khong like tu suong
+                    if ($targetComment && $targetComment['user_id'] != $userId) {
+                        $senderName = $_SESSION['auth']['fullname'];
+                        $msg = "<b>$senderName</b> đã thích bình luận của bạn.";
+                        $link = _HOST_URL . '/detail?id=' . $targetComment['movie_id'] . '#comment-' . $commentId;
+                        $notiData = [
+                            'user_id' => $targetComment['user_id'],
+                            'type' => 'like',
+                            'message' => $msg,
+                            'link'    => $link,
+                            'created_at' => date('Y:m:d H:i:s')
+                        ];
+                        $this->notificationsModel->createNotification($notiData);
+                    }
+                }
                 ob_clean();
                 echo json_encode([
                     'status' => 'success',
@@ -287,8 +313,29 @@ class CommentUserController extends baseController
             $newId = $this->commentsModel->getLastID(); // Lấy ID thật
 
             if ($insertId) {
-                // Trả về dữ liệu xây dựng từ Session giúp nhanh hơn query lại DB
-                // Frontend đang mong đợi field 'avartar' (lưu ý chính tả)
+                //-----------------------------------------------------------
+                //Thong bao cho nguoi dung
+                //-----------------------------------------------------------
+                //Kiem tra co phai la reply khong
+                if ($parentId > 0) {
+                    $parentComment = $this->commentsModel->getCmtOwner($parentId);
+                    //thong bao neu tim thay va khong thong bao minh tu reply
+                    if ($parentComment && $parentComment['user_id'] != $userId) {
+                        //Người gửi
+                        $senderName = $_SESSION['auth']['fullname'] ?? 'Ai đó';
+                        $msg = "<b>$senderName</b> đã trả lời bình luận của bạn";
+                        //link
+                        $link = _HOST_URL . '/detail?id=' . $movieId . '#comment-' . $newId;
+                        $notiData = [
+                            'user_id' => $parentComment['user_id'],
+                            'message' => $msg,
+                            'type' => 'reply',
+                            'link' => $link,
+                            'created_at' => date('Y:m:d H:i:s'),
+                        ];
+                        $this->notificationsModel->createNotification($notiData);
+                    }
+                }
                 $responseComment = [
                     'id' => $newId,
                     'fullname' => $_SESSION['auth']['fullname'] ?? 'User',

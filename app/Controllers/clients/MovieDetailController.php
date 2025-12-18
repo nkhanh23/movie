@@ -39,6 +39,7 @@ class MovieDetailController extends baseController
     {
         $filter = filterData();
         $idMovie = $filter['id'];
+        $idEpisode = $filter['episode_id'] ?? null;
 
         // Lấy ID user
         if (isset($_SESSION['auth']['id'])) {
@@ -104,6 +105,7 @@ class MovieDetailController extends baseController
 
         $data = [
             'idMovie' => $idMovie,
+            'idEpisode' => $idEpisode,
             'movieDetail' => $movieDetail,
             'seasonDetail' => $seasonDetail,
             'episodeDetail' => $episodeDetail,
