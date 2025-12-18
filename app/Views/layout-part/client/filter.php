@@ -29,7 +29,7 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
 </button>
 
 <!-- Filter Panel (Collapsible) -->
-<div id="filterPanel" class="glass-panel rounded-2xl p-6 md:p-10 mb-8 border border-glass-border hidden">
+<div id="filterPanel" class="glass-panel rounded-2xl p-6 md:p-10 mb-8 border border-glass-border">
 
     <form method="GET" id="filterForm">
         <!-- Hidden fields để giữ route -->
@@ -197,6 +197,44 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
 </div>
 
 <style>
+    /* ====================================
+       FILTER PANEL ANIMATIONS - OPTIMIZED
+       GPU-accelerated với max-height + opacity
+       ==================================== */
+    #filterPanel {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 0;
+        transition:
+            max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.25s ease,
+            padding 0.35s ease,
+            margin 0.35s ease;
+        will-change: max-height, opacity;
+    }
+
+    #filterPanel.filter-open {
+        max-height: 1000px;
+        /* Đủ lớn để chứa tất cả nội dung */
+        opacity: 1;
+        padding-top: 1.5rem !important;
+        /* p-6 = 1.5rem */
+        padding-bottom: 1.5rem !important;
+        margin-bottom: 2rem;
+        /* mb-8 = 2rem */
+    }
+
+    @media (min-width: 768px) {
+        #filterPanel.filter-open {
+            padding-top: 2.5rem !important;
+            /* md:p-10 = 2.5rem */
+            padding-bottom: 2.5rem !important;
+        }
+    }
+
     /* Filter Checkbox/Radio Styles */
     .filter-checkbox {
         position: relative;
@@ -313,16 +351,18 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
     const filterPanel = document.getElementById('filterPanel');
 
     filterToggle.addEventListener('click', function() {
-        filterPanel.classList.toggle('hidden');
+        // Chỉ cần toggle class - CSS transition sẽ xử lý animation mượt mà
+        filterPanel.classList.toggle('filter-open');
 
-        // Smooth scroll to panel when opening
-        if (!filterPanel.classList.contains('hidden')) {
-            setTimeout(() => {
+        // Smooth scroll khi mở (optional)
+        if (filterPanel.classList.contains('filter-open')) {
+            // Đợi animation bắt đầu rồi mới scroll
+            requestAnimationFrame(() => {
                 filterPanel.scrollIntoView({
                     behavior: 'smooth',
                     block: 'nearest'
                 });
-            }, 100);
+            });
         }
     });
 

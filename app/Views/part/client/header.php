@@ -15,6 +15,7 @@ $allCountries = $moviesModel->getAllCountries();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer">
   <title>Phê Phim</title>
+  <link rel="icon" type="image/png" href="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim_resize.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -178,6 +179,12 @@ $allCountries = $moviesModel->getAllCountries();
 
             <!-- Menu Items -->
             <div class="py-2">
+              <?php if ($_SESSION['auth']['group_id'] == '2'): ?>
+                <a href="<?php echo _HOST_URL; ?>/admin/dashboard" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                  <i data-lucide="heart" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
+                  <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Trang admin</span>
+                </a>
+              <?php endif; ?>
               <a href="<?php echo _HOST_URL; ?>/yeu_thich" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
                 <i data-lucide="heart" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
                 <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Yêu thích</span>

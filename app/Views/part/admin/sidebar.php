@@ -61,6 +61,10 @@ if (!defined('_nkhanhh')) {
         </a>
 
         <div class="nav-divider">Hệ thống</div>
+        <a href="<?php echo _HOST_URL; ?>/admin/user" class="nav-item">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>Người dùng</span>
+        </a>
         <a href="<?php echo _HOST_URL; ?>/admin/logs" class="nav-item">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Nhật ký hoạt động</span>

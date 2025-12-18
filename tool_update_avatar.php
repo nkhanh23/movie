@@ -382,7 +382,18 @@ $isRunning = isset($_GET['run']) && $_GET['run'] == 1;
                     $updateStmt->execute([':avatar' => $avatarUrl, ':id' => $pId]);
                     echo "<div style='color:#4caf50; width:40px;'>[OK]</div>";
                     echo "<div style='flex-grow:1; font-weight:500'>$pName $sourceBadge</div>";
-                    echo "<a href='$avatarUrl' target='_blank'><img src='$avatarUrl' class='thumb'></a>";
+                    echo "<a href='$avALTER TABLE movies ADD COLUMN temp_poster VARCHAR(500);
+
+UPDATE movies
+SET temp_poster = poster_url;
+
+UPDATE movies
+SET 
+    poster_url = thumbnail,
+    thumbnail  = temp_poster;
+
+ALTER TABLE movies DROP COLUMN temp_poster;
+atarUrl' target='_blank'><img src='$avatarUrl' class='thumb'></a>";
                 } else {
                     $updateStmt->execute([':avatar' => '0', ':id' => $pId]);
                     echo "<div style='color:#666; width:40px;'>[0]</div>";
