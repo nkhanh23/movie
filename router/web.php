@@ -113,10 +113,10 @@ $router->post('/detail', 'MovieDetailController@detail');
 
 $router->get('/api/get-episodes', 'MovieDetailController@getEpisodesApi');
 
-$router->post('/api/post-comment', 'MovieDetailController@postCommentApi');
-$router->post('/api/delete-comment', 'MovieDetailController@deleteCommentApi');
-$router->post('/api/reply-comment', 'MovieDetailController@replyCommentApi');
-$router->post('/api/like-comment', 'MovieDetailController@likeCommentApi');
+$router->post('/api/post-comment', 'CommentUserController@postCommentApi');
+$router->post('/api/delete-comment', 'CommentUserController@deleteCommentApi');
+$router->post('/api/reply-comment', 'CommentUserController@replyCommentApi');
+$router->post('/api/like-comment', 'CommentUserController@likeCommentApi');
 
 // PAGE WATCH
 $router->get('/watch', 'WatchDetailController@showWatch');
