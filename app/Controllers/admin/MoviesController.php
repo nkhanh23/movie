@@ -89,7 +89,6 @@ class MoviesController extends baseController
         }
 
         // Xử lí phân trang
-        //Tạo câu lệnh SQL để đếm số lượng kết quả tìm được
         $sqlCount = "SELECT count(DISTINCT m.id) as total
         FROM movies as m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
@@ -428,7 +427,6 @@ class MoviesController extends baseController
                             }
                         }
                     }
-
                     // Lặp qua dataUpdate để xem trường nào thay đổi
                     $changes = [];
                     foreach ($dataUpdate as $key => $value) {
@@ -479,41 +477,6 @@ class MoviesController extends baseController
             $checkID = $this->moviesModel->getOneMovie($condition);
 
             if (!empty($checkID)) {
-                // --- BẮT ĐẦU QUY TRÌNH XÓA SẠCH (CLEANUP) ---
-                // Phải xóa dữ liệu ở các bảng con trước khi xóa bảng cha (movies)
-
-                $condDelete = "movie_id = $movie_id";
-
-                // 1. Xóa Thể loại (movie_genres)
-                $this->moviesModel->delete('movie_genres', $condDelete);
-
-                // 2. Xóa Diễn viên/Đạo diễn (movie_person) - Nguyên nhân gây lỗi hiện tại của bạn
-                $this->moviesModel->delete('movie_person', $condDelete);
-
-                // 3. Xóa Bình luận (comments) & Like bình luận
-                // Lưu ý: Cần xóa comment_likes trước nếu có ràng buộc, nhưng ở đây ta xóa comments trước
-                // Nếu comments có khóa ngoại self-referencing (parent_id), delete có thể phức tạp hơn, 
-                // nhưng với cấu trúc hiện tại, xóa theo movie_id là ổn.
-                $this->moviesModel->delete('comments', $condDelete);
-
-                // 4. Xóa Tập phim (episodes)
-                $this->moviesModel->delete('episodes', $condDelete);
-
-                // 5. Xóa Mùa phim (seasons)
-                $this->moviesModel->delete('seasons', $condDelete);
-
-                // 6. Xóa Yêu thích (favorites)
-                $this->moviesModel->delete('favorites', $condDelete);
-
-                // 7. Xóa Thống kê view (movie_views_daily)
-                $this->moviesModel->delete('movie_views_daily', $condDelete);
-
-                // 8. Xóa Đánh giá (ratings)
-                $this->moviesModel->delete('ratings', $condDelete);
-
-                // --- KẾT THÚC CLEANUP ---
-
-                // 9. Cuối cùng: Xóa Phim (movies)
                 $deleteMovie = $this->moviesModel->deleteMovie($condition);
 
                 if ($deleteMovie) {
@@ -526,12 +489,11 @@ class MoviesController extends baseController
                         $checkID, // Lưu data cũ để audit
                         null
                     );
-
-                    setSessionFlash('msg', 'Xoá phim và toàn bộ dữ liệu liên quan thành công.');
+                    setSessionFlash('msg', 'Xoá phim thành công.');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/film/list');
                 } else {
-                    setSessionFlash('msg', 'Xoá phim thất bại (Lỗi Database).');
+                    setSessionFlash('msg', 'Xoá phim thất bại.');
                     setSessionFlash('msg_type', 'danger');
                     reload('/admin/film/list');
                 }

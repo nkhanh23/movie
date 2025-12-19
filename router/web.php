@@ -46,6 +46,17 @@ $router->post('/admin/episode/add', 'EpisodeController@add');
 
 $router->get('/admin/episode/delete', 'EpisodeController@delete');
 
+//ADMIN SOURCE
+$router->get('/admin/source', 'SourceController@list');
+
+$router->get('/admin/source/edit', 'SourceController@showEdit');
+$router->post('/admin/source/edit', 'SourceController@edit');
+
+$router->get('/admin/source/add', 'SourceController@showAdd');
+$router->post('/admin/source/add', 'SourceController@add');
+
+$router->get('/admin/source/delete', 'SourceController@delete');
+
 //ADMIN GENRES
 $router->get('/admin/genres', 'GenresController@list');
 
@@ -96,6 +107,8 @@ $router->get('/admin/comments/delete', 'CommentController@delete');
 
 //ADMIN LOG
 $router->get('/admin/logs', 'ActivityController@list');
+$router->get('/admin/logs/delete', 'ActivityController@delete');
+
 
 //ADMIN CRAWLER
 $router->get('/admin/crawler', 'CrawlerController@list');

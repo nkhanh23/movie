@@ -506,4 +506,11 @@ class Movies extends CoreModel
             return 'added';
         }
     }
+
+    //Lay id cua nguoi thich phim
+    public function getFollowrs($movieId)
+    {
+        $sql = "SELECT user_id FROM favorites WHERE movie_id = :movie_id";
+        return $this->getAll($sql, ['movie_id' => $movieId]);
+    }
 }

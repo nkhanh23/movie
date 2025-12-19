@@ -6,6 +6,13 @@ $genresModel = new Genres();
 $moviesModel = new Movies();
 $allGenres = $genresModel->getAllGenres();
 $allCountries = $moviesModel->getAllCountries();
+
+// Fetch notifications for logged-in users
+$notifications = [];
+if (!empty($_SESSION['auth'])) {
+  $notificationsModel = new Notifications();
+  $notifications = $notificationsModel->getLatest($_SESSION['auth']['id'], 5);
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -72,6 +79,9 @@ $allCountries = $moviesModel->getAllCountries();
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Comment System -->
+  <script src="<?php echo _HOST_URL_PUBLIC; ?>/assets/js/client/comments.js"></script>
 
   <script type="importmap">
     {
@@ -155,8 +165,109 @@ $allCountries = $moviesModel->getAllCountries();
         </div>
       </form>
 
-      <!-- Thong Bao -->
-      <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-300 hidden sm:block"></i>
+      <!-- Thong Bao Dropdown -->
+      <?php if (!empty($_SESSION['auth'])): ?>
+        <div class="relative" id="notificationDropdownContainer">
+          <button id="notificationBtn" class="relative cursor-pointer hover:text-gray-300 transition-colors">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <?php if (!empty($notifications)): ?>
+              <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+            <?php endif; ?>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div id="notificationDropdown" class="absolute right-0 top-full mt-3 w-96 glass-panel rounded-xl border border-white/10 shadow-glass opacity-0 invisible transform translate-y-2 transition-all duration-300 overflow-hidden max-h-[500px] flex flex-col">
+            <!-- Header -->
+            <div class="px-4 py-3 border-b border-white/10 bg-white/5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-white font-semibold text-sm">Thông báo</h3>
+                <a href="<?php echo _HOST_URL; ?>/thong_bao" class="text-primary text-xs hover:text-secondary transition-colors">
+                  Xem tất cả
+                </a>
+              </div>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="overflow-y-auto custom-scroll flex-1">
+              <?php if (!empty($notifications)): ?>
+                <div class="py-2">
+                  <?php foreach ($notifications as $item): ?>
+                    <?php
+                    // Xử lý logic giao diện theo type
+                    $config = [
+                      'icon' => 'info',
+                      'color' => 'bg-white/10',
+                      'icon_bg' => 'bg-white/5',
+                      'icon_color' => 'text-white/60',
+                      'title' => 'Thông báo hệ thống'
+                    ];
+
+                    switch ($item['type']) {
+                      case 'new_episode':
+                        $config = [
+                          'icon' => 'film',
+                          'color' => 'bg-primary',
+                          'icon_bg' => 'bg-primary/20',
+                          'icon_color' => 'text-primary',
+                          'title' => 'Tập phim mới'
+                        ];
+                        break;
+                      case 'reply':
+                        $config = [
+                          'icon' => 'message-square',
+                          'color' => 'bg-secondary',
+                          'icon_bg' => 'bg-secondary/20',
+                          'icon_color' => 'text-secondary',
+                          'title' => 'Phản hồi mới'
+                        ];
+                        break;
+                      case 'like':
+                        $config = [
+                          'icon' => 'heart',
+                          'color' => 'bg-red-500',
+                          'icon_bg' => 'bg-red-500/20',
+                          'icon_color' => 'text-red-500',
+                          'title' => 'Lượt thích mới'
+                        ];
+                        break;
+                    }
+                    ?>
+                    <a href="<?php echo $item['link']; ?>" class="block px-4 py-3 hover:bg-white/5 transition-colors group border-l-2 border-transparent hover:border-primary">
+                      <div class="flex items-start gap-3">
+                        <!-- Icon -->
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 <?php echo $config['icon_bg']; ?>">
+                          <i data-lucide="<?php echo $config['icon']; ?>" class="w-5 h-5 <?php echo $config['icon_color']; ?>"></i>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+                          <p class="text-white text-xs font-medium mb-1">
+                            <?php echo $config['title']; ?>
+                          </p>
+                          <p class="text-slate-400 text-xs line-clamp-2 mb-1">
+                            <?php echo html_entity_decode($item['message']); ?>
+                          </p>
+                          <span class="text-slate-500 text-[10px]">
+                            <?php echo timeAgo($item['created_at']); ?>
+                          </span>
+                        </div>
+
+                        <!-- Indicator -->
+                        <div class="w-2 h-2 rounded-full <?php echo $config['color']; ?> flex-shrink-0 mt-1"></div>
+                      </div>
+                    </a>
+                  <?php endforeach; ?>
+                </div>
+              <?php else: ?>
+                <div class="flex flex-col items-center justify-center py-12 text-slate-500">
+                  <i data-lucide="bell-off" class="w-12 h-12 mb-3 opacity-50"></i>
+                  <p class="text-sm">Chưa có thông báo</p>
+                </div>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
 
       <!-- User Avatar / Login Button -->
       <?php if (!empty($_SESSION['auth'])): ?>
@@ -289,6 +400,37 @@ $allCountries = $moviesModel->getAllCountries();
             userDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
             if (dropdownChevron) dropdownChevron.classList.remove('rotate-180');
             isDropdownOpen = false;
+          }
+        });
+      }
+
+      // Notification Dropdown Toggle
+      const notificationBtn = document.getElementById('notificationBtn');
+      const notificationDropdown = document.getElementById('notificationDropdown');
+      const notificationDropdownContainer = document.getElementById('notificationDropdownContainer');
+
+      if (notificationBtn && notificationDropdown) {
+        let isNotificationOpen = false;
+
+        notificationBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          isNotificationOpen = !isNotificationOpen;
+
+          if (isNotificationOpen) {
+            notificationDropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+            notificationDropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+          } else {
+            notificationDropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+            notificationDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (isNotificationOpen && !notificationDropdownContainer.contains(e.target)) {
+            notificationDropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+            notificationDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+            isNotificationOpen = false;
           }
         });
       }

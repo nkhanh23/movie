@@ -17,6 +17,21 @@ class Comments extends CoreModel
         return $this->getRows($sql);
     }
 
+    public function getCommentBySeasonId($season_id)
+    {
+        return $this->getOne("SELECT * FROM comments WHERE season_id = $season_id");
+    }
+
+    public function deleteComment($condition)
+    {
+        return $this->delete("comments", $condition);
+    }
+
+    public function getOneComment($condition)
+    {
+        return $this->getOne("SELECT * FROM comments WHERE $condition");
+    }
+
     // ------------------------------------- CLIENT ------------------------------------------------------
     // Lấy danh sách bình luận của phim (kèm thông tin user)
     public function getCommentsByMovie($movieId, $userId = 0, $episodeId = null)

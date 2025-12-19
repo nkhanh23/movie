@@ -144,7 +144,7 @@ $errors = getSessionFlash('errors');
 
                     <div class="dropdown-content">
                         <?php
-                        // Xử lý logic: Ưu tiên dữ liệu từ Session (khi lỗi form), nếu không có thì dùng dữ liệu DB
+                        //Ưu tiên dữ liệu từ Session (khi lỗi form), nếu không có thì dùng dữ liệu DB
                         // $oldData ở đây là biến lấy từ Session
                         $checkedGenres = [];
                         // Trường hợp 1: Submit lỗi, lấy lại những gì user vừa tick
@@ -277,7 +277,7 @@ $errors = getSessionFlash('errors');
                                         <select name="cast_person[]" class="form-control">
                                             <option value="">-- Chọn người --</option>
                                             <?php foreach ($getAllPersons as $item): ?>
-                                                <option value="<?php echo $p['id']; ?>"
+                                                <option value="<?php echo $item['id']; ?>"
                                                     <?php echo ($item['id'] == $cast['person_id']) ? 'selected' : ''; ?>>
                                                     <?php echo $item['name']; ?>
                                                 </option>
@@ -285,10 +285,9 @@ $errors = getSessionFlash('errors');
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="cast_role[]" class="form-control">
-                                            <option value="">-- Chọn vai trò --</option>
+                                        <select name="cast_role[]" class="form-control" required>
                                             <?php foreach ($getAllRoles as $item): ?>
-                                                <option value="<?php echo $r['id']; ?>"
+                                                <option value="<?php echo $item['id']; ?>"
                                                     <?php echo ($item['id'] == $cast['role_id']) ? 'selected' : ''; ?>>
                                                     <?php echo $item['name']; ?>
                                                 </option>

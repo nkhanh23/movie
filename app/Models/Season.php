@@ -15,6 +15,11 @@ class Season extends CoreModel
         }
     }
 
+    public function getLastInsertId()
+    {
+        return $this->getLastInsertId();
+    }
+
     public function insertSeason($data)
     {
         return $this->insert("seasons", $data);

@@ -2,9 +2,11 @@
 class RoleController extends baseController
 {
     private $roleModel;
+    private $activityModel;
     public function __construct()
     {
         $this->roleModel = new Role;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -119,6 +121,16 @@ class RoleController extends baseController
             ];
             $checkInsert = $this->roleModel->insertRole($data);
             if ($checkInsert) {
+                $role_id = $this->roleModel->getLastInsertId();
+                // GHI LOG
+                $this->activityModel->log(
+                    $_SESSION['auth']['id'],
+                    'create',
+                    'roles',
+                    $role_id,
+                    null,
+                    $data
+                );
                 setSessionFlash('msg', 'Thêm vai trò mới thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/role');
@@ -179,8 +191,31 @@ class RoleController extends baseController
                 'updated_at' => date('Y:m:d'),
             ];
             $condition = 'id=' . $filter['id'];
+            $oldData = $this->roleModel->getOneRole($condition);
+
             $checkUpdate = $this->roleModel->updateRole($data, $condition);
             if ($checkUpdate) {
+                // Lặp qua dataUpdate để xem trường nào thay đổi
+                $changes = [];
+                foreach ($data as $key => $value) {
+                    if ($oldData[$key] != $value) {
+                        $changes[$key] = [
+                            'from' => $oldData[$key],
+                            'to' => $value
+                        ];
+                    }
+                }
+                //ghi log
+                if (!empty($changes)) {
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'update',
+                        'roles',
+                        $filter['id'],
+                        $oldData,
+                        $data
+                    );
+                }
                 setSessionFlash('msg', 'Cập nhật vai trò mới thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/role');
@@ -214,17 +249,26 @@ class RoleController extends baseController
                     $conditionDelete = 'id=' . $role_id;
                     $deleteRole = $this->roleModel->deleteRole($conditionDelete);
                     if ($deleteRole) {
+                        // GHI LOG
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'delete',
+                            'roles',
+                            $role_id,
+                            $checkID, // Lưu data cũ để audit
+                            null
+                        );
                         setSessionFlash('msg', 'Xoá vai trò thành công.');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/role');
                     } else {
-                        setSessionFlash('msg', 'Xoá vai trò thành công.');
-                        setSessionFlash('msg_type', 'success');
+                        setSessionFlash('msg', 'Xoá vai trò thất bại.');
+                        setSessionFlash('msg_type', 'danger');
                         reload('/admin/role');
                     }
                 }
             } else {
-                setSessionFlash('msg', 'Bài viết không tồn tại.');
+                setSessionFlash('msg', 'Vai trò không tồn tại.');
                 setSessionFlash('msg_type', 'danger');
                 reload('/admin/role');
             }

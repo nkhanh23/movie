@@ -22,16 +22,20 @@ if (!defined('_nkhanhh')) {
             <span>Danh sách Phim</span>
         </a>
         <a href="<?php echo _HOST_URL; ?>/admin/season" class="nav-item">
-            <i class="fa-solid fa-list-ol"></i>
-            <span>Tập phim (Episodes)</span>
+            <i class="fa-solid fa-folder-tree"></i>
+            <span>Mùa phim</span>
         </a>
         <a href="<?php echo _HOST_URL; ?>/admin/episode" class="nav-item">
             <i class="fa-solid fa-list-ol"></i>
-            <span>Tập phim (Episodes)</span>
+            <span>Tập phim</span>
+        </a>
+        <a href="<?php echo _HOST_URL; ?>/admin/source" class="nav-item">
+            <i class="fa-solid fa-link"></i>
+            <span>Nguồn phim</span>
         </a>
         <a href="<?php echo _HOST_URL; ?>/admin/genres" class="nav-item">
             <i class="fa-solid fa-tags"></i>
-            <span>Thể loại (Genres)</span>
+            <span>Thể loại</span>
         </a>
 
         <div class="nav-divider">Nhân sự</div>

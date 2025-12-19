@@ -5,12 +5,16 @@ class EpisodeController extends baseController
     private $moviesModel;
     private $seasonsModel;
     private $activityModel;
+    private $notificationModel;
+    private $sourceModel;
     public function __construct()
     {
         $this->episodeModel = new Episode;
         $this->moviesModel = new Movies;
         $this->seasonsModel = new Season;
         $this->activityModel = new Activity;
+        $this->notificationModel = new Notifications;
+        $this->sourceModel = new Source;
     }
 
     public function list()
@@ -102,13 +106,9 @@ class EpisodeController extends baseController
         //Xử lý quẻy
         $queryString = $_SERVER['QUERY_STRING'];
 
-        // 1. Xóa trường hợp "&page=..." (khi page nằm sau tham số khác)
         $queryString = str_replace('&page=' . $page, '', $queryString);
 
-        // 2. Xóa trường hợp "page=..." (khi page nằm đầu tiên)
         $queryString = str_replace('page=' . $page, '', $queryString);
-
-        // 3. Xóa dấu & thừa ở 2 đầu (nếu có) để link đẹp hơn
         $queryString = trim($queryString, '&');
 
 
@@ -180,7 +180,7 @@ class EpisodeController extends baseController
             }
 
             if (empty($errors)) {
-                $videoSourceId = !empty($filter['video_source_id']) ? $filter['video_source_id'] : null;
+                // $videoSourceId = !empty($filter['video_source_id']) ? $filter['video_source_id'] : null;
                 $countSuccess = 0;
                 if ($isBulk) {
                     // THÊM NHIỀU TẬP 
@@ -189,12 +189,18 @@ class EpisodeController extends baseController
                             'movie_id'        => $idMovie,
                             'season_id'       => $idSeason,
                             'name'            => 'Tập ' . $i,
-                            'video_source_id' => $videoSourceId,
+                            // 'video_source_id' => $videoSourceId,
                             'duration'        => $filter['duration'],
                             'server_name'     => $filter['server_name'],
                             'created_at'      => date('Y:m:d H:i:s'),
                         ];
                         $insertBulk = $this->episodeModel->insertEpisode($dataBulk);
+                        $getLastEpisode = $this->episodeModel->getLastIdEpisode();
+                        $dataVideoSource = [
+                            'episode_id'      => $getLastEpisode,
+                            'created_at'      => date('Y:m:d H:i:s'),
+                        ];
+                        $insertVideoSource = $this->sourceModel->insertVideoSource($dataVideoSource);
                         if ($insertBulk) {
                             $countSuccess++;
                         }
@@ -204,22 +210,27 @@ class EpisodeController extends baseController
                     reload('/admin/episode?filter-movie-id=' . $idMovie);
                 } else {
                     // THÊM 1 TẬP
-                    $data = [
+                    $dataInsert = [
                         'movie_id' => $idMovie,
                         'season_id' => $idSeason,
                         'name' => $filter['name'],
-                        'video_source_id' => $videoSourceId,
                         'duration' => $filter['duration'],
                         'server_name' => $filter['server_name'],
                         'created_at' => date('Y:m:d H:i:s'),
                     ];
-                    $checkInsert = $this->episodeModel->insertEpisode($data);
+                    $checkInsert = $this->episodeModel->insertEpisode($dataInsert);
                     if ($checkInsert) {
                         $idEpisode = $this->episodeModel->getLastIdEpisode();
+                        $dataVideoSource = [
+                            'episode_id'      => $idEpisode,
+                            'created_at'      => date('Y:m:d H:i:s'),
+                        ];
+                        $insertVideoSource = $this->sourceModel->insertVideoSource($dataVideoSource);
+                        // ---------------------------------------------------------------------------------------------------
                         // Ghi log
+                        //-----------------------------------------------------------------------------------------------------
                         $logData = [
-                            'tittle' => $data['tittle'],
-                            'slug' => $data['slug']
+                            'tittle' => $dataInsert['name'],
                         ];
                         $this->activityModel->log(
                             $_SESSION['auth']['id'],
@@ -229,6 +240,29 @@ class EpisodeController extends baseController
                             null,
                             $logData
                         );
+                        //---------------------------------------------------------------------------------
+                        //Gui thong bao cho nguoi dung
+                        //---------------------------------------------------------------------------------
+                        $movieInfo = $this->moviesModel->getOneMovie('id=' . $idMovie);
+                        $episodeName = $dataInsert['name'];
+                        //Lay danh sach nguoi theo doix cua phim nay
+                        $followers = $this->moviesModel->getFollowrs($idMovie);
+                        if (!empty($followers) && !empty($movieInfo)) {
+                            $movieName = $movieInfo['tittle'];
+                            $msg = "Phim <b>" . $movieName . "</b> vừa được thêm tập <b>" . $episodeName . "</b>";
+                            $link = _HOST_URL . '/watch/id=' . $idMovie . '&episode_id=' . $idEpisode;
+                        }
+                        //gui thong bao cho nguoi dung da thich phim
+                        foreach ($followers as $item) {
+                            $data = [
+                                'user_id' => $item['user_id'],
+                                'type' => 'new_episode',
+                                'message' => $msg,
+                                'link' => $link,
+                                'created_at' => date('Y:m:d H:i:s'),
+                            ];
+                            $this->notificationModel->createNotification($data);
+                        }
                         setSessionFlash('msg', 'Thêm tập mới thành công');
                         setSessionFlash('msg_type', 'success');
                         // Nếu có season thì redirect kèm season, không thì chỉ redirect về phim
@@ -260,11 +294,9 @@ class EpisodeController extends baseController
         $idEpisode = $filter['id'];
         $conditionGetOneEpisode = 'id=' . $idEpisode;
         $getOneEpisode = $this->episodeModel->getOneEpisode($conditionGetOneEpisode);
-        $getAllVideoSource = $this->episodeModel->getAllVideoSource();
 
         $data = [
             'oldData' => $getOneEpisode,
-            'getAllVideoSource' => $getAllVideoSource,
             'idEpisode' => $idEpisode
         ];
         $this->renderView('/layout-part/admin/episode/edit', $data);
@@ -292,7 +324,7 @@ class EpisodeController extends baseController
             $data = [
                 'name' => $filter['name'],
                 'server_name' => $filter['server_name'],
-                'video_source_id' => $filter['video_source_id'],
+                // 'video_source_id' => $filter['video_source_id'],
                 'duration' => $filter['duration'],
                 'updated_at' => date('Y:m:d H:i:s'),
             ];
@@ -355,6 +387,8 @@ class EpisodeController extends baseController
                     $getOneEpisode,
                     null
                 );
+                $condition = 'episode_id=' . $episode_id;
+                $this->sourceModel->deleteSource($condition);
                 setSessionFlash('msg', 'Xóa tập phim thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/episode');

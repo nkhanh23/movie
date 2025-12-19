@@ -2,9 +2,11 @@
 class UserController extends baseController
 {
     private $userModel;
+    private $activityModel;
     public function __construct()
     {
         $this->userModel = new User;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -156,6 +158,15 @@ class UserController extends baseController
                 ];
                 $checkInsert = $this->userModel->insertUser($data);
                 if ($checkInsert) {
+                    // GHI LOG
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'insert',
+                        'users',
+                        $filter['id'],
+                        $data, // Lưu data cũ để audit
+                        null
+                    );
                     setSessionFlash('msg', 'Thêm người dùng mới thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/user');
@@ -232,8 +243,30 @@ class UserController extends baseController
                 $checkPassword = password_verify($filter['password'], $getOneUser['password']);
                 if ($checkPassword) {
                     $conditionUpdateUser = 'id=' . $filter['idUser'];
+                    $oldData = $this->userModel->getOneUser($conditionUpdateUser);
                     $checkUpdate = $this->userModel->updateUser($dataUpdate, $conditionUpdateUser);
                     if ($checkUpdate) {
+                        // Lặp qua dataUpdate để xem trường nào thay đổi
+                        $changes = [];
+                        foreach ($dataUpdate as $key => $value) {
+                            if ($oldData[$key] != $value) {
+                                $changes[$key] = [
+                                    'from' => $oldData[$key],
+                                    'to' => $value
+                                ];
+                            }
+                        }
+                        //ghi log
+                        if (!empty($changes)) {
+                            $this->activityModel->log(
+                                $_SESSION['auth']['id'],
+                                'update',
+                                'users',
+                                $filter['idUser'],
+                                $oldData,
+                                $dataUpdate
+                            );
+                        }
                         setSessionFlash('msg', 'Cập nhật thành công');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/user');
@@ -267,6 +300,15 @@ class UserController extends baseController
                 $conditionDeleteUser = 'id=' . $user_id;
                 $deleteUser = $this->userModel->deleteUser($conditionDeleteUser);
                 if ($deleteUser) {
+                    // GHI LOG
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'delete',
+                        'users',
+                        $user_id,
+                        $checkId, // Lưu data cũ để audit
+                        null
+                    );
                     setSessionFlash('msg', 'Xoá người dùng thành công.');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/user');

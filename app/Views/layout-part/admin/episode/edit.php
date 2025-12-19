@@ -12,7 +12,7 @@ $errors = getSessionFlash('errors');
 
 <section id="add-episode-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
-        <h2><i class="fa-solid fa-plus-circle"></i> Thêm Tập Phim Mới</h2>
+        <h2><i class="fa-solid fa-plus-circle"></i> Cập nhật Tập Phim</h2>
         <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/episode/list'" id="btn-cancel-episode"
             class="btn"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
     </div>
@@ -25,7 +25,7 @@ $errors = getSessionFlash('errors');
         ?>
         <form class="form-grid" method="POST" action="" enctype="multipart/form-data">
             <input type="hidden" name="idEpisode" value="<?php echo $idEpisode ?>">
-            <input type="hidden" name="idEpisode" value="<?php echo $idEpisode ?>">
+            <input type="hidden" name="idSeason" value="<?php echo $idSeason ?>">
 
 
             <div class="form-group">
@@ -42,19 +42,6 @@ $errors = getSessionFlash('errors');
                 <?php echo (!empty($errors) ? formError($errors, 'server_name') : ''); ?>
 
             </div>
-
-            <div class="form-group">
-                <label for="video_source_id">Nguồn Video</label>
-                <select name="video_source_id" id="video_source_id">
-                    <option value="">-- Chọn nguồn video --</option>
-                    <?php foreach ($getAllVideoSource as $item): ?>
-                        <option value="<?php echo $item['id']; ?>"
-                            <?php echo ($oldData['video_source_id'] == $item['id']) ? 'selected' : '' ?>>
-                            <?php echo $item['source_name']; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
 
             <div class="form-group">
                 <label for="duration">Thời lượng (phút)</label>

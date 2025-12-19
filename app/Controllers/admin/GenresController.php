@@ -2,9 +2,11 @@
 class GenresController extends baseController
 {
     private $genresModel;
+    private $activityModel;
     public function __construct()
     {
         $this->genresModel = new Genres;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -34,7 +36,7 @@ class GenresController extends baseController
         GROUP BY g.id";
         $countGenres = $this->genresModel->CountGenres($sql);
         $maxData = $this->genresModel->CountGenres($sql);
-        $perPage = 3;
+        $perPage = 50;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;
@@ -114,6 +116,20 @@ class GenresController extends baseController
                 ];
                 $checkInsert = $this->genresModel->insertGenres($data);
                 if ($checkInsert) {
+                    $getLastGenreInsert = $this->genresModel->getLastInsertId();
+                    // Ghi log
+                    $logData = [
+                        'name' => $data['name'],
+                        'slug' => $data['slug']
+                    ];
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'create',
+                        'genres',
+                        $getLastGenreInsert,
+                        null,
+                        $logData
+                    );
                     setSessionFlash('msg', 'Thêm thể loại mới thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/genres');
@@ -172,8 +188,30 @@ class GenresController extends baseController
                     'updated_at' => date('Y:m:d H:i:m')
                 ];
                 $condition = 'id=' . $filter['id'];
+                $oldData = $this->genresModel->getOneGenres($condition);
                 $checkUpdate = $this->genresModel->updateGenres($data, $condition);
                 if ($checkUpdate) {
+                    // Lặp qua dataUpdate để xem trường nào thay đổi
+                    $changes = [];
+                    foreach ($data as $key => $value) {
+                        if ($oldData[$key] != $value) {
+                            $changes[$key] = [
+                                'from' => $oldData[$key],
+                                'to' => $value
+                            ];
+                        }
+                    }
+                    //ghi log
+                    if (!empty($changes)) {
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'update',
+                            'genres',
+                            $filter['id'],
+                            $oldData,
+                            $data
+                        );
+                    }
                     setSessionFlash('msg', 'Cập nhật thể loại thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/genres');
@@ -206,22 +244,31 @@ class GenresController extends baseController
                     $conditionDeleteGenres = 'id=' . $idGenres;
                     $deleteGenres = $this->genresModel->deleteGenres('genres', $conditionDeleteGenres);
                     if ($deleteGenres) {
-                        setSessionFlash('msg', 'Xoá bài viết thành công.');
+                        // GHI LOG
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'delete',
+                            'genres',
+                            $idGenres,
+                            $checkID, // Lưu data cũ để audit
+                            null
+                        );
+                        setSessionFlash('msg', 'Xoá thể loại thành công.');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/genres');
                     } else {
-                        setSessionFlash('msg', 'Xoá bài viết thất bại.');
+                        setSessionFlash('msg', 'Xoá thể loại thất bại.');
                         setSessionFlash('msg_type', 'danger');
                         reload('/admin/genres');
                     }
                 }
             } else {
-                setSessionFlash('msg', 'Bài viết không tồn tại.');
+                setSessionFlash('msg', 'Thể loại không tồn tại.');
                 setSessionFlash('msg_type', 'danger');
                 reload('/admin/genres');
             }
         } else {
-            setSessionFlash('msg', 'Xoá bài viết thất bại.');
+            setSessionFlash('msg', 'Xoá thể loại thất bại.');
             setSessionFlash('msg_type', 'danger');
         }
     }

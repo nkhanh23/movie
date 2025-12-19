@@ -5,11 +5,13 @@ class CommentController extends baseController
     private $commentModel;
     private $movieModel;
     private $userModel;
+    private $activityModel;
     public function __construct()
     {
         $this->commentModel = new Comments;
         $this->movieModel = new Movies;
         $this->userModel = new User;
+        $this->activityModel = new Activity;
     }
     public function list()
     {
@@ -135,5 +137,31 @@ class CommentController extends baseController
         $this->renderView('/layout-part/admin/comments/list', $data);
     }
 
-    public function delete() {}
+    public function delete()
+    {
+        $filter = filterData('get');
+        $condition = 'id=' . $filter['id'];
+        $checkID = $this->commentModel->getOneComment($condition);
+        if (!empty($checkID)) {
+            $deleteComment = $this->commentModel->deleteComment($condition);
+            if ($deleteComment) {
+                // GHI LOG
+                $this->activityModel->log(
+                    $_SESSION['auth']['id'],
+                    'delete',
+                    'comments',
+                    $filter['id'],
+                    $checkID, // Lưu data cũ để audit
+                    null
+                );
+                setSessionFlash('msg', 'Xoá bình luận thành công.');
+                setSessionFlash('msg_type', 'success');
+                reload('/admin/comments');
+            } else {
+                setSessionFlash('msg', 'Xoá bình luận thất bại.');
+                setSessionFlash('msg_type', 'danger');
+                reload('/admin/comments');
+            }
+        }
+    }
 }

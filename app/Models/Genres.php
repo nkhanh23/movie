@@ -16,6 +16,11 @@ class Genres extends CoreModel
         }
     }
 
+    public function getLastInsertId()
+    {
+        return $this->getLastInsertId();
+    }
+
     public function getGenresGrid()
     {
 

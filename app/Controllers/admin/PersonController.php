@@ -2,9 +2,11 @@
 class PersonController extends baseController
 {
     private $personModel;
+    private $activityModel;
     public function __construct()
     {
         $this->personModel = new Person;
+        $this->activityModel = new Activity;
     }
 
     public function list()
@@ -161,6 +163,15 @@ class PersonController extends baseController
                             $checkInsertMoviePerson = $this->personModel->insertMoviePerson($data);
                         }
                         if ($checkInsertMoviePerson) {
+                            //ghi log
+                            $this->activityModel->log(
+                                $_SESSION['auth']['id'],
+                                'create',
+                                'persons',
+                                $person_id,
+                                null,
+                                $data
+                            );
                             setSessionFlash('msg', 'Thêm người dùng mới thành công');
                             setSessionFlash('msg_type', 'success');
                             reload('/admin/person');
@@ -248,6 +259,7 @@ class PersonController extends baseController
                 $person_id = $filter['id'];
                 $role_id = $filter['role_id'];
                 $conditionDeleteMoviePerson = 'person_id=' . $person_id;
+                $oldData = $this->personModel->getOnePerson("SELECT * FROM persons WHERE $conditionDeleteMoviePerson");
                 $deleteMoviePerson = $this->personModel->deleteMoviePerson($conditionDeleteMoviePerson);
                 if ($deleteMoviePerson) {
                     if (!empty($role_id)) {
@@ -260,6 +272,27 @@ class PersonController extends baseController
                         }
                     }
                     if ($checkInsertMoviePerson) {
+                        // Lặp qua dataUpdate để xem trường nào thay đổi
+                        $changes = [];
+                        foreach ($dataUpdate as $key => $value) {
+                            if ($oldData[$key] != $value) {
+                                $changes[$key] = [
+                                    'from' => $oldData[$key],
+                                    'to' => $value
+                                ];
+                            }
+                        }
+                        //ghi log
+                        if (!empty($changes)) {
+                            $this->activityModel->log(
+                                $_SESSION['auth']['id'],
+                                'update',
+                                'persons',
+                                $person_id,
+                                $oldData,
+                                $dataUpdate
+                            );
+                        }
                         setSessionFlash('msg', 'Cập nhật người dùng thành công');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/person');
@@ -299,6 +332,15 @@ class PersonController extends baseController
                     $conditionDeletePerson = 'id=' . $person_id;
                     $deletePerson = $this->personModel->deletePerson($conditionDeletePerson);
                     if ($deletePerson) {
+                        // GHI LOG
+                        $this->activityModel->log(
+                            $_SESSION['auth']['id'],
+                            'delete',
+                            'persons',
+                            $person_id,
+                            $checkID, // Lưu data cũ để audit
+                            null
+                        );
                         setSessionFlash('msg', 'Xoá diễn viên thành công.');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/person');

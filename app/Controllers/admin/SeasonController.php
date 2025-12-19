@@ -4,11 +4,13 @@ class SeasonController extends baseController
     private $episodeModel;
     private $moviesModel;
     private $seasonsModel;
+    private $activityModel;
     public function __construct()
     {
         $this->episodeModel = new Episode;
         $this->moviesModel = new Movies;
         $this->seasonsModel = new Season;
+        $this->activityModel = new Activity;
     }
     public function list()
     {
@@ -34,8 +36,6 @@ class SeasonController extends baseController
                 $chuoiWhere .= "s.movie_id = '$movieId'";
             }
 
-
-            //Sử dụng addslashes để tránh lỗi ký tự đặc biệt như dấu nháy đơn '
             $cleanKeyword = addslashes($keyword);
             if (!empty($keyword)) {
                 if (strpos($chuoiWhere, 'WHERE') == false) {
@@ -77,7 +77,8 @@ class SeasonController extends baseController
         FROM seasons s
         LEFT JOIN movies m ON m.id = s.movie_id
         $chuoiWhere
-        ORDER BY m.created_at DESC");
+        ORDER BY m.created_at DESC
+        LIMIT $offset, $perPage");
 
         //Xử lý quẻy
         $queryString = $_SERVER['QUERY_STRING'];
@@ -149,6 +150,20 @@ class SeasonController extends baseController
                 ];
                 $checkInsert = $this->seasonsModel->insertSeason($data);
                 if ($checkInsert) {
+                    $season_id = $this->seasonsModel->getLastInsertId();
+                    // Ghi log
+                    $logData = [
+                        'tittle' => $data['name'],
+                        'slug' => $data['slug']
+                    ];
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'create',
+                        'seasons',
+                        $season_id,
+                        null,
+                        $logData
+                    );
                     setSessionFlash('msg', 'Thêm mùa mới thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/season?filter-movie-id=' . $idMovie['id']);
@@ -218,8 +233,30 @@ class SeasonController extends baseController
             ];
 
             $condition = 'id=' . $filter['id'];
+            $oldData = $this->seasonsModel->getOneSeason($condition);
             $checkUpdate = $this->seasonsModel->updateSeason($data, $condition);
             if ($checkUpdate) {
+                // Lặp qua dataUpdate để xem trường nào thay đổi
+                $changes = [];
+                foreach ($data as $key => $value) {
+                    if ($oldData[$key] != $value) {
+                        $changes[$key] = [
+                            'from' => $oldData[$key],
+                            'to' => $value
+                        ];
+                    }
+                }
+                //ghi log
+                if (!empty($changes)) {
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'update',
+                        'seasons',
+                        $filter['id'],
+                        $oldData,
+                        $data
+                    );
+                }
                 setSessionFlash('msg', 'Cập nhật thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/season?filter-movie-id=' . $filter['movie_id']);
@@ -246,6 +283,15 @@ class SeasonController extends baseController
                 $conditionDeleteSeason = 'id=' . $season_id;
                 $deleteSeason = $this->seasonsModel->deleteSeason($conditionDeleteSeason);
                 if ($deleteSeason) {
+                    // GHI LOG
+                    $this->activityModel->log(
+                        $_SESSION['auth']['id'],
+                        'delete',
+                        'seasons',
+                        $season_id,
+                        $checkID, // Lưu data cũ để audit
+                        null
+                    );
                     setSessionFlash('msg', 'Xoá mùa thành công.');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/season');

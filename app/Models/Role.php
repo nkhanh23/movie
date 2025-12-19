@@ -19,6 +19,11 @@ class Role extends CoreModel
         return $this->getOne("SELECT * FROM person_roles WHERE $condition");
     }
 
+    public function getLastInsertId()
+    {
+        return $this->getLastInsertId();
+    }
+
     public function countRole($sql = '')
     {
         if (!empty($sql)) {

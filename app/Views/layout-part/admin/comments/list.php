@@ -97,7 +97,7 @@ $msg_type = getSessionFlash('msg_type');
                         <td><?= $comment['created_at'] ?></td>
                         <td class="actions">
                             <div class="action-buttons">
-                                <button class="btn-icon-sm delete-btn"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/comments/delete?id=<?php echo $comment['id'] ?>'" class="btn-icon-sm delete-btn"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>

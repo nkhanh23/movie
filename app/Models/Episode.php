@@ -34,6 +34,24 @@ class Episode extends CoreModel
         return $this->getAll("SELECT * FROM video_sources");
     }
 
+    public function getAllVideoSources($sql = '')
+    {
+        if (!empty($sql)) {
+            return $this->getAll($sql);
+        } else {
+            return $this->getAll("SELECT * FROM video_sources");
+        }
+    }
+
+    public function countAllVideoSources($sql = '')
+    {
+        if (!empty($sql)) {
+            return $this->getRows($sql);
+        } else {
+            return $this->getRows("SELECT * FROM video_sources");
+        }
+    }
+
     public function insertEpisode($data)
     {
         return $this->insert('episodes', $data);
@@ -52,5 +70,10 @@ class Episode extends CoreModel
     public function deleteEpisode($condition)
     {
         return $this->delete("episodes", $condition);
+    }
+
+    public function getEpisodeBySeasonId($season_id)
+    {
+        return $this->getAll("SELECT * FROM episodes WHERE season_id = $season_id");
     }
 }

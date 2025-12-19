@@ -2,10 +2,12 @@
 class AccountController extends baseController
 {
     private $moviesModel;
+    private $notificationModel;
 
     public function __construct()
     {
         $this->moviesModel = new Movies();
+        $this->notificationModel = new Notifications();
     }
 
     public function showIntroduce()
@@ -93,6 +95,11 @@ class AccountController extends baseController
 
     public function showNotice()
     {
-        $this->renderView('layout-part/client/user/thong_bao');
+        $userId = $_SESSION['auth']['id'];
+        $notices = $this->notificationModel->getLatest($userId, 20);
+        $data = [
+            'notices' => $notices
+        ];
+        $this->renderView('layout-part/client/user/thong_bao', $data);
     }
 }

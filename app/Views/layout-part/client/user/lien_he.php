@@ -115,7 +115,7 @@ layout('client/header');
                             </div>
                             <div>
                                 <p class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">Hỗ trợ qua Email</p>
-                                <h3 class="text-white font-bold text-lg tracking-tight group-hover:text-secondary transition-colors">support@phephim.vn</h3>
+                                <h3 class="text-white font-bold text-lg tracking-tight group-hover:text-secondary transition-colors">nkhanh2305@gmail.com</h3>
                             </div>
                             <span class="material-symbols-outlined ml-auto text-slate-600 group-hover:text-white transition-colors">arrow_forward_ios</span>
                         </div>
@@ -130,7 +130,7 @@ layout('client/header');
                             </div>
                             <div>
                                 <p class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">Văn phòng chính</p>
-                                <h3 class="text-white font-bold text-lg tracking-tight group-hover:text-highlight transition-colors">Quận 1, TP. Hồ Chí Minh</h3>
+                                <h3 class="text-white font-bold text-lg tracking-tight group-hover:text-highlight transition-colors">Đại học Nha Trang</h3>
                             </div>
                             <span class="material-symbols-outlined ml-auto text-slate-600 group-hover:text-white transition-colors">arrow_forward_ios</span>
                         </div>

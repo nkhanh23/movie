@@ -33,7 +33,7 @@ class Activity extends CoreModel
     // Lấy danh sách log để hiển thị Admin (kèm tên User)
     public function getLatestLogs($limit = 20)
     {
-        $sql = "SELECT l.*, u.fullname 
+        $sql = "SELECT l.*, u.fullname, u.group_id 
             FROM activity_logs l
             LEFT JOIN users u ON l.user_id = u.id
             ORDER BY l.created_at DESC 
@@ -55,5 +55,35 @@ class Activity extends CoreModel
             ORDER BY l.created_at DESC 
             LIMIT $limit";
         return $this->getAll($sql);
+    }
+
+    //Lấy tất cả log
+    public function getAllLogs($chuoiWhere = '', $limit = 10, $offset = 0)
+    {
+        $limit = (int)$limit;
+        $offset = (int)$offset;
+        $sql = "SELECT l.*, u.fullname, u.group_id
+            FROM activity_logs l
+            LEFT JOIN users u ON l.user_id = u.id
+            $chuoiWhere
+            ORDER BY l.created_at DESC
+            LIMIT $limit OFFSET $offset";
+        return $this->getAll($sql);
+    }
+
+    //pagination
+    public function pagination($chuoiWhere = '')
+    {
+        $sqlCount = "SELECT count(*) as total
+            FROM activity_logs l
+            LEFT JOIN users u ON l.user_id = u.id
+            $chuoiWhere";
+        return $this->getAll($sqlCount);
+    }
+
+    //delete
+    public function deleteLog($id, $condition)
+    {
+        return $this->delete('activity_logs', $condition);
     }
 }
