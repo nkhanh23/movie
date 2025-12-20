@@ -174,3 +174,7 @@ $router->get('/tai_khoan', 'AccountController@showAccount');
 //PAGE YEU THICH
 $router->get('/yeu_thich', 'AccountController@showFavorite');
 $router->post('/api/toggle-favorite', 'AccountController@toggleFavoriteApi');
+
+//PAGE EDIT
+$router->get('/chinh_sua', 'AccountController@showEdit');
+$router->post('/chinh_sua', 'AccountController@edit');

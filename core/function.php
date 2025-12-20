@@ -348,6 +348,7 @@ function isLogin()
             'id' => $user['id'],
             'fullname' => $user['fullname'],
             'email' => $user['email'],
+            'phone' => $user['phone'],
             'group_id' => $user['group_id'],
             'avatar' => $user['avartar']
         ];

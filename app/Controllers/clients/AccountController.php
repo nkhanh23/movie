@@ -20,12 +20,7 @@ class AccountController extends baseController
         $this->renderView('layout-part/client/user/lien_he');
     }
 
-    public function showAccount()
-    {
-        $this->renderView('layout-part/client/user/profile');
-    }
 
-    public function account() {}
 
     public function showFavorite()
     {
@@ -101,5 +96,29 @@ class AccountController extends baseController
             'notices' => $notices
         ];
         $this->renderView('layout-part/client/user/thong_bao', $data);
+    }
+
+    public function showAccount()
+    {
+        $userInfor = $_SESSION['auth'];
+        $data = [
+            'userInfor' => $userInfor
+        ];
+        $this->renderView('layout-part/client/user/profile', $data);
+    }
+
+    public function edit()
+    {
+        if (isPost()) {
+            $filter = filterData();
+            $data = [
+                'name' => $filter['fullname'],
+                'email' => $filter['email'],
+                'phone' => $filter['phone'],
+                'address' => $filter['address'],
+                'updated_at' => date('Y:m:d H:i:s')
+            ];
+            $this->usersModel->updateUser($data, $_SESSION['auth']['id']);
+        }
     }
 }
