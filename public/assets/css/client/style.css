@@ -1379,3 +1379,132 @@ input[type=range]::-webkit-slider-runnable-track {
     background: rgba(239, 68, 68, 0.25) !important;
     border-color: rgba(239, 68, 68, 0.5) !important;
 }
+
+/* =========================================
+   MESSAGE ALERT STYLES (for getMsg)
+   ========================================= */
+
+/* Base message style with modern glassmorphism */
+.announce-message {
+    position: relative;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Animated gradient background effect */
+.announce-message::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    animation: shimmer-message 3s infinite;
+}
+
+/* Success message (green theme) */
+.announce-message.alert-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+}
+
+.announce-message.alert-success::after {
+    content: '✓';
+    position: absolute;
+    left: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+    color: #10b981;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* Danger/Error message (red theme) */
+.announce-message.alert-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.announce-message.alert-danger::after {
+    content: '✕';
+    position: absolute;
+    left: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Warning message (yellow/orange theme) */
+.announce-message.alert-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #fcd34d;
+}
+
+.announce-message.alert-warning::after {
+    content: '⚠';
+    position: absolute;
+    left: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+    color: #f59e0b;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* Info message (blue theme) */
+.announce-message.alert-info {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+}
+
+.announce-message.alert-info::after {
+    content: 'ℹ';
+    position: absolute;
+    left: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+    color: #3b82f6;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Add padding for icon */
+.announce-message::after {
+    z-index: 1;
+}
+
+/* Slide in animation */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Shimmer effect */
+@keyframes shimmer-message {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(200%);
+    }
+}

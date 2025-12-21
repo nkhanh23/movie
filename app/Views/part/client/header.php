@@ -95,7 +95,6 @@ if (!empty($_SESSION['auth'])) {
 </head>
 
 <body>
-  <?php require_once 'app/Views/part/client/intro-splash.php'; ?>
   <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-4 flex items-center justify-between transition-all duration-300">
     <div class="flex items-center gap-8">
       <img src="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim.png" alt="" class="h-16 w-auto">

@@ -1,111 +1,277 @@
-<!-- Modal Overlay (hidden by default) -->
-<div id="editProfileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="display: none;">
-    <!-- Dimmed Background -->
-    <div onclick="closeEditModal()" class="absolute inset-0 bg-black/70 backdrop-blur-md transition-all"></div>
+<?php
+if (!defined('_nkhanhh')) {
+    die('Truy cập không hợp lệ');
+}
+layout('client/header');
+$msg = getSessionFlash('msg');
+$msg_type = getSessionFlash('msg_type');
+$errors = getSessionFlash('errors');
+?>
 
-    <!-- Modal Content -->
-    <div class="relative w-full max-w-[500px] overflow-hidden rounded-3xl border border-primary/30 bg-[#0b1121]/95 shadow-[0_0_50px_-12px_rgba(217,108,22,0.5)] backdrop-blur-2xl ring-1 ring-white/10 animate-modal-appear">
-        <!-- Animated Background Effects -->
-        <div class="pointer-events-none absolute inset-0 z-0">
-            <div class="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[conic-gradient(transparent_0deg,transparent_90deg,rgba(217,108,22,0.15)_180deg,transparent_270deg)] animate-spin-slow opacity-50"></div>
-            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
-        </div>
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-hidden" style="background-color: #050505;">
+    <!-- Background Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[100px] animate-pulse delay-1000"></div>
+        <div class="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-highlight/10 rounded-full blur-[80px]"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 mix-blend-overlay"></div>
+    </div>
 
-        <!-- Modal Header -->
-        <div class="relative z-10 flex items-center justify-between border-b border-white/5 px-8 py-6">
-            <h3 class="text-xl font-bold tracking-tight text-white drop-shadow-[0_0_10px_rgba(217,108,22,0.5)]">Chỉnh Sửa Hồ Sơ</h3>
-            <button onclick="closeEditModal()" class="group rounded-full p-2 text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                <span class="material-symbols-outlined text-xl transition-transform group-hover:rotate-90">close</span>
-            </button>
-        </div>
+    <div class="layout-container relative z-10 flex h-full grow flex-col pt-24">
+        <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40">
+            <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
+                <!-- SIDE BAR -->
+                <?php layout('client/sidebarUser'); ?>
+                <!-- END SIDE BAR -->
 
-        <!-- Modal Body -->
-        <div class="relative z-10 px-8 py-8 space-y-8 max-h-[70vh] overflow-y-auto">
-            <!-- Avatar Section -->
-            <div class="flex flex-col items-center justify-center">
-                <div class="group relative cursor-pointer">
-                    <div class="absolute inset-[-8px] rounded-full border border-primary/40 border-dashed animate-spin-slow"></div>
-                    <div class="absolute inset-[-16px] rounded-full border border-secondary/30 border-dotted animate-spin-reverse-slow opacity-60"></div>
-                    <div class="relative h-28 w-28 overflow-hidden rounded-full border-2 border-white/10 bg-slate-800 shadow-[0_0_30px_rgba(217,108,22,0.3)]">
-                        <div class="h-full w-full bg-cover bg-center opacity-90 transition-all duration-500 group-hover:scale-110 group-hover:opacity-50" style="background-image: url('<?php echo !empty($_SESSION['auth']['avatar']) ? $_SESSION['auth']['avatar'] : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDp5z9ZOQaU3DTgLKIV6PUXCrR683wgb-cfCtJkQb8fjthg6JZpJSoLnJAB_yLhGXcB50ZUZavHxOwTg49G1jP75MI4G4Ze4X59DwMVmAw5WSNPMbtKXDfKAQ_gbF3HBmgak9heLsPTafhUNnl0XnjySGe2aXePkhP3jNqlHLilcq_MOq77GLgj8f7DUbiYQ69J76kGeQi_Jc4pRNRZmiN24BpItbsEpLMeh0vaXya_5iTPRrZAibG83nrS3UDYSj-8bXuXmQPaH3hG'; ?>');"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-                            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-[0_0_8px_rgba(217,108,22,1)]">upload</span>
+                <main class="flex-1 layout-content-container flex flex-col gap-6">
+                    <!-- Page Header -->
+                    <div class="px-2 py-2">
+                        <div class="flex flex-col gap-2">
+                            <h2 class="text-white text-3xl font-bold tracking-tight drop-shadow-lg">Chỉnh Sửa Thông Tin</h2>
+                            <p class="text-slate-400 text-sm">Cập nhật thông tin tài khoản của bạn</p>
                         </div>
                     </div>
-                    <div class="absolute -right-2 top-0 h-2 w-2 rounded-full bg-primary blur-[1px] shadow-[0_0_10px_#D96C16] animate-pulse"></div>
-                    <div class="absolute -left-2 bottom-4 h-1.5 w-1.5 rounded-full bg-secondary blur-[1px] shadow-[0_0_10px_#F29F05] animate-pulse delay-700"></div>
-                </div>
-                <p class="mt-4 text-xs font-medium uppercase tracking-widest text-primary/90">Cập nhật ảnh đại diện</p>
-            </div>
+                    <?php
+                    if (!empty($msg) && !empty($msg_type)) {
+                        getMsg($msg, $msg_type);
+                    }
+                    ?>
+                    <!-- Edit Profile Form -->
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        <div class="user-glassmorphic rounded-2xl p-8 relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 
-            <!-- Form Fields -->
-            <form id="editProfileForm" class="space-y-5">
-                <div class="group">
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-400">Họ và tên</label>
-                    <div class="relative">
-                        <input name="fullname" class="peer w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white shadow-inner placeholder:text-slate-600 focus:border-primary/60 focus:bg-primary/5 focus:outline-none focus:ring-1 focus:ring-primary/60 transition-all duration-300" type="text" value="<?php echo !empty($userInfor['fullname']) ? $userInfor['fullname'] : ''; ?>" />
-                        <div class="pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_0_0_rgba(217,108,22,0)] transition-shadow duration-300 peer-focus:shadow-[0_0_15px_rgba(217,108,22,0.2)]"></div>
-                    </div>
-                </div>
+                            <div class="relative z-10 flex flex-col gap-10">
+                                <!-- Avatar & Form Fields Section -->
+                                <div class="flex flex-col md:flex-row gap-10 items-start">
+                                    <!-- Avatar Upload Section -->
+                                    <div class="flex flex-col items-center gap-4 shrink-0 mx-auto md:mx-0">
+                                        <!-- Hidden File Input -->
+                                        <input type="file" id="avatarInput" name="avartar" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
 
-                <div class="group">
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-400">Email</label>
-                    <div class="relative">
-                        <input name="email" class="peer w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white shadow-inner placeholder:text-slate-600 focus:border-primary/60 focus:bg-primary/5 focus:outline-none focus:ring-1 focus:ring-primary/60 transition-all duration-300" type="email" value="<?php echo !empty($userInfor['email']) ? $userInfor['email'] : ''; ?>" />
-                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 peer-focus:text-primary transition-colors">lock</span>
-                    </div>
-                </div>
+                                        <div onclick="document.getElementById('avatarInput').click()" class="relative w-48 h-48 flex items-center justify-center group/avatar cursor-pointer">
+                                            <!-- Glow Effect -->
+                                            <div class="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-50 group-hover/avatar:opacity-80 transition-opacity duration-500"></div>
 
-                <div class="group">
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-400">Số điện thoại</label>
-                    <div class="relative">
-                        <input name="phone" class="peer w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white shadow-inner placeholder:text-slate-600 focus:border-primary/60 focus:bg-primary/5 focus:outline-none focus:ring-1 focus:ring-primary/60 transition-all duration-300" type="tel" value="<?php echo !empty($userInfor['phone']) ? $userInfor['phone'] : ''; ?>" />
-                    </div>
-                </div>
+                                            <!-- Rotating Rings -->
+                                            <div class="absolute inset-[-4px] border border-primary/30 rounded-full border-t-transparent border-l-transparent animate-spin-slow group-hover/avatar:border-primary/60 transition-colors"></div>
+                                            <div class="absolute inset-[-12px] border border-secondary/20 rounded-full border-b-transparent border-r-transparent animate-spin-reverse-slow group-hover/avatar:border-secondary/50 transition-colors"></div>
 
-                <div class="group">
-                    <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-400">Địa chỉ</label>
-                    <div class="relative">
-                        <input name="address" class="peer w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white shadow-inner placeholder:text-slate-600 focus:border-primary/60 focus:bg-primary/5 focus:outline-none focus:ring-1 focus:ring-primary/60 transition-all duration-300" type="tel" value="<?php echo !empty($userInfor['address']) ? $userInfor['address'] : ''; ?>" />
-                    </div>
-                </div>
-            </form>
+                                            <!-- Orbiting Dots -->
+                                            <div class="absolute inset-[-20px] animate-orbit">
+                                                <div class="absolute top-1/2 -right-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#D96C16]"></div>
+                                            </div>
+                                            <div class="absolute inset-[-28px] animate-orbit [animation-delay:-4s] opacity-60">
+                                                <div class="absolute bottom-0 left-1/2 w-1.5 h-1.5 bg-secondary rounded-full shadow-[0_0_10px_#F29F05]"></div>
+                                            </div>
 
-            <!-- Action Buttons -->
-            <div class="flex items-center gap-4 pt-2">
-                <button onclick="closeEditModal()" class="flex-1 rounded-xl border border-white/10 bg-white/5 py-3.5 text-sm font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                    Hủy
-                </button>
-                <button onclick="saveProfile()" class="group relative flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-secondary py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_0_20px_rgba(217,108,22,0.4)] hover:shadow-[0_0_30px_rgba(217,108,22,0.6)] transition-all">
-                    <span class="relative z-10 flex items-center justify-center gap-2">
-                        Lưu thay đổi
-                        <span class="material-symbols-outlined text-lg">check</span>
-                    </span>
-                    <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer"></div>
-                </button>
+                                            <!-- Avatar Image -->
+                                            <?php
+                                            $avatarUrl = !empty($_SESSION['auth']['avatar']) ? $_SESSION['auth']['avatar'] : (_HOST_URL_PUBLIC . '/img/avartar_default/default-avatar.png');
+                                            // var_dump('Avatar URL: ' . $avatarUrl);
+                                            ?>
+                                            <div id="avatarPreview" class="relative z-10 w-40 h-40 rounded-full overflow-hidden border-2 border-white/10 shadow-inner group-hover/avatar:border-primary/50 transition-colors">
+                                                <div class="absolute inset-0 bg-center bg-no-repeat bg-cover transform group-hover/avatar:scale-105 transition-transform duration-700" style="background-image: url('<?php echo $avatarUrl; ?>');"></div>
+                                                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-primary/30 mix-blend-overlay"></div>
+                                                <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
+
+                                                <!-- Upload Overlay -->
+                                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300">
+                                                    <span class="material-symbols-outlined text-white text-3xl drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">cloud_upload</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="button" onclick="document.getElementById('avatarInput').click()" class="text-sm font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1 justify-center">
+                                                <span class="material-symbols-outlined text-base">refresh</span>
+                                                Thay đổi ảnh đại diện
+                                            </button>
+                                            <p class="text-xs text-slate-500 mt-1">*.jpeg, *.jpg, *.png, *.gif</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Form Fields Grid -->
+                                    <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Full Name -->
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <label class="text-xs font-medium text-slate-300 uppercase tracking-wider ml-1">Họ và Tên</label>
+                                            <div class="user-glass-input rounded-xl p-0.5 relative group/input">
+                                                <div class="flex items-center px-4">
+                                                    <span class="material-symbols-outlined text-slate-400 text-[20px]">person</span>
+                                                    <input name="fullname" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="Nhập họ và tên" type="text" value="<?php echo !empty($_SESSION['auth']['fullname']) ? $_SESSION['auth']['fullname'] : ''; ?>" />
+                                                </div>
+                                                <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
+                                            </div>
+                                            <?php
+                                            if (!empty($errors)) {
+                                                echo formError($errors, 'fullname');
+                                            }
+                                            ?>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <label class="text-xs font-medium text-slate-300 uppercase tracking-wider ml-1">Email</label>
+                                            <div class="user-glass-input rounded-xl p-0.5 relative group/input">
+                                                <div class="flex items-center px-4">
+                                                    <span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
+                                                    <input name="email" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="email@example.com" type="email" value="<?php echo !empty($_SESSION['auth']['email']) ? $_SESSION['auth']['email'] : ''; ?>" />
+                                                </div>
+                                                <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
+                                            </div>
+                                            <?php
+                                            if (!empty($errors)) {
+                                                echo formError($errors, 'email');
+                                            }
+                                            ?>
+                                        </div>
+
+                                        <!-- Phone -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-medium text-slate-300 uppercase tracking-wider ml-1">Số điện thoại</label>
+                                            <div class="user-glass-input rounded-xl p-0.5 relative group/input">
+                                                <div class="flex items-center px-4">
+                                                    <span class="material-symbols-outlined text-slate-400 text-[20px]">phone</span>
+                                                    <input name="phone" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="0901234567" type="tel" value="<?php echo !empty($_SESSION['auth']['phone']) ? $_SESSION['auth']['phone'] : ''; ?>" />
+                                                </div>
+                                                <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-medium text-slate-300 uppercase tracking-wider ml-1">Địa chỉ</label>
+                                            <div class="user-glass-input rounded-xl p-0.5 relative group/input">
+                                                <div class="flex items-center px-4">
+                                                    <span class="material-symbols-outlined text-slate-400 text-[20px]">location_on</span>
+                                                    <input name="address" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="Nhập địa chỉ" type="text" value="<?php echo !empty($_SESSION['auth']['address']) ? $_SESSION['auth']['address'] : ''; ?>" />
+                                                </div>
+                                                <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bio -->
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <label class="text-xs font-medium text-slate-300 uppercase tracking-wider ml-1">Giới thiệu</label>
+                                            <div class="user-glass-input rounded-xl p-0.5 relative group/input">
+                                                <textarea name="bio" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 px-4 py-3 rounded-lg text-sm min-h-[120px] resize-none" placeholder="Giới thiệu một chút về bản thân bạn..."><?php echo !empty($_SESSION['auth']['bio']) ? $_SESSION['auth']['bio'] : ''; ?></textarea>
+                                                <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
+                                            </div>
+                                            <div class="flex justify-end">
+                                                <span class="text-[10px] text-slate-500">0/500 ký tự</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/5 justify-end">
+                                    <button type="button" onclick="window.location.href='<?php echo _HOST_URL; ?>/tai_khoan'" class="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-semibold tracking-wide">
+                                        Hủy
+                                    </button>
+                                    <button type="submit" class="relative group overflow-hidden px-8 py-3 rounded-xl bg-primary/20 border border-primary/40 text-white shadow-[0_0_20px_rgba(217,108,22,0.3)] hover:shadow-[0_0_30px_rgba(217,108,22,0.5)] transition-all duration-300">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-primary/0 via-white/20 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                        <span class="relative z-10 font-bold tracking-wide flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">save</span>
+                                            Lưu Thay Đổi
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </main>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    @keyframes modal-appear {
+    .user-glass-input {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .user-glass-input:focus-within {
+        background: rgba(15, 23, 42, 0.8);
+        border-color: rgba(217, 108, 22, 0.5);
+        box-shadow: 0 0 15px rgba(217, 108, 22, 0.2);
+    }
+
+    /* Remove default outline/ring from inputs */
+    .user-glass-input input,
+    .user-glass-input textarea {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .user-glass-input input:focus,
+    .user-glass-input textarea:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Error Message Styling */
+    .error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: rgba(239, 68, 68, 0.1);
+        border-left: 3px solid #ef4444;
+        border-radius: 8px;
+        color: #fca5a5;
+        font-size: 13px;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .error::before {
+        content: "⚠";
+        font-size: 16px;
+        color: #ef4444;
+    }
+
+    @keyframes slideDown {
         from {
             opacity: 0;
-            transform: scale(0.95) translateY(-20px);
+            transform: translateY(-10px);
         }
 
         to {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: translateY(0);
         }
     }
 
-    .animate-modal-appear {
-        animation: modal-appear 0.3s ease-out forwards;
+    @keyframes spin-slow {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
 
-    @keyframes spin-slow {
+    @keyframes spin-reverse-slow {
+        from {
+            transform: rotate(360deg);
+        }
+
+        to {
+            transform: rotate(0deg);
+        }
+    }
+
+    @keyframes orbit {
         from {
             transform: rotate(0deg);
         }
@@ -120,48 +286,28 @@
     }
 
     .animate-spin-reverse-slow {
-        animation: spin-slow 15s linear infinite reverse;
+        animation: spin-reverse-slow 15s linear infinite;
     }
 
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-150%);
-        }
-
-        100% {
-            transform: translateX(150%);
-        }
-    }
-
-    .group-hover\:animate-shimmer:hover {
-        animation: shimmer 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    .animate-orbit {
+        animation: orbit 8s linear infinite;
     }
 </style>
 
 <script>
-    function openEditModal() {
-        const modal = document.getElementById('editProfileModal');
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeEditModal() {
-        const modal = document.getElementById('editProfileModal');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    function saveProfile() {
-        // Add your save logic here
-        console.log('Saving profile...');
-        // For now, just close the modal
-        closeEditModal();
-    }
-
-    // Close modal when pressing Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeEditModal();
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update avatar preview
+                const avatarPreview = document.getElementById('avatarPreview');
+                const avatarDiv = avatarPreview.querySelector('.absolute.inset-0.bg-center');
+                if (avatarDiv) {
+                    avatarDiv.style.backgroundImage = `url('${e.target.result}')`;
+                }
+            }
+            reader.readAsDataURL(file);
         }
-    });
+    }
 </script>

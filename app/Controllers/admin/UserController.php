@@ -212,14 +212,14 @@ class UserController extends baseController
 
             $conditionGetOneUser = 'id= ' . $filter['idUser'];
             $getOneUser = $this->userModel->getOneUser($conditionGetOneUser);
-            //validate tittle
+            //validate fullname
             if (empty(trim($filter['fullname']))) {
-                $errors['fullname']['required'] = ' Tên phim bắt buộc phải nhập';
+                $errors['fullname']['required'] = ' Tên người dùng bắt buộc phải nhập';
             }
 
-            //validate original_tittle
+            //validate email
             if (empty(trim($filter['email']))) {
-                $errors['email']['email'] = ' Tên gốc bắt buộc phải nhập';
+                $errors['email']['email'] = ' Email bắt buộc phải nhập';
             }
 
             //validate mật khẩu

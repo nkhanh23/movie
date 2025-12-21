@@ -3,6 +3,9 @@ if (!defined('_nkhanhh')) {
     die('Truy cập không hợp lệ');
 }
 layout('client/header');
+$msg = getSessionFlash('msg');
+$msg_type = getSessionFlash('msg_type');
+$errors = getSessionFlash('errors');
 // echo '<pre>';
 // print_r($userInfor);
 // echo '</pre>';
@@ -33,59 +36,62 @@ layout('client/header');
                             <p class="text-slate-400 text-sm">Quản lý thông tin tài khoản và tùy chỉnh cá nhân của bạn.</p>
                         </div>
                     </div>
+                    <?php
+                    if (!empty($msg) && !empty($msg_type)) {
+                        getMsg($msg, $msg_type);
+                    }
+                    ?>
 
                     <!-- Profile Card -->
                     <div class="user-glassmorphic rounded-2xl p-8 relative overflow-hidden group">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 
-                        <form action="" method="post">
-                            <div class="relative z-10 flex w-full flex-col gap-8 md:flex-row md:justify-between md:items-center">
-                                <div class="flex flex-col md:flex-row gap-8 items-center">
-                                    <!-- Avatar with Animations -->
-                                    <div class="profile-avatar-container">
-                                        <div class="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
-                                        <div class="profile-avatar-ring profile-avatar-ring-1"></div>
-                                        <div class="profile-avatar-ring profile-avatar-ring-2"></div>
-                                        <div class="profile-avatar-orbit profile-avatar-orbit-1">
-                                            <div class="absolute top-1/2 -right-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#D96C16]"></div>
-                                        </div>
-                                        <div class="profile-avatar-orbit profile-avatar-orbit-2">
-                                            <div class="absolute bottom-0 left-1/2 w-1.5 h-1.5 bg-secondary rounded-full shadow-[0_0_10px_#F29F05]"></div>
-                                        </div>
-                                        <div class="relative z-10 w-32 h-32 rounded-full overflow-hidden border-2 border-white/10 shadow-inner">
-                                            <div class="absolute inset-0 bg-center bg-no-repeat bg-cover" style='background-image: url("<?php echo !empty($_SESSION['auth']['avatar']) ? $_SESSION['auth']['avatar'] : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDp5z9ZOQaU3DTgLKIV6PUXCrR683wgb-cfCtJkQb8fjthg6JZpJSoLnJAB_yLhGXcB50ZUZavHxOwTg49G1jP75MI4G4Ze4X59DwMVmAw5WSNPMbtKXDfKAQ_gbF3HBmgak9heLsPTafhUNnl0XnjySGe2aXePkhP3jNqlHLilcq_MOq77GLgj8f7DUbiYQ69J76kGeQi_Jc4pRNRZmiN24BpItbsEpLMeh0vaXya_5iTPRrZAibG83nrS3UDYSj-8bXuXmQPaH3hG'; ?>");'></div>
-                                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-primary/30 mix-blend-overlay"></div>
-                                            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
-                                        </div>
-                                    </div>
 
-                                    <!-- User Info -->
-                                    <div class="flex flex-col justify-center text-center md:text-left space-y-1">
-                                        <h2 class="text-white text-3xl font-bold tracking-tight"><?php echo !empty($_SESSION['auth']['fullname']) ? $_SESSION['auth']['fullname'] : 'Guest User'; ?></h2>
-                                        <div class="flex items-center justify-center md:justify-start gap-2">
-                                            <span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary border border-primary/20 shadow-[0_0_10px_rgba(217,108,22,0.2)]">
-                                                Premium User
-                                            </span>
-                                        </div>
-                                        <p class="text-slate-400 text-sm font-light pt-1">ID: #<?php echo !empty($_SESSION['auth']['id']) ? str_pad($_SESSION['auth']['id'], 6, '0', STR_PAD_LEFT) : '000000'; ?></p>
+                        <div class="relative z-10 flex w-full flex-col gap-8 md:flex-row md:justify-between md:items-center">
+                            <div class="flex flex-col md:flex-row gap-8 items-center">
+                                <!-- Avatar with Animations -->
+                                <div class="profile-avatar-container">
+                                    <div class="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
+                                    <div class="profile-avatar-ring profile-avatar-ring-1"></div>
+                                    <div class="profile-avatar-ring profile-avatar-ring-2"></div>
+                                    <div class="profile-avatar-orbit profile-avatar-orbit-1">
+                                        <div class="absolute top-1/2 -right-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#D96C16]"></div>
+                                    </div>
+                                    <div class="profile-avatar-orbit profile-avatar-orbit-2">
+                                        <div class="absolute bottom-0 left-1/2 w-1.5 h-1.5 bg-secondary rounded-full shadow-[0_0_10px_#F29F05]"></div>
+                                    </div>
+                                    <div class="relative z-10 w-32 h-32 rounded-full overflow-hidden border-2 border-white/10 shadow-inner">
+                                        <div class="absolute inset-0 bg-center bg-no-repeat bg-cover" style='background-image: url("<?php echo !empty($_SESSION['auth']['avatar']) ? $_SESSION['auth']['avatar'] : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDp5z9ZOQaU3DTgLKIV6PUXCrR683wgb-cfCtJkQb8fjthg6JZpJSoLnJAB_yLhGXcB50ZUZavHxOwTg49G1jP75MI4G4Ze4X59DwMVmAw5WSNPMbtKXDfKAQ_gbF3HBmgak9heLsPTafhUNnl0XnjySGe2aXePkhP3jNqlHLilcq_MOq77GLgj8f7DUbiYQ69J76kGeQi_Jc4pRNRZmiN24BpItbsEpLMeh0vaXya_5iTPRrZAibG83nrS3UDYSj-8bXuXmQPaH3hG'; ?>");'></div>
+                                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-primary/30 mix-blend-overlay"></div>
+                                        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons -->
-                                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                                    <button onclick="openEditModal()" class="kinetic-hover flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border border-white/10 bg-white/5 text-white text-sm font-semibold tracking-wide hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all">
-                                        <span class="material-symbols-outlined text-[18px] text-slate-300">edit</span>
-                                        Chỉnh sửa
-                                    </button>
-                                    <button class="kinetic-hover flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary/20 border border-primary/40 text-white text-sm font-semibold tracking-wide hover:bg-primary/30 hover:shadow-[0_0_15px_rgba(217,108,22,0.3)] transition-all">
-                                        <span class="material-symbols-outlined text-[18px]">lock</span>
-                                        Bảo mật
-                                    </button>
+                                <!-- User Info -->
+                                <div class="flex flex-col justify-center text-center md:text-left space-y-1">
+                                    <h2 class="text-white text-3xl font-bold tracking-tight"><?php echo !empty($_SESSION['auth']['fullname']) ? $_SESSION['auth']['fullname'] : 'Guest User'; ?></h2>
+                                    <div class="flex items-center justify-center md:justify-start gap-2">
+                                        <span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary border border-primary/20 shadow-[0_0_10px_rgba(217,108,22,0.2)]">
+                                            Premium User
+                                        </span>
+                                    </div>
+                                    <p class="text-slate-400 text-sm font-light pt-1">ID: #<?php echo !empty($_SESSION['auth']['id']) ? str_pad($_SESSION['auth']['id'], 6, '0', STR_PAD_LEFT) : '000000'; ?></p>
                                 </div>
                             </div>
-                        </form>
-                    </div>
 
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/tai_khoan/chinh_sua'" class="kinetic-hover flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border border-white/10 bg-white/5 text-white text-sm font-semibold tracking-wide hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all">
+                                    <span class="material-symbols-outlined text-[18px] text-slate-300">edit</span>
+                                    Chỉnh sửa
+                                </button>
+                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/tai_khoan/bao_mat'" class="kinetic-hover flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary/20 border border-primary/40 text-white text-sm font-semibold tracking-wide hover:bg-primary/30 hover:shadow-[0_0_15px_rgba(217,108,22,0.3)] transition-all">
+                                    <span class="material-symbols-outlined text-[18px]">lock</span>
+                                    Bảo mật
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Stat 1: Favorite Genre -->
@@ -181,45 +187,3 @@ layout('client/header');
         </div>
     </div>
 </div>
-
-<!-- Include Edit Profile Modal -->
-<!-- Modal -->
-<?php
-$data = [
-    'userInfor' => $userInfor
-];
-layoutPart('client/user/chinh_sua', $data);
-?>
-
-
-<script>
-    function openEditModal() {
-        const modal = document.getElementById('editProfileModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function closeEditModal() {
-        const modal = document.getElementById('editProfileModal');
-        if (modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    function saveProfile() {
-        // Add your save logic here
-        console.log('Saving profile...');
-        // For now, just close the modal
-        closeEditModal();
-    }
-
-    // Close modal when pressing Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeEditModal();
-        }
-    });
-</script>

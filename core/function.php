@@ -203,7 +203,8 @@ function layoutPart($viewName, $data = [])
 // <div class="annouce-message alert alert-danger">Thong bao loi hoac thanh cong</div> 
 function getMsg($msg, $msg_type)
 {
-    echo ' <div class = "announce-message alert alert-' . $msg_type . '">';
+    // echo ' <div class = "announce-message alert alert-' . $msg_type . '">';
+    echo ' <div class = "announce-message alert alert-' . $msg_type . '" style="padding-left: 3rem;">';
     echo $msg;
     echo '</div>';
 }
@@ -349,6 +350,8 @@ function isLogin()
             'fullname' => $user['fullname'],
             'email' => $user['email'],
             'phone' => $user['phone'],
+            'address' => $user['address'],
+            'bio' => $user['bio'],
             'group_id' => $user['group_id'],
             'avatar' => $user['avartar']
         ];

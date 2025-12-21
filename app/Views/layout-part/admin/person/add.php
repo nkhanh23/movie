@@ -36,13 +36,6 @@ $errors = getSessionFlash('errors');
                         value="<?php if (!empty($oldData)) {
                                     echo oldData($oldData, 'name');
                                 } ?>">
-                    <button type="button" class="btn btn-info" onclick="searchTMDB()">
-                        <i class="fa-solid fa-search"></i> Tìm trên TMDB
-                    </button>
-                </div>
-
-                <div id="tmdb-results"
-                    style="display: none; position: absolute; z-index: 1000; background: #fff; border: 1px solid #ccc; width: 100%; max-height: 300px; overflow-y: auto; top: 70px;">
                 </div>
                 <?php
                 if (!empty($errors)) {

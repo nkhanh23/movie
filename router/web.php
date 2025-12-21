@@ -9,6 +9,10 @@ $router->post('/login', 'AuthController@login');
 $router->get('/logout', 'AuthController@logout');
 $router->post('/register', 'AuthController@register');
 $router->get('/active', 'AuthController@active');
+$router->get('/forgot', 'AuthController@showForgot');
+$router->post('/forgot', 'AuthController@forgot');
+$router->get('/reset', 'AuthController@showReset');
+$router->post('/reset', 'AuthController@reset');
 // ADMIN POST 
 $router->get('/admin/film/list', 'MoviesController@list');
 
@@ -176,5 +180,7 @@ $router->get('/yeu_thich', 'AccountController@showFavorite');
 $router->post('/api/toggle-favorite', 'AccountController@toggleFavoriteApi');
 
 //PAGE EDIT
-$router->get('/chinh_sua', 'AccountController@showEdit');
-$router->post('/chinh_sua', 'AccountController@edit');
+$router->get('/tai_khoan/chinh_sua', 'AccountController@showEdit');
+$router->post('/tai_khoan/chinh_sua', 'AccountController@edit');
+$router->get('/tai_khoan/bao_mat', 'AccountController@showSecurity');
+$router->post('/tai_khoan/bao_mat', 'AccountController@security');
