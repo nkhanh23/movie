@@ -218,9 +218,6 @@ class AuthController extends baseController
                         $logoContent = file_get_contents($logoPath);
                         $logoBase64 = base64_encode($logoContent);
                         $logoData = 'data:image/png;base64,' . $logoBase64;
-                    } else {
-                        // Fallback: no logo if file not found
-                        $logoData = '';
                     }
 
                     $emailTo = $filter['email'];

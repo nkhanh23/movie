@@ -3,6 +3,9 @@ if (!defined('_nkhanhh')) {
     die('Truy cập không hợp lệ');
 }
 layout('client/header');
+$msg = getSessionFlash('msg');
+$msg_type = getSessionFlash('msg_type');
+$errors = getSessionFlash('errors');
 ?>
 
 <div class="min-h-screen bg-background-dark">
@@ -20,7 +23,11 @@ layout('client/header');
                         <p class="text-slate-400 text-sm">Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn 24/7. Hãy kết nối với chúng tôi.</p>
                     </div>
                 </div>
-
+                <?php
+                if (!empty($msg) && !empty($msg_type)) {
+                    getMsg($msg, $msg_type);
+                }
+                ?>
                 <!-- Contact Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Contact Form -->
@@ -28,24 +35,34 @@ layout('client/header');
                         <div class="user-glassmorphic rounded-2xl p-8 relative overflow-hidden h-full">
                             <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <div class="absolute bottom-10 left-10 w-20 h-20 bg-secondary/10 rounded-full blur-[40px] pointer-events-none animate-pulse"></div>
-
-                            <form class="flex flex-col gap-6 relative z-10 h-full justify-between">
+                            <form class="flex flex-col gap-6 relative z-10 h-full justify-between" method="POST">
+                                <input type="hidden" name="user_id" value="<?= $userInfor['id'] ?>">
                                 <div class="flex flex-col gap-6">
                                     <!-- Name & Email Row -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div class="flex flex-col gap-2 group">
                                             <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider pl-1">Họ và tên</label>
                                             <div class="relative">
-                                                <input class="contact-input" placeholder="Tên của bạn" type="text" />
+                                                <input name="fullname" class="contact-input" placeholder="Tên của bạn" type="text" value="<?= $userInfor['fullname'] ?>" />
                                                 <span class="material-symbols-outlined contact-input-icon">person</span>
                                             </div>
+                                            <?php
+                                            if (!empty($errors)) {
+                                                echo formError($errors, 'fullname');
+                                            }
+                                            ?>
                                         </div>
                                         <div class="flex flex-col gap-2 group">
                                             <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider pl-1">Email</label>
                                             <div class="relative">
-                                                <input class="contact-input" placeholder="email@example.com" type="email" />
+                                                <input name="email" class="contact-input" placeholder="email@example.com" type="email" value="<?= $userInfor['email'] ?>" />
                                                 <span class="material-symbols-outlined contact-input-icon">alternate_email</span>
                                             </div>
+                                            <?php
+                                            if (!empty($errors)) {
+                                                echo formError($errors, 'email');
+                                            }
+                                            ?>
                                         </div>
                                     </div>
 
@@ -53,11 +70,10 @@ layout('client/header');
                                     <div class="flex flex-col gap-2 group">
                                         <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider pl-1">Chủ đề</label>
                                         <div class="relative">
-                                            <select class="contact-select">
-                                                <option class="bg-slate-900 text-slate-300">Vấn đề tài khoản</option>
-                                                <option class="bg-slate-900 text-slate-300">Thanh toán & Gói cước</option>
-                                                <option class="bg-slate-900 text-slate-300">Báo lỗi kỹ thuật</option>
-                                                <option class="bg-slate-900 text-slate-300">Khác</option>
+                                            <select name="support_type" class="contact-select">
+                                                <?php foreach ($getAllSupportType as $item): ?>
+                                                    <option class="bg-slate-900 text-slate-300" value="<?= $item['id'] ?>"><?= $item['name'] ?></option>
+                                                <?php endforeach ?>
                                             </select>
                                             <span class="material-symbols-outlined contact-input-icon">topic</span>
                                             <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[20px]">expand_more</span>
@@ -68,15 +84,20 @@ layout('client/header');
                                     <div class="flex flex-col gap-2 group">
                                         <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider pl-1">Nội dung</label>
                                         <div class="relative">
-                                            <textarea class="contact-textarea" placeholder="Mô tả chi tiết vấn đề..." rows="5"></textarea>
+                                            <textarea name="content" class="contact-textarea" placeholder="Mô tả chi tiết vấn đề..." rows="5"></textarea>
                                             <span class="material-symbols-outlined absolute left-3 top-4 text-slate-500 group-focus-within:text-primary transition-colors text-[20px]">description</span>
                                         </div>
+                                        <?php
+                                        if (!empty($errors)) {
+                                            echo formError($errors, 'content');
+                                        }
+                                        ?>
                                     </div>
                                 </div>
 
                                 <!-- Submit Button -->
                                 <div class="pt-2">
-                                    <button class="contact-submit-btn" type="button">
+                                    <button class="contact-submit-btn" type="submit">
                                         <div class="absolute inset-0 bg-white/20 group-hover:opacity-0 transition-opacity"></div>
                                         <div class="relative bg-[#0f172a] hover:bg-transparent rounded-[11px] px-8 py-3.5 flex items-center justify-center gap-3 transition-all duration-300">
                                             <span class="text-white font-bold tracking-wide">Gửi tin nhắn</span>

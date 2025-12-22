@@ -38,6 +38,17 @@ if (!defined('_nkhanhh')) {
             <span>Thể loại</span>
         </a>
 
+        <!-- NEW: SUPPORT SECTIONS -->
+        <div class="nav-divider">Hỗ trợ & Phản hồi</div>
+        <a href="<?php echo _HOST_URL; ?>/admin/support" class="nav-item">
+            <i class="fa-solid fa-headset"></i>
+            <span>Yêu cầu hỗ trợ</span>
+        </a>
+        <a href="<?php echo _HOST_URL; ?>/admin/support_type" class="nav-item">
+            <i class="fa-solid fa-folder-open"></i>
+            <span>Loại hỗ trợ</span>
+        </a>
+
         <div class="nav-divider">Nhân sự</div>
         <a href="<?php echo _HOST_URL; ?>/admin/person" class="nav-item">
             <i class="fa-solid fa-users"></i>

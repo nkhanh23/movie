@@ -118,6 +118,26 @@ $router->get('/admin/logs/delete', 'ActivityController@delete');
 $router->get('/admin/crawler', 'CrawlerController@list');
 $router->get('/admin/crawler/sync-api', 'CrawlerController@syncApi');
 
+//ADMIN SUPPORT
+$router->get('/admin/support', 'SupportController@list');
+
+$router->get('/admin/support/reply', 'SupportController@showReply');
+$router->post('/admin/support/reply', 'SupportController@reply');
+
+
+$router->get('/admin/support/delete', 'SupportController@delete');
+
+//ADMIN SUPPORT TYPE
+$router->get('/admin/support_type', 'SupportTypeController@list');
+
+$router->get('/admin/support_type/edit', 'SupportTypeController@showEdit');
+$router->post('/admin/support_type/edit', 'SupportTypeController@edit');
+
+$router->get('/admin/support_type/add', 'SupportTypeController@showAdd');
+$router->post('/admin/support_type/add', 'SupportTypeController@add');
+
+$router->get('/admin/support_type/delete', 'SupportTypeController@delete');
+
 
 
 // -----------------------------------------------------------------
@@ -165,6 +185,7 @@ $router->get('/dien_vien', 'HomeController@dienVien');
 
 //PAGE LIEN HE
 $router->get('/lien_he', 'AccountController@showContact');
+$router->post('/lien_he', 'AccountController@contact');
 
 //PAGE GIOI THIEU
 $router->get('/gioi_thieu', 'AccountController@showIntroduce');

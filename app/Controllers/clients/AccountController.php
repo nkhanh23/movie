@@ -4,12 +4,14 @@ class AccountController extends baseController
     private $moviesModel;
     private $notificationModel;
     private $usersModel;
+    private $supportModel;
 
     public function __construct()
     {
         $this->moviesModel = new Movies();
         $this->notificationModel = new Notifications();
         $this->usersModel = new User();
+        $this->supportModel = new Support();
     }
 
     public function showIntroduce()
@@ -19,10 +21,149 @@ class AccountController extends baseController
 
     public function showContact()
     {
-        $this->renderView('layout-part/client/user/lien_he');
+        $userInfor = $_SESSION['auth'];
+        $getAllSupportType = $this->supportModel->getAllSupportType();
+        $data = [
+            'getAllSupportType' => $getAllSupportType,
+            'userInfor' => $userInfor
+        ];
+        $this->renderView('layout-part/client/user/lien_he', $data);
     }
 
+    public function contact()
+    {
+        if (isPost()) {
+            $filter = filterData();
+            $errors = [];
+            // echo '<pre>';
+            // print_r($filter);
+            // echo '</pre>';
+            // die();
+            //validate name
+            if (empty(trim($filter['fullname']))) {
+                $errors['fullname']['required'] = ' Họ và tên bắt buộc phải nhập';
+            }
+            if (empty(trim($filter['email']))) {
+                $errors['email']['required'] = ' Email bắt buộc phải nhập';
+            }
+            if (empty(trim($filter['content']))) {
+                $errors['content']['required'] = ' Nội dung tin nhắn bắt buộc phải nhập';
+            }
+            if (empty($errors)) {
+                // Lấy tên loại hỗ trợ
+                $supportTypeName = '';
+                $allSupportTypes = $this->supportModel->getAllSupportType();
+                foreach ($allSupportTypes as $type) {
+                    if ($type['id'] == $filter['support_type']) {
+                        $supportTypeName = $type['name'];
+                        break;
+                    }
+                }
 
+                $emailTo = 'nkhanh2305@gmail.com';
+                $subject = '[Phê Phim] Yêu cầu hỗ trợ: ' . $supportTypeName;
+                $content = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Arial, sans-serif; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);">
+    <div style="max-width: 650px; margin: 40px auto; background: linear-gradient(135deg, rgba(18, 24, 33, 0.95) 0%, rgba(10, 14, 20, 0.98) 100%); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset;">
+        
+        <!-- Header with Logo -->
+        <div style="background: linear-gradient(135deg, #D96C16 0%, #F29F05 100%); padding: 40px 20px; text-align: center; position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);"></div>
+            <img src="' . _HOST_URL_PUBLIC . '/img/logo/PhePhim.png" alt="Phê Phim" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));">
+            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">🎧 Yêu Cầu Hỗ Trợ Mới</h1>
+            <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 13px;">Từ khách hàng của Phê Phim</p>
+        </div>
+        
+        <!-- Content -->
+        <div style="padding: 35px 30px; color: #e2e8f0; line-height: 1.8;">
+            
+            <!-- User Info Card -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);"></div>
+                    <h3 style="margin: 0; color: #10b981; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Thông tin người gửi</h3>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #94a3b8; font-size: 13px; width: 120px;">👤 Họ và tên:</td>
+                        <td style="padding: 8px 0; color: #fff; font-size: 14px; font-weight: 600;">' . htmlspecialchars($filter['fullname']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #94a3b8; font-size: 13px;">📧 Email:</td>
+                        <td style="padding: 8px 0;">
+                            <a href="mailto:' . htmlspecialchars($filter['email']) . '" style="color: #3b82f6; text-decoration: none; font-size: 14px;">' . htmlspecialchars($filter['email']) . '</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #94a3b8; font-size: 13px;">📁 Loại hỗ trợ:</td>
+                        <td style="padding: 8px 0;">
+                            <span style="display: inline-block; background: rgba(217, 108, 22, 0.15); border: 1px solid rgba(217, 108, 22, 0.3); color: #F29F05; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">' . htmlspecialchars($supportTypeName) . '</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #94a3b8; font-size: 13px;">🕐 Thời gian:</td>
+                        <td style="padding: 8px 0; color: #cbd5e1; font-size: 13px;">' . date('d/m/Y H:i:s') . '</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Message Content -->
+            <div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 18px;">💬</span>
+                    <h3 style="margin: 0; color: #93c5fd; font-size: 14px; font-weight: 600;">NỘI DUNG YÊU CẦU</h3>
+                </div>
+                <div style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; padding: 15px; color: #e2e8f0; font-size: 14px; line-height: 1.7; white-space: pre-wrap;">' . htmlspecialchars($filter['content']) . '</div>
+            </div>
+            
+            <!-- Quick Action Button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="' . _HOST_URL . '/admin/support" style="display: inline-block; background: linear-gradient(135deg, #D96C16 0%, #F29F05 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 15px rgba(217, 108, 22, 0.3); transition: all 0.3s;">
+                    🚀 Xem chi tiết trong Admin Panel
+                </a>
+            </div>
+            
+            <!-- Info Notice -->
+            <div style="margin-top: 25px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; border-radius: 8px;">
+                <p style="font-size: 13px; color: #fbbf24; margin: 0;">
+                    <strong>💡 Lưu ý:</strong> Vui lòng phản hồi yêu cầu này trong vòng 24 giờ để đảm bảo trải nghiệm tốt nhất cho khách hàng.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="background: rgba(15, 23, 42, 0.7); padding: 25px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+            <p style="margin: 0; font-size: 13px; color: #64748b;">Email tự động từ hệ thống <strong style="color: #F29F05;">Phê Phim</strong> ✨</p>
+            <p style="margin: 10px 0 0 0; font-size: 11px; color: #475569;">© 2024 Phê Phim. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>';
+                sendMail($emailTo, $subject, $content);
+
+                $data = [
+                    'user_id' => $filter['user_id'],
+                    'fullname' => $filter['fullname'],
+                    'email' => $filter['email'],
+                    'content' => $filter['content'],
+                    'support_type_id' => $filter['support_type'],
+                    'support_status_id' => 1,
+                    'created_at' => date('Y:m:d H:i:s')
+                ];
+                $insertSupport = $this->supportModel->insertSupport($data);
+                if ($insertSupport) {
+                    setSessionFlash('msg', 'Gửi tin nhắn thành công');
+                    setSessionFlash('msg_type', 'success');
+                    reload('/lien_he');
+                }
+            }
+        }
+    }
 
     public function showFavorite()
     {

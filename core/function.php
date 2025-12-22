@@ -4,7 +4,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-function sendMail($emailTo, $subject, $content)
+function sendMail($emailTo, $subject, $content, $replyToEmail = null, $replyToName = null)
 {
 
     //Import PHPMailer classes into the global namespace
@@ -24,9 +24,13 @@ function sendMail($emailTo, $subject, $content)
         $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
         //Recipients
-        $mail->setFrom('nkhanh2305@gmail.com', 'Nkhanh Course');
-        $mail->addAddress($emailTo,);     //Add a recipient
-
+        $mail->setFrom('nkhanh2305@gmail.com', 'PHEPHIM');
+        $mail->addAddress($emailTo,);     // Gửi tới Admin
+        //khi bấm Reply thì sẽ trả lời người dùng
+        if ($replyToEmail) {
+            // Nếu không có tên thì dùng chính email làm tên
+            $mail->addReplyTo($replyToEmail, $replyToName ?? $replyToEmail);
+        }
         //Content
         $mail->CharSet = 'UTF-8';
         $mail->isHTML(true);                                  //Set email format to HTML
