@@ -260,48 +260,7 @@ function renderMoviePlayer($url)
                 <source src="' . htmlspecialchars($url) . '" type="application/x-mpegURL">
                 Trình duyệt không hỗ trợ phát video này.
             </video>
-        </div>
-        
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                var video = document.getElementById("hls-video");
-                var videoSrc = "' . $url . '";
-
-                if (Hls.isSupported()) {
-                    var hls = new Hls();
-                    hls.loadSource(videoSrc);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        // Tự động phát nếu muốn (lưu ý trình duyệt có thể chặn âm thanh)
-                        // video.play(); 
-                    });
-                    
-                    // Xử lý lỗi load stream
-                    hls.on(Hls.Events.ERROR, function (event, data) {
-                        if (data.fatal) {
-                            switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log("Lỗi mạng, đang thử load lại...");
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.log("Lỗi media, đang thử phục hồi...");
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                console.log("Lỗi không thể phục hồi, hủy phát.");
-                                hls.destroy();
-                                break;
-                            }
-                        }
-                    });
-                }
-                // Hỗ trợ Safari (iOS/Mac)
-                else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-                    video.src = videoSrc;
-                }
-            });
-        </script>';
+        </div>';
     }
 
     // --- TRƯỜNG HỢP 2: Link Embed Iframe (Dữ liệu cũ) ---

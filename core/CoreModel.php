@@ -114,4 +114,11 @@ class CoreModel
         $stm->execute($params);
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // để hỗ trợ chạy SQL có tham số (binding params)
+    public function execute($sql, $params = [])
+    {
+        $stm = $this->connect->prepare($sql);
+        return $stm->execute($params);
+    }
 }

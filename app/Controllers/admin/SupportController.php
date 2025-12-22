@@ -3,9 +3,11 @@
 class SupportController extends baseController
 {
     private $supportModel;
+    private $notificationModel;
     public function __construct()
     {
         $this->supportModel = new Support();
+        $this->notificationModel = new Notifications();
     }
     public function list()
     {
@@ -269,8 +271,23 @@ class SupportController extends baseController
                 'support_status_id' => $new_status,
             ];
             $conditionUpdate = 'id=' . $id;
-            $checkUpdate = $this->supportModel->updateSupport($conditionUpdate, $dataUpdate);
+            $checkUpdate = $this->supportModel->updateSupport($dataUpdate, $conditionUpdate);
             if ($checkUpdate) {
+                //-----------------------------------------------------------
+                //Thông báo cho người dùng
+                //-----------------------------------------------------------
+                $senderName = 'Admin';
+                $msg = "<b>$senderName</b> đã phản hồi yêu cầu hỗ trợ của bạn: <b>" . htmlspecialchars($getSupport['support_type_name']) . "</b>. Vui lòng kiểm tra email để xem chi tiết.";
+                $link = _HOST_URL . '/lien_he';
+                $notiData = [
+                    'user_id' => $getSupport['user_id'],
+                    'type' => 'support_reply',
+                    'message' => $msg,
+                    'link' => $link,
+                    'created_at' => date('Y:m:d H:i:s')
+                ];
+                $this->notificationModel->createNotification($notiData);
+
                 setSessionFlash('msg', 'Cập nhật thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/support');

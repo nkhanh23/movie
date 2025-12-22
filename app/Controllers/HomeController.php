@@ -5,21 +5,28 @@ class HomeController extends baseController
     private $genresModel;
     private $personModel;
     private $activityModel;
+    private $supportModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
         $this->genresModel = new Genres;
         $this->personModel = new Person;
         $this->activityModel = new Activity;
+        $this->supportModel = new Support;
     }
 
     public function adminDashboard()
     {
         $getLatestMoviesLogs = $this->activityModel->getLatestMoviesLogs(5);
         $logs = $this->activityModel->getLatestLogs(5);
+
+        // Lấy 5 support mới nhất
+        $latestSupports = $this->supportModel->getAllSupport('', 5, 0);
+
         $data = [
             'logs' => $logs,
-            'getLatestMoviesLogs' => $getLatestMoviesLogs
+            'getLatestMoviesLogs' => $getLatestMoviesLogs,
+            'latestSupports' => $latestSupports
         ];
         $this->renderView('/layout-part/admin/dashboard', $data);
     }

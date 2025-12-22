@@ -55,68 +55,73 @@
 
         <!-- Dashboard Grid (2 Columns) -->
         <div class="dashboard-grid">
-            <!-- Column 1: Recent Movies -->
+            <!-- Column 1: Support -->
             <div class="dashboard-col-main">
                 <div class="card h-full">
                     <div class="card-header">
-                        <h3>Phim mới cập nhật</h3>
-                        <a href="#" class="view-all-link">Xem tất cả</a>
+                        <h3 style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-inbox" style="color: var(--accent-blue);"></i> Hộp thư hỗ trợ mới
+                        </h3>
+                        <a href="<?php echo _HOST_URL; ?>/admin/support" class="view-all-link">Xem tất cả</a>
                     </div>
-                    <div class="table-container" style="margin-top: 15px;">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Tên phim</th>
-                                    <th>Thể loại</th>
+                                    <th>Người gửi</th>
+                                    <th>Chủ đề</th>
                                     <th>Trạng thái</th>
-                                    <th>Ngày tạo</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 500;">The Matrix Resurrections</div>
-                                    </td>
-                                    <td>Hành động</td>
-                                    <td><span class="badge success">Hoàn thành</span></td>
-                                    <td>20/10/2023</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 500;">Inception</div>
-                                    </td>
-                                    <td>Sci-Fi</td>
-                                    <td><span class="badge success">Hoàn thành</span></td>
-                                    <td>18/10/2023</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 500;">Stranger Things S4</div>
-                                    </td>
-                                    <td>Kinh dị</td>
-                                    <td><span class="badge warning">Đang cập nhật</span></td>
-                                    <td>15/10/2023</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 500;">Loki Season 2</div>
-                                    </td>
-                                    <td>Fantasy</td>
-                                    <td><span class="badge warning">Đang cập nhật</span></td>
-                                    <td>12/10/2023</td>
-                                </tr>
+                                <?php if (!empty($latestSupports)): ?>
+                                    <?php foreach ($latestSupports as $support): ?>
+                                        <?php
+                                        // Xác định màu badge theo trạng thái
+                                        $statusBadge = 'secondary';
+                                        if ($support['support_status_id'] == 1) {
+                                            $statusBadge = 'warning'; // Chờ xử lý
+                                        } elseif ($support['support_status_id'] == 2) {
+                                            $statusBadge = 'info'; // Đang xử lý
+                                        } elseif ($support['support_status_id'] == 3) {
+                                            $statusBadge = 'success'; // Đã thực hiện
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 500;"><?php echo htmlspecialchars($support['fullname']) ?></div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary);"><?php echo htmlspecialchars($support['email']) ?></div>
+                                            </td>
+                                            <td><span class="badge info"><?php echo htmlspecialchars($support['support_type_name']) ?></span></td>
+                                            <td><span class="badge <?php echo $statusBadge ?>"><?php echo htmlspecialchars($support['status_name']) ?></span></td>
+                                            <td class="actions">
+                                                <button onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/support/reply?id=<?php echo $support['id'] ?>'" class="btn-icon-sm" title="Xem chi tiết">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">
+                                            Chưa có yêu cầu hỗ trợ nào
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+
             <!-- Column 2: Activity Feed -->
             <div class="dashboard-col-side">
                 <div class="card h-full">
                     <div class="card-header">
                         <h3>Hoạt động gần đây</h3>
-                        <button class="btn-icon-sm"><i class="fa-solid fa-ellipsis"></i></button>
+                        <a href="<?php echo _HOST_URL; ?>/admin/logs" class="view-all-link">Xem tất cả</a>
                     </div>
 
                     <div class="activity-feed">

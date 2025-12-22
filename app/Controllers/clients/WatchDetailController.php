@@ -6,6 +6,7 @@ class WatchDetailController extends baseController
     private $episodesModel;
     private $personModel;
     private $commentsModel;
+    private $watchHistoryModel;
     public function __construct()
     {
         $this->moviesModel = new Movies();
@@ -13,6 +14,7 @@ class WatchDetailController extends baseController
         $this->episodesModel = new Episode();
         $this->personModel = new Person();
         $this->commentsModel = new Comments();
+        $this->watchHistoryModel = new WatchHistory();
     }
 
     // Hàm đệ quy để tạo cây thư mục comment
@@ -98,6 +100,14 @@ class WatchDetailController extends baseController
             header("Location: $redirectUrl");
             exit;
         }
+        //--------------------------------------------------------------------------------------
+        // LAY LICH SU XEM PHIM
+        //-------------------------------------------------------------------------------------
+        $startTime = 0;
+        //Chi lay lich su neu user da dang nhap va co ID tap phim
+        if ($currentUserId > 0 && !empty($idEpisode)) {
+            $startTime = $this->watchHistoryModel->getProgress($currentUserId, $idMovie, $idEpisode);
+        }
         // Lấy danh sách bình luận
         $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId, $idEpisode);
         // Xử lý Phân cấp Cha - Con (Tree Structure)
@@ -122,9 +132,56 @@ class WatchDetailController extends baseController
             'comments' => $comments,
             'listComments' => $commentsTree,
             'totalComments' => $totalComments,
-            'similarMovies' => $similarMovies
+            'similarMovies' => $similarMovies,
+            'startTime' => $startTime
 
         ];
         $this->renderView('layout-part/client/watch', $data);
+    }
+
+    public function saveHistory()
+    {
+        //Cau hinh header tra ve JSON
+        header('Content-Type: application/json');
+        //Kiem tra dang nhap
+        if (!isset($_SESSION['auth']['id'])) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Unauthorized: Bạn chưa đăng nhập'
+            ]);
+            return;
+        }
+
+        //Nhap du lieu json tu js
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, true);
+
+        //validate du lieu dau vao
+        if (isset($input['movie_id'], $input['episode_id'], $input['current_time'])) {
+
+            $userId = $_SESSION['auth']['id'];
+            $movieId = (int)$input['movie_id'];
+            $episodeId = (int)$input['episode_id'];
+            $currentTime = (float)$input['current_time'];
+
+            $result = $this->watchHistoryModel->saveProgress($userId, $movieId, $episodeId, $currentTime);
+
+            if ($result) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Thanh cong'
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'That bai'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Du lieu khong hop le'
+            ]);
+        }
     }
 }

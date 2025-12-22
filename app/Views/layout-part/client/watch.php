@@ -43,7 +43,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                         // KHỞI TẠO URL MẶC ĐỊNH
                         $movieUrl = '';
 
-                        // LOGIC LẤY LINK THÔNG MINH
+                        // LOGIC LẤY LINK
                         if (!empty($episodeDetail) && is_array($episodeDetail)) {
 
                             // 1. Lấy ID tập đang xem từ URL (nếu có)
@@ -463,7 +463,146 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
             });
     }
 </script>
+<script>
+    // ========================================================================
+    // UNIFIED HLS PLAYER + WATCH HISTORY SCRIPT
+    // ========================================================================
+    const MOVIE_ID = <?php echo isset($idMovie) ? (int)$idMovie : 0; ?>;
+    const EPISODE_ID = <?php echo isset($idEpisode) && $idEpisode ? (int)$idEpisode : 0; ?>;
+    const SERVER_START_TIME = <?php echo isset($startTime) ? (float)$startTime : 0; ?>;
+    const API_URL = '<?php echo _HOST_URL; ?>/api/save-history';
 
+    console.log("=== INIT VIDEO PLAYER ===");
+    console.log("Movie:", MOVIE_ID, "| Episode:", EPISODE_ID);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const player = document.getElementById('hls-video');
+
+        if (!player) {
+            console.warn("Player not found (iframe mode?)");
+            return;
+        }
+
+        console.log(" Player found:", player.tagName);
+
+        // ====================================================================
+        // 1. HLS.JS INITIALIZATION (for .m3u8 streams)
+        // ====================================================================
+        const videoSrc = player.querySelector('source')?.src;
+
+        if (videoSrc && videoSrc.includes('.m3u8')) {
+            console.log("🎬 Initializing HLS.js for:", videoSrc);
+
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(player);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    console.log(" HLS manifest parsed successfully");
+                });
+
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        console.error(" HLS Fatal Error:", data.type);
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log(" Network error, retrying...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log(" Media error, recovering...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                console.log(" Unrecoverable error, destroying HLS");
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            }
+            // Safari native HLS support
+            else if (player.canPlayType("application/vnd.apple.mpegurl")) {
+                console.log(" Using Safari native HLS");
+                player.src = videoSrc;
+            }
+        }
+
+        // ====================================================================
+        // 2. WATCH HISTORY - RESUME PLAYBACK
+        // ====================================================================
+        player.addEventListener('loadedmetadata', function() {
+            console.log(" Video duration:", player.duration);
+
+            let seekTime = SERVER_START_TIME;
+
+            // Fallback to localStorage if server returns 0
+            if (seekTime <= 0) {
+                const localKey = `progress_m${MOVIE_ID}_e${EPISODE_ID}`;
+                const localTime = localStorage.getItem(localKey);
+                if (localTime) {
+                    seekTime = parseFloat(localTime);
+                    console.log(" Found localStorage:", seekTime);
+                }
+            }
+
+            if (seekTime > 0) {
+                player.currentTime = seekTime;
+                console.log(`Resumed at: ${seekTime}s`);
+            }
+        });
+
+        // ====================================================================
+        // 3. WATCH HISTORY - SYNC TO SERVER
+        // ====================================================================
+        let lastSyncTime = 0;
+
+        function syncProgressToDB(time) {
+            console.log(` Syncing progress: ${time}s`);
+
+            fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        movie_id: MOVIE_ID,
+                        episode_id: EPISODE_ID,
+                        current_time: time
+                    })
+                })
+                .then(response => {
+                    console.log("📡 API Status:", response.status);
+                    return response.text();
+                })
+                .then(data => {
+                    console.log(" Server response:", data);
+                })
+                .catch(err => console.error(" Sync error:", err));
+        }
+
+        // Auto-save every 10 seconds
+        player.addEventListener('timeupdate', function() {
+            const currentTime = player.currentTime;
+
+            // Always save to localStorage (instant backup)
+            localStorage.setItem(`progress_m${MOVIE_ID}_e${EPISODE_ID}`, currentTime);
+
+            // Sync to server every 10s (throttled)
+            if (currentTime > 5 && Math.abs(currentTime - lastSyncTime) > 10) {
+                syncProgressToDB(currentTime);
+                lastSyncTime = currentTime;
+            }
+        });
+
+        // Save on pause
+        player.addEventListener('pause', function() {
+            console.log("Paused, saving...");
+            syncProgressToDB(player.currentTime);
+        });
+    });
+</script>
 <?php
 //footer
 layout('client/footer');

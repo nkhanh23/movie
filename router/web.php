@@ -158,6 +158,7 @@ $router->post('/api/like-comment', 'CommentUserController@likeCommentApi');
 // PAGE WATCH
 $router->get('/watch', 'WatchDetailController@showWatch');
 $router->post('/watch', 'WatchDetailController@watch');
+$router->post('/api/save-history', 'WatchDetailController@saveHistory');
 
 // PAGE PERSON
 $router->get('/dien_vien/chi_tiet', 'PersonDetailController@showPerson');
