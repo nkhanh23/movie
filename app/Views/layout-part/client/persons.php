@@ -11,8 +11,8 @@ layout('client/header');
 ?>
 
 <body class="font-display text-white overflow-x-hidden min-h-screen relative">
-    <div class="layout-container flex flex-col min-h-screen pt-32">
-        <div class="flex-1 flex justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="layout-container flex flex-col min-h-screen pt-20 md:pt-32">
+        <div class="flex-1 flex justify-center py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
             <div class="flex flex-col max-w-[1920px] w-full gap-8">
                 <!-- Actor Profile Hero -->
                 <section class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden group">
@@ -34,7 +34,7 @@ layout('client/header');
                         <!-- Bio Content -->
                         <div class="flex-1 text-center md:text-left space-y-4">
                             <div>
-                                <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-2 drop-shadow-md"><?php echo $personDetail['name'] ?></h1>
+                                <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2 drop-shadow-md"><?php echo $personDetail['name'] ?></h1>
                                 <div class="flex flex-wrap justify-center md:justify-start gap-3 text-sm text-gray-400">
                                     <?php
                                     $roles = explode(',', $personDetail['role_name']);
@@ -107,7 +107,7 @@ layout('client/header');
                             <h2 class="text-2xl font-bold text-white tracking-wide">Danh sách phim</h2>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-6">
                         <!-- Movie Card -->
                         <?php foreach ($getPersonMovies as $movie):
                             $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';

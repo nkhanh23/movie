@@ -6,6 +6,9 @@ class HomeController extends baseController
     private $personModel;
     private $activityModel;
     private $supportModel;
+    private $watchHistoryModel;
+    private $userModel;
+    private $commentModel;
     public function __construct()
     {
         $this->moviesModel = new Movies;
@@ -13,6 +16,9 @@ class HomeController extends baseController
         $this->personModel = new Person;
         $this->activityModel = new Activity;
         $this->supportModel = new Support;
+        $this->watchHistoryModel = new WatchHistory;
+        $this->userModel = new User;
+        $this->commentModel = new Comments;
     }
 
     public function adminDashboard()
@@ -23,10 +29,18 @@ class HomeController extends baseController
         // Lấy 5 support mới nhất
         $latestSupports = $this->supportModel->getAllSupport('', 5, 0);
 
+        // Lấy thống kê tổng số
+        $totalMovies = $this->moviesModel->getTotalMovies();
+        $totalUsers = $this->userModel->getTotalUsers();
+        $totalComments = $this->commentModel->getTotalComments();
+
         $data = [
             'logs' => $logs,
             'getLatestMoviesLogs' => $getLatestMoviesLogs,
-            'latestSupports' => $latestSupports
+            'latestSupports' => $latestSupports,
+            'totalMovies' => $totalMovies,
+            'totalUsers' => $totalUsers,
+            'totalComments' => $totalComments
         ];
         $this->renderView('/layout-part/admin/dashboard', $data);
     }
@@ -38,12 +52,19 @@ class HomeController extends baseController
         $getMoviesKorean = $this->moviesModel->getMoviesKorean();
         $getMoviesUSUK = $this->moviesModel->getMoviesUSUK();
         $getMoviesChinese = $this->moviesModel->getMoviesChinese();
-        $getTopDailyByType1 = $this->moviesModel->getTopDailyByType(1);
-        $getTopDailyByType2 = $this->moviesModel->getTopDailyByType(2);
+        $getTopDailyByType1 = $this->moviesModel->getTopTrendingToday(1);
+        $getTopDailyByType2 = $this->moviesModel->getTopTrendingToday(2);
         $getCinemaMovie = $this->moviesModel->getCinemaMovie();
         $getAnimeMovies = $this->moviesModel->getAnimeMovies();
         $getLoveMovies = $this->moviesModel->getLoveMovies();
         $getHorrorMovies = $this->moviesModel->getHorrorMovies();
+
+
+        // Lấy danh sách xem tiếp (nếu đã đăng nhập)
+        $getContinueWatching = [];
+        if (!empty($_SESSION['auth']['id'])) {
+            $getContinueWatching = $this->watchHistoryModel->getContinueWatchingList($_SESSION['auth']['id'], 10);
+        }
 
         // Kiểm tra trạng thái favorite cho hero movie
         $heroIsFavorited = false;
@@ -66,7 +87,8 @@ class HomeController extends baseController
             'getAnimeMovies' => $getAnimeMovies,
             'getLoveMovies' => $getLoveMovies,
             'getHorrorMovies' => $getHorrorMovies,
-            'heroIsFavorited' => $heroIsFavorited
+            'heroIsFavorited' => $heroIsFavorited,
+            'getContinueWatching' => $getContinueWatching
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }

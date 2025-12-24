@@ -138,6 +138,22 @@ $router->post('/admin/support_type/add', 'SupportTypeController@add');
 
 $router->get('/admin/support_type/delete', 'SupportTypeController@delete');
 
+//ADMIN COUNTRY
+$router->get('/admin/country', 'CountryController@list');
+
+$router->get('/admin/country/edit', 'CountryController@showEdit');
+$router->post('/admin/country/edit', 'CountryController@edit');
+
+$router->get('/admin/country/add', 'CountryController@showAdd');
+$router->post('/admin/country/add', 'CountryController@add');
+
+$router->get('/admin/country/delete', 'CountryController@delete');
+
+//ADMIN SETTING
+$router->get('/admin/settings', 'SettingController@showGeneral');
+$router->post('/admin/settings/general', 'SettingController@updateGeneral');
+$router->post('/admin/settings/email', 'SettingController@updateEmail');
+
 
 
 // -----------------------------------------------------------------
@@ -206,3 +222,8 @@ $router->get('/tai_khoan/chinh_sua', 'AccountController@showEdit');
 $router->post('/tai_khoan/chinh_sua', 'AccountController@edit');
 $router->get('/tai_khoan/bao_mat', 'AccountController@showSecurity');
 $router->post('/tai_khoan/bao_mat', 'AccountController@security');
+
+//PAGE XEM TIEP
+$router->get('/xem_tiep', 'AccountController@showNextWatch');
+$router->get('/delete-history-dashboard', 'AccountController@deleteHistoryDashboard');
+$router->get('/delete-history-continue-page', 'AccountController@deleteHistoryContinuePage');

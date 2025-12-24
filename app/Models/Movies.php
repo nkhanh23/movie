@@ -75,8 +75,14 @@ class Movies extends CoreModel
         if (!empty($sql)) {
             return $this->getRows($sql);
         } else {
-            return $this->getRows("SELECT * FROM movies");
+            return $this->getRows("SELECT id FROM movies");
         }
+    }
+
+    // Lấy tổng số phim
+    public function getTotalMovies()
+    {
+        return $this->getRows("SELECT id FROM movies");
     }
 
     public function getLastIdMovies()
@@ -129,15 +135,41 @@ class Movies extends CoreModel
         // loc theo the loai phim
         if (!empty($filter['genres'])) {
             $chuoiWhere = $this->chuoiWhere($chuoiWhere);
-            $chuoiWhere .= "mg.genre_id = ?";
-            $params[] = $filter['genres'];
+
+            // Kiểm tra nếu là mảng (multi-select) hoặc giá trị đơn
+            if (is_array($filter['genres'])) {
+                // Multi-select: sử dụng IN (?, ?, ?)
+                $placeholders = implode(',', array_fill(0, count($filter['genres']), '?'));
+                $chuoiWhere .= "mg.genre_id IN ($placeholders)";
+                // Thêm từng giá trị vào params
+                foreach ($filter['genres'] as $genreId) {
+                    $params[] = $genreId;
+                }
+            } else {
+                // Single value: sử dụng =
+                $chuoiWhere .= "mg.genre_id = ?";
+                $params[] = $filter['genres'];
+            }
         }
 
         // loc theo quoc gia
         if (!empty($filter['countries'])) {
             $chuoiWhere = $this->chuoiWhere($chuoiWhere);
-            $chuoiWhere .= "m.country_id = ?";
-            $params[] = $filter['countries'];
+
+            // Kiểm tra nếu là mảng (multi-select) hoặc giá trị đơn
+            if (is_array($filter['countries'])) {
+                // Multi-select: sử dụng IN (?, ?, ?)
+                $placeholders = implode(',', array_fill(0, count($filter['countries']), '?'));
+                $chuoiWhere .= "m.country_id IN ($placeholders)";
+                // Thêm từng giá trị vào params
+                foreach ($filter['countries'] as $countryId) {
+                    $params[] = $countryId;
+                }
+            } else {
+                // Single value: sử dụng =
+                $chuoiWhere .= "m.country_id = ?";
+                $params[] = $filter['countries'];
+            }
         }
 
         // loc theo loai phim
@@ -273,6 +305,63 @@ class Movies extends CoreModel
         ];
     }
 
+    public function getTopTrendingToday($typeId)
+    {
+        //Auto seeding: Nếu chưa có view hôm nay thì tạo giả
+        $this->seedFakeViewsIfEmpty();
+
+        $sql = "SELECT m.id, m.tittle, m.slug, m.thumbnail, m.poster_url, m.original_tittle,m.release_year,
+                       d.views as daily_views
+                FROM movies m
+                JOIN movie_views_daily d ON m.id = d.movie_id
+                WHERE d.view_date = CURDATE() 
+                AND m.type_id = :type_id
+                ORDER BY d.views DESC
+                LIMIT 10";
+
+        return $this->getAll($sql, [
+            'type_id' => $typeId
+        ]);
+    }
+
+    public function incrementMovieView($movieId)
+    {
+        $sql = "INSERT INTO movie_views_daily (movie_id, view_date, views) 
+            VALUES (:movie_id, :view_date, 1) 
+            ON DUPLICATE KEY UPDATE views = views + 1";
+
+        $this->execute($sql, [
+            'movie_id' => $movieId,
+            'view_date' => date('Y-m-d')
+        ]);
+        return true;
+    }
+
+    private function seedFakeViewsIfEmpty()
+    {
+        $checkSql = "SELECT 1 FROM movie_views_daily WHERE view_date = CURDATE() LIMIT 1";
+        $result = $this->getRows($checkSql);
+        if ($result) {
+            return;
+        }
+        //Nếu chưa có -> Tiến hành Fake
+        $sqlMovies = "SELECT id FROM movies ORDER BY RAND() LIMIT 20";
+        $movies = $this->getAll($sqlMovies);
+        $countMovies = count($movies);
+        if ($countMovies > 0) {
+            $today = date('Y-m-d');
+            $insertSql = "INSERT INTO movie_views_daily (movie_id, view_date, views) VALUES (:movie_id, :view_date, :views)";
+            foreach ($movies as $movie) {
+                $fakeViews = rand(100, 5000);
+                $movieId = $movie['id'];
+                $this->execute($insertSql, [
+                    'movie_id' => $movieId,
+                    'view_date' => $today,
+                    'views' => $fakeViews
+                ]);
+            }
+        }
+    }
     // CLIENT
 
     // Dashboard
@@ -306,19 +395,6 @@ class Movies extends CoreModel
     public function getMoviesChinese()
     {
         return $this->getAll("SELECT * FROM movies WHERE country_id = 4 ORDER BY created_at DESC LIMIT 10");
-    }
-
-    // Lấy phim theo loại
-    public function getTopDailyByType($typeId)
-    {
-        return $this->getAll("SELECT m.*
-        FROM movies m
-        JOIN movie_views_daily d ON m.id = d.movie_id
-        WHERE m.type_id = $typeId
-        AND d.view_date = CURDATE()
-        ORDER BY d.views DESC
-        LIMIT 10
-        ");
     }
 
     // Lấy phim chiếu rạp
@@ -399,7 +475,7 @@ class Movies extends CoreModel
     public function getSingleMovieSource($movieId)
     {
         // Logic mới: Phim lẻ -> Tìm trong bảng episodes -> Tìm trong video_sources
-        $sql = "SELECT vs.id, vs.source_url, vs.voice_type 
+        $sql = "SELECT vs.id, vs.source_url, vs.voice_type, e.id as episode_id
                 FROM episodes e
                 JOIN video_sources vs ON e.id = vs.episode_id
                 WHERE e.movie_id = $movieId
@@ -430,7 +506,7 @@ class Movies extends CoreModel
     // Lấy video source
     public function getVideoSources($id)
     {
-        return $this->getOne("SELECT vs.* FROM episodes e
+        return $this->getOne("SELECT vs.*, e.id as episode_id FROM episodes e
         JOIN video_sources vs ON e.id = vs.episode_id
         WHERE e.movie_id = '$id'
         LIMIT 1");

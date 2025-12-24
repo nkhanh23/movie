@@ -35,6 +35,12 @@ class User extends CoreModel
         return $this->getRows($sql);
     }
 
+    // Lấy tổng số người dùng
+    public function getTotalUsers()
+    {
+        return $this->getRows("SELECT id FROM users");
+    }
+
     public function insertUser($data)
     {
         return $this->insert("users", $data);

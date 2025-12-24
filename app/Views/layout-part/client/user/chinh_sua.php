@@ -17,8 +17,8 @@ $errors = getSessionFlash('errors');
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 mix-blend-overlay"></div>
     </div>
 
-    <div class="layout-container relative z-10 flex h-full grow flex-col pt-24">
-        <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40">
+    <div class="layout-container relative z-10 flex h-full grow flex-col pt-20 lg:pt-24">
+        <div class="flex flex-1 justify-center py-5 px-3 md:px-10 lg:px-40">
             <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
                 <!-- SIDE BAR -->
                 <?php layout('client/sidebarUser'); ?>
@@ -28,7 +28,7 @@ $errors = getSessionFlash('errors');
                     <!-- Page Header -->
                     <div class="px-2 py-2">
                         <div class="flex flex-col gap-2">
-                            <h2 class="text-white text-3xl font-bold tracking-tight drop-shadow-lg">Chỉnh Sửa Thông Tin</h2>
+                            <h2 class="text-white text-2xl lg:text-3xl font-bold tracking-tight drop-shadow-lg">Chỉnh Sửa Thông Tin</h2>
                             <p class="text-slate-400 text-sm">Cập nhật thông tin tài khoản của bạn</p>
                         </div>
                     </div>
@@ -39,7 +39,7 @@ $errors = getSessionFlash('errors');
                     ?>
                     <!-- Edit Profile Form -->
                     <form action="" method="POST" enctype="multipart/form-data">
-                        <div class="user-glassmorphic rounded-2xl p-8 relative overflow-hidden group">
+                        <div class="user-glassmorphic rounded-2xl p-4 md:p-8 relative overflow-hidden group">
                             <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 
                             <div class="relative z-10 flex flex-col gap-10">

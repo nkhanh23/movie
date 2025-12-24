@@ -6,12 +6,26 @@ $current_path = parse_url($current_page, PHP_URL_PATH);
 // Xác định trang nào đang active
 $is_gioi_thieu = strpos($current_path, '/gioi_thieu') !== false;
 $is_lien_he = strpos($current_path, '/lien_he') !== false;
+$is_xem_tiep = strpos($current_path, '/xem_tiep') !== false;
 $is_yeu_thich = strpos($current_path, '/yeu_thich') !== false;
 $is_tai_khoan = strpos($current_path, '/tai_khoan') !== false;
 $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
 ?>
-<aside id="userSidebar" class="w-full lg:w-72 shrink-0 transition-all duration-300 relative">
-    <div id="sidebarContent" class="flex h-full min-h-[700px] flex-col justify-between sidebar-glassmorphic rounded-2xl p-6 relative">
+<!-- Mobile Menu Toggle Button (visible on small screens) -->
+<button id="mobileMenuToggle" class="lg:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-110 transition-all duration-300">
+    <span class="material-symbols-outlined text-white text-2xl">menu</span>
+</button>
+
+<!-- Sidebar Overlay (for mobile) -->
+<div id="sidebarOverlay" class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+<!-- Mobile Sidebar (slides from left) -->
+<aside id="userSidebar" class="
+    fixed top-0 left-0 h-full w-72 z-[56] 
+    transform -translate-x-full transition-transform duration-300 ease-out
+    lg:relative lg:translate-x-0 lg:block lg:shrink-0
+">
+    <div id="sidebarContent" class="flex h-full min-h-screen lg:min-h-[700px] flex-col justify-start sidebar-glassmorphic rounded-none lg:rounded-2xl p-4 lg:p-6 pt-20 lg:pt-6 relative overflow-y-auto">
 
         <div class="flex flex-col gap-8 relative z-10">
             <div class="flex items-center gap-4 pb-6 border-b border-white/5 sidebar-user-info relative">
@@ -41,6 +55,12 @@ $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
                     <p class="text-sm font-medium sidebar-text">Liên hệ</p>
                 </a>
 
+                <!-- Xem tiếp phim -->
+                <a href="<?= _HOST_URL ?>/xem_tiep" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_xem_tiep ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                    <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_xem_tiep ? 'group-hover:text-primary' : ''; ?> sidebar-icon">play_arrow</span>
+                    <p class="text-sm font-medium sidebar-text">Xem tiếp phim</p>
+                </a>
+
                 <!-- Yêu thích -->
                 <a href="<?= _HOST_URL ?>/yeu_thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_yeu_thich ? 'group-hover:text-primary' : ''; ?> sidebar-icon" <?php echo $is_yeu_thich ? 'style="font-variation-settings: \'FILL\' 1;"' : ''; ?>>favorite</span>
@@ -63,6 +83,55 @@ $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
     </div>
 </aside>
 
+<script>
+    // Mobile Menu Toggle - Slide from Left
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('userSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        let isOpen = false;
+
+        function openSidebar() {
+            isOpen = true;
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            mobileToggle.querySelector('.material-symbols-outlined').textContent = 'close';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeSidebar() {
+            isOpen = false;
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            mobileToggle.querySelector('.material-symbols-outlined').textContent = 'menu';
+            document.body.style.overflow = ''; // Re-enable scrolling
+        }
+
+        if (mobileToggle && sidebar && overlay) {
+            mobileToggle.addEventListener('click', function() {
+                if (isOpen) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+
+            // Close sidebar when clicking overlay
+            overlay.addEventListener('click', closeSidebar);
+
+            // Close on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && isOpen) {
+                    closeSidebar();
+                }
+            });
+        }
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('userSidebar');

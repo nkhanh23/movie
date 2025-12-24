@@ -17,8 +17,8 @@ $errors = getSessionFlash('errors');
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 mix-blend-overlay"></div>
     </div>
 
-    <div class="layout-container relative z-10 flex h-full grow flex-col pt-24">
-        <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40">
+    <div class="layout-container relative z-10 flex h-full grow flex-col pt-20 lg:pt-24">
+        <div class="flex flex-1 justify-center py-5 px-3 md:px-10 lg:px-40">
             <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
                 <!-- SIDE BAR -->
                 <?php layout('client/sidebarUser'); ?>
@@ -28,15 +28,15 @@ $errors = getSessionFlash('errors');
                     <!-- Page Header -->
                     <div class="px-2 py-2">
                         <div class="flex flex-col gap-2">
-                            <h2 class="text-white text-3xl font-bold tracking-tight drop-shadow-lg flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary animate-pulse">shield_lock</span>
+                            <h2 class="text-white text-2xl lg:text-3xl font-bold tracking-tight drop-shadow-lg flex items-center gap-2 lg:gap-3">
+                                <span class="material-symbols-outlined text-primary text-2xl lg:text-3xl animate-pulse">shield_lock</span>
                                 Bảo Mật & An Toàn
                             </h2>
                             <p class="text-slate-400 text-sm">Quản lý mật khẩu và cài đặt bảo mật cho tài khoản của bạn</p>
                         </div>
                     </div>
 
-                    <div class="user-glassmorphic rounded-2xl p-8 relative overflow-visible group">
+                    <div class="user-glassmorphic rounded-2xl p-4 md:p-8 relative overflow-visible group">
                         <!-- Decorative Elements -->
                         <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-primary/5 to-transparent blur-[80px] -translate-y-1/2 translate-x-1/2 rounded-full pointer-events-none"></div>
                         <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-secondary/5 blur-[60px] translate-y-1/2 -translate-x-1/4 rounded-full pointer-events-none"></div>

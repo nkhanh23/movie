@@ -1,5 +1,6 @@
 <footer class="footer">
-    <p>&copy; 2023 Movie Admin Panel. Phiên bản 1.0.0</p>
+    <?php $siteSettings = getSiteSettings(); ?>
+    <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($siteSettings['site_name']); ?> - Admin Panel. Phiên bản 1.0.0</p>
 </footer>
 </div>
 

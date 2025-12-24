@@ -3,7 +3,7 @@
 
 // 1. Hàm tạo Slug từ tên
 function createSlug(string) {
-    if(!string) return '';
+    if (!string) return '';
     return string.toLowerCase()
         .normalize('NFD') // chuyển ký tự có dấu thành tổ hợp
         .replace(/[\u0300-\u036f]/g, '') // xoá dấu
@@ -15,13 +15,13 @@ function createSlug(string) {
 }
 
 // 2. Hàm bật tắt dropdown (cho Custom Multi-select)
-window.toggleDropdown = function(id) {
+window.toggleDropdown = function (id) {
     var content = document.querySelector('#' + id + ' .dropdown-content');
-    if(content) content.classList.toggle('show');
+    if (content) content.classList.toggle('show');
 }
 
 // 3. Đóng dropdown khi click ra ngoài
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (!event.target.closest('.dropdown-btn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
         for (var i = 0; i < dropdowns.length; i++) {
@@ -46,8 +46,8 @@ function initApp() {
     // --- 1. TOGGLE SIDEBAR (CODE CŨ) ---
     const newBtn = sidebarToggleBtn.cloneNode(true);
     sidebarToggleBtn.parentNode.replaceChild(newBtn, sidebarToggleBtn);
-    
-    newBtn.addEventListener('click', function() {
+
+    newBtn.addEventListener('click', function () {
         if (window.innerWidth <= 768) {
             appContainer.classList.toggle('sidebar-open');
         } else {
@@ -55,10 +55,10 @@ function initApp() {
         }
     });
 
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768 && 
-            appContainer.classList.contains('sidebar-open') && 
-            !event.target.closest('.sidebar') && 
+    document.addEventListener('click', function (event) {
+        if (window.innerWidth <= 768 &&
+            appContainer.classList.contains('sidebar-open') &&
+            !event.target.closest('.sidebar') &&
             !event.target.closest('#sidebar-toggle')) {
             appContainer.classList.remove('sidebar-open');
         }
@@ -69,16 +69,16 @@ function initApp() {
         const newItem = item.cloneNode(true);
         item.parentNode.replaceChild(newItem, item);
 
-        newItem.addEventListener('click', function(e) {
+        newItem.addEventListener('click', function (e) {
             const targetData = this.getAttribute('data-target');
             if (targetData) {
                 e.preventDefault();
                 document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 const targetId = targetData + '-view';
                 contentSections.forEach(section => section.classList.remove('active'));
-                
+
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) {
                     targetSection.classList.add('active');
@@ -114,23 +114,23 @@ function initApp() {
 
     // 1. Mở màn hình Thêm Phim
     if (btnAddMovie && addMovieView && moviesView) {
-        btnAddMovie.addEventListener('click', function() {
+        btnAddMovie.addEventListener('click', function () {
             moviesView.classList.remove('active');
-            if(editMovieView) editMovieView.classList.remove('active'); // Đảm bảo tắt edit nếu đang mở
+            if (editMovieView) editMovieView.classList.remove('active'); // Đảm bảo tắt edit nếu đang mở
             addMovieView.classList.add('active');
         });
     }
 
     // 2. Mở màn hình Sửa Phim (Sử dụng Event Delegation vì nút Sửa nằm trong bảng)
     if (moviesView) {
-        moviesView.addEventListener('click', function(e) {
+        moviesView.addEventListener('click', function (e) {
             // Tìm xem nút được click có phải là nút sửa (hoặc icon bên trong nó) không
             const btnEdit = e.target.closest('.btn-edit-movie');
             if (btnEdit && editMovieView) {
                 moviesView.classList.remove('active');
-                if(addMovieView) addMovieView.classList.remove('active');
+                if (addMovieView) addMovieView.classList.remove('active');
                 editMovieView.classList.add('active');
-                
+
                 // Tại đây bạn có thể thêm logic lấy ID từ data-id để load dữ liệu bằng AJAX nếu cần
                 // const movieId = btnEdit.getAttribute('data-id');
                 // loadMovieData(movieId); 
@@ -140,16 +140,16 @@ function initApp() {
 
     // 3. Nút Quay lại/Hủy bỏ (chung cho form Phim)
     cancelButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            if(addMovieView) addMovieView.classList.remove('active');
-            if(editMovieView) editMovieView.classList.remove('active');
-            if(moviesView) moviesView.classList.add('active');
+        btn.addEventListener('click', function () {
+            if (addMovieView) addMovieView.classList.remove('active');
+            if (editMovieView) editMovieView.classList.remove('active');
+            if (moviesView) moviesView.classList.add('active');
         });
     });
-    
+
     // Nút quay lại riêng lẻ (nếu có ID cụ thể)
     if (btnCancelMovie && addMovieView && moviesView) {
-        btnCancelMovie.addEventListener('click', function() {
+        btnCancelMovie.addEventListener('click', function () {
             addMovieView.classList.remove('active');
             moviesView.classList.add('active');
         });
@@ -158,8 +158,8 @@ function initApp() {
     // C. LOGIC CHUYỂN ĐỔI MÀN HÌNH TẬP PHIM
 
     // 1. Mở màn hình Thêm Tập
-    if(btnAddEpisode && addEpisodeView && episodesView) {
-        btnAddEpisode.addEventListener('click', function() {
+    if (btnAddEpisode && addEpisodeView && episodesView) {
+        btnAddEpisode.addEventListener('click', function () {
             episodesView.classList.remove('active');
             addEpisodeView.classList.add('active');
         });
@@ -167,19 +167,19 @@ function initApp() {
 
     // 2. Quay lại màn hình Danh sách Tập
     cancelToEpisodeListBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             addEpisodeView.classList.remove('active');
             episodesView.classList.add('active');
         });
     });
 
     // D. TỰ ĐỘNG TẠO SLUG KHI NHẬP TÊN (Tiện ích UI)
-    
+
     // Cho form Thêm Phim
     const titleInput = document.getElementById('title'); // ID input tên phim
     const slugInput = document.getElementById('slug');   // ID input slug
-    if(titleInput && slugInput) {
-        titleInput.addEventListener('input', function() {
+    if (titleInput && slugInput) {
+        titleInput.addEventListener('input', function () {
             slugInput.value = createSlug(this.value);
         });
     }
@@ -187,8 +187,8 @@ function initApp() {
     // Cho form Sửa Phim
     const editTitleInput = document.getElementById('edit_title');
     const editSlugInput = document.getElementById('edit_slug');
-    if(editTitleInput && editSlugInput) {
-        editTitleInput.addEventListener('input', function() {
+    if (editTitleInput && editSlugInput) {
+        editTitleInput.addEventListener('input', function () {
             editSlugInput.value = createSlug(this.value);
         });
     }
@@ -196,15 +196,15 @@ function initApp() {
     // Cho form Thêm Tập
     const epNameInput = document.getElementById('ep_name');
     const epSlugInput = document.getElementById('ep_slug');
-    if(epNameInput && epSlugInput) {
-        epNameInput.addEventListener('input', function() {
+    if (epNameInput && epSlugInput) {
+        epNameInput.addEventListener('input', function () {
             epSlugInput.value = createSlug(this.value);
         });
     }
 
     // --- E. LOGIC CHO SEARCHABLE SELECT (MỚI THÊM) ---
     const searchableSelects = document.querySelectorAll('.searchable-select');
-    
+
     searchableSelects.forEach(select => {
         const trigger = select.querySelector('.select-trigger');
         const input = select.querySelector('.select-search-box input');
@@ -212,7 +212,7 @@ function initApp() {
         const hiddenInput = select.querySelector('input[type="hidden"]');
 
         if (trigger) {
-            trigger.addEventListener('click', function(e) {
+            trigger.addEventListener('click', function (e) {
                 // Ngăn chặn sự kiện nổi bọt
                 e.stopPropagation();
 
@@ -225,7 +225,7 @@ function initApp() {
 
                 // Toggle trạng thái active cho select hiện tại
                 select.classList.toggle('active');
-                
+
                 // Nếu mở ra thì focus vào ô tìm kiếm
                 if (select.classList.contains('active') && input) {
                     input.focus();
@@ -234,13 +234,13 @@ function initApp() {
         }
 
         if (input) {
-             // Click vào ô input không đóng dropdown
-            input.addEventListener('click', function(e) {
+            // Click vào ô input không đóng dropdown
+            input.addEventListener('click', function (e) {
                 e.stopPropagation();
             });
 
             // Logic tìm kiếm
-            input.addEventListener('input', function() {
+            input.addEventListener('input', function () {
                 const filter = this.value.toLowerCase();
                 options.forEach(option => {
                     const text = option.textContent.toLowerCase();
@@ -256,7 +256,7 @@ function initApp() {
         }
 
         options.forEach(option => {
-            option.addEventListener('click', function(e) {
+            option.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const value = this.getAttribute('data-value');
                 const text = this.textContent;
@@ -279,13 +279,71 @@ function initApp() {
     });
 
     // Sự kiện click ra ngoài để đóng Searchable Select
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.searchable-select')) {
             searchableSelects.forEach(select => {
                 select.classList.remove('active');
             });
         }
     });
+
+    // --- G. LOGIC CHO SETTINGS TABS ---
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    if (tabButtons.length > 0) {
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Lấy tab target từ data-tab attribute
+                const targetTab = this.getAttribute('data-tab');
+
+                // Remove active class từ tất cả buttons và contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class cho button được click
+                this.classList.add('active');
+
+                // Show nội dung tương ứng
+                const targetContent = document.getElementById(targetTab + '-settings');
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+
+                // Cập nhật URL với query parameter (không reload trang)
+                const url = new URL(window.location);
+                url.searchParams.set('tab', targetTab);
+                window.history.pushState({}, '', url);
+            });
+        });
+    }
+
+    // --- F. LOGIC CHO USER PROFILE DROPDOWN ---
+    const userProfileToggle = document.getElementById('user-profile-toggle');
+    const userProfileDropdown = document.querySelector('.user-profile-dropdown');
+
+    if (userProfileToggle && userProfileDropdown) {
+        // Click vào user profile để toggle dropdown
+        userProfileToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            userProfileDropdown.classList.toggle('active');
+        });
+
+        // Click ra ngoài để đóng dropdown
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.user-profile-dropdown')) {
+                userProfileDropdown.classList.remove('active');
+            }
+        });
+
+        // Đóng dropdown khi click vào các link trong menu
+        const dropdownLinks = userProfileDropdown.querySelectorAll('.dropdown-item');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                userProfileDropdown.classList.remove('active');
+            });
+        });
+    }
 }
 
 // Logic kiểm tra trạng thái tải trang

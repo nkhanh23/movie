@@ -32,10 +32,10 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
     <div class="relative z-10 flex h-full grow flex-col">
         <!-- TopNavBar -->
         <!-- Main Content Area -->
-        <main class="flex-1 p-6 sm:p-8 lg:p-12 pt-28">
-            <div class="flex flex-col lg:flex-row gap-8">
+        <main class="flex-1 p-3 sm:p-6 md:p-8 lg:p-12 pt-20 sm:pt-24 md:pt-28">
+            <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
                 <!-- Left Column: Player and Info -->
-                <div class="flex-1 flex flex-col gap-6">
+                <div class="flex-1 flex flex-col gap-4 sm:gap-6">
                     <!-- MediaPlayer -->
                     <div
                         class="relative w-full rounded-xl shadow-2xl shadow-primary/20 border border-primary/50 p-1 bg-black/50 overflow-hidden">
@@ -84,7 +84,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                         <div class="w-full space-y-6">
                             <!-- Tiêu đề và các nút hành động -->
                             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                                <h1 class="text-white tracking-tight text-3xl md:text-4xl font-bold leading-tight flex-1">
+                                <h1 class="text-white tracking-tight text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight flex-1">
                                     <?php echo $movieDetail['tittle']; ?>
                                 </h1>
                                 <!-- Nút hành động -->
@@ -106,8 +106,8 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                             <!-- Movie Info Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Poster and synopsis -->
-                                <div class="md:col-span-2 flex flex-col sm:flex-row gap-6 glass-panel p-4 rounded-xl">
-                                    <img class="w-full sm:w-1/3 aspect-[2/3] object-cover rounded-lg"
+                                <div class="md:col-span-2 flex flex-col sm:flex-row gap-3 sm:gap-6 glass-panel p-3 sm:p-4 rounded-xl">
+                                    <img class="w-full mx-auto max-w-[180px] sm:w-1/3 sm:max-w-none aspect-[2/3] object-cover rounded-lg"
                                         data-alt="Movie poster for Cybernetic Dreams, showing a robot looking over a futuristic city."
                                         src="<?php echo $movieDetail['poster_url']; ?>" />
                                     <div class="flex-1">
@@ -115,8 +115,8 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                     </div>
                                 </div>
                                 <!-- Tags and Metadata -->
-                                <div class="md:col-span-1 flex flex-col gap-4 glass-panel p-4 rounded-xl">
-                                    <h3 class="text-lg font-bold">Details</h3>
+                                <div class="md:col-span-1 flex flex-col gap-3 sm:gap-4 glass-panel p-3 sm:p-4 rounded-xl">
+                                    <h3 class="text-base sm:text-lg font-bold">Details</h3>
                                     <div class="flex gap-2 flex-wrap">
                                         <?php
                                         $genres = explode(',', $movieDetail['genre_name']);
@@ -207,7 +207,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                 <div class="flex-1 max-h-[450px] overflow-y-auto custom-scroll p-4">
                                     <?php
                                     $layoutClass = $isSeries
-                                        ? 'grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2'
+                                        ? 'grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2'
                                         : 'flex flex-col gap-3';
                                     ?>
 
@@ -217,7 +217,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
 
                                             <?php if ($isSeries): ?>
                                                 <?php foreach ($episodeDetail as $item): ?>
-                                                    <a href="?mod=client&act=watch&id=<?php echo $item['id']; ?>"
+                                                    <a href="?mod=client&act=watch&id=<?php echo $idMovie; ?>&episode_id=<?php echo $item['id']; ?>"
                                                         class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
 
                                                         <span class="text-sm font-semibold truncate">
@@ -228,7 +228,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
 
                                             <?php else: ?>
                                                 <?php foreach ($episodeDetail as $item): ?>
-                                                    <a href="?mod=client&act=watch&id=<?php echo $item['id']; ?>"
+                                                    <a href="?mod=client&act=watch&id=<?php echo $idMovie; ?>&episode_id=<?php echo $item['id']; ?>"
                                                         class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
                                                         <div
@@ -288,6 +288,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                             'comments' => $comments,
                             'listComments' => $listComments,
                             'totalComments' => $totalComments,
+                            'countAllCommentsByMovie' => $countAllCommentsByMovie,
                         ];
                         layoutPart('client/comment', $data); ?>
                     </div>
@@ -469,6 +470,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
     // ========================================================================
     const MOVIE_ID = <?php echo isset($idMovie) ? (int)$idMovie : 0; ?>;
     const EPISODE_ID = <?php echo isset($idEpisode) && $idEpisode ? (int)$idEpisode : 0; ?>;
+    const SEASON_ID = <?php echo isset($currentSeasonId) && $currentSeasonId ? (int)$currentSeasonId : 'null'; ?>;
     const SERVER_START_TIME = <?php echo isset($startTime) ? (float)$startTime : 0; ?>;
     const API_URL = '<?php echo _HOST_URL; ?>/api/save-history';
 
@@ -491,7 +493,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
         const videoSrc = player.querySelector('source')?.src;
 
         if (videoSrc && videoSrc.includes('.m3u8')) {
-            console.log("🎬 Initializing HLS.js for:", videoSrc);
+            console.log(" Initializing HLS.js for:", videoSrc);
 
             if (Hls.isSupported()) {
                 const hls = new Hls();
@@ -569,11 +571,12 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                     body: JSON.stringify({
                         movie_id: MOVIE_ID,
                         episode_id: EPISODE_ID,
+                        season_id: SEASON_ID,
                         current_time: time
                     })
                 })
                 .then(response => {
-                    console.log("📡 API Status:", response.status);
+                    console.log(" API Status:", response.status);
                     return response.text();
                 })
                 .then(data => {

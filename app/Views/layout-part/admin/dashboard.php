@@ -26,15 +26,15 @@
             <div class="card stats-card">
                 <div class="stats-icon color-blue"><i class="fa-solid fa-film"></i></div>
                 <div class="stats-info">
-                    <h3>1,245</h3>
+                    <h3><?php echo number_format($totalMovies ?? 0); ?></h3>
                     <p>Tổng số phim</p>
                 </div>
             </div>
             <div class="card stats-card">
                 <div class="stats-icon color-green"><i class="fa-solid fa-users"></i></div>
                 <div class="stats-info">
-                    <h3>8,520</h3>
-                    <p>Người dùng mới</p>
+                    <h3><?php echo number_format($totalUsers ?? 0); ?></h3>
+                    <p>Tổng số người dùng</p>
                 </div>
             </div>
             <div class="card stats-card">
@@ -47,8 +47,8 @@
             <div class="card stats-card">
                 <div class="stats-icon color-orange"><i class="fa-solid fa-comment-dots"></i></div>
                 <div class="stats-info">
-                    <h3>342</h3>
-                    <p>Bình luận mới</p>
+                    <h3><?php echo number_format($totalComments ?? 0); ?></h3>
+                    <p>Tổng số bình luận</p>
                 </div>
             </div>
         </div>

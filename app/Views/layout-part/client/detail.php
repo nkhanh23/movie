@@ -30,10 +30,10 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
         </div>
 
         <div class="relative z-20 mx-auto max-w-7xl">
-            <main class="mt-32 grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+            <main class="mt-20 sm:mt-28 md:mt-32 grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
                 <!-- Movie Poster -->
                 <div class="lg:col-span-1 flex justify-center items-start">
-                    <div class="glow-border w-72 mx-auto sticky top-8">
+                    <div class="glow-border w-52 sm:w-60 md:w-72 mx-auto sticky top-8">
                         <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden aspect-[2/3] rounded-xl"
                             data-alt="<?php echo $movieDetail['tittle']; ?>"
                             style='background-image: url("<?php echo $movieDetail['poster_url']; ?>");'></div>
@@ -43,9 +43,9 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                 </div>
 
                 <!-- Movie Info -->
-                <div class="lg:col-span-2 mt-8 lg:mt-0 flex flex-col gap-6">
-                    <div class="glass-panel p-6 rounded-xl">
-                        <h1 class="text-white tracking-light text-4xl md:text-5xl font-bold leading-tight">
+                <div class="lg:col-span-2 mt-6 sm:mt-8 lg:mt-0 flex flex-col gap-4 sm:gap-6">
+                    <div class="glass-panel p-4 sm:p-6 rounded-xl">
+                        <h1 class="text-white tracking-light text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                             <?php echo $movieDetail['tittle']; ?></h1>
 
                         <div class="movie-meta-tags">
@@ -77,7 +77,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
                         <p class="text-white/80 mt-4 text-base leading-relaxed">
                             <?php echo $movieDetail['description']; ?></p>
-                        <div class="flex flex-wrap gap-3 mt-6">
+                        <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
                             <?php
                             // Tạo URL xem phim với episode_id của tập đầu tiên
                             $watchUrl = _HOST_URL . '/watch?id=' . $movieDetail['id'];
@@ -86,15 +86,16 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                             }
                             ?>
                             <button onclick="window.location.href='<?php echo $watchUrl; ?>'"
-                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105">
-                                <span class="material-symbols-outlined mr-2">play_arrow</span>
-                                <span class="truncate">Xem Ngay</span>
+                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-11 sm:h-12 px-4 sm:px-6 bg-primary text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105">
+                                <span class="material-symbols-outlined mr-2 text-xl">play_arrow</span>
+                                <span>Xem Ngay</span>
                             </button>
                             <button
-                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-white/10 hover:bg-white/20 text-white text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105 js-favorite-btn <?= $favClass ?>"
+                                class="button-glow flex flex-1 sm:flex-none min-w-[84px] items-center justify-center overflow-hidden rounded-lg h-11 sm:h-12 px-4 sm:px-6 bg-white/10 hover:bg-white/20 text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] transition-transform hover:scale-105 js-favorite-btn <?= $favClass ?>"
                                 data-movie-id="<?php echo $movieDetail['id']; ?>">
-                                <span class="material-symbols-outlined mr-2">favorite</span>
-                                <span class="truncate">Thêm vào yêu thích</span>
+                                <span class="material-symbols-outlined mr-2 text-xl">favorite</span>
+                                <span class="hidden sm:inline">Thêm vào yêu thích</span>
+                                <span class="sm:hidden">Yêu thích</span>
                             </button>
                         </div>
                     </div>
@@ -264,7 +265,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
             <div class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <!-- SIMILAR MOVIES -->
                 <div class="lg:col-span-4 flex flex-col gap-6 order-2 lg:order-1">
-                    <h3 class="text-white text-xl font-bold pl-2 border-l-4 border-primary">Similar Movies</h3>
+                    <h3 class="text-white text-xl font-bold pl-2 border-l-4 border-primary">Phim tương tự</h3>
 
                     <div class="flex flex-col gap-4">
                         <?php foreach ($similarMovies as $movie): ?>
@@ -300,6 +301,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                     'comments' => $comments,
                     'listComments' => $listComments,
                     'totalComments' => $totalComments,
+                    'countAllCommentsByMovie' => $countAllCommentsByMovie,
                 ];
                 layoutPart('client/comment', $data); ?>
             </div>

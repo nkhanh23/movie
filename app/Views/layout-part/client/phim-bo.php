@@ -14,7 +14,7 @@ layout('client/header');
     <div class="fixed top-0 left-0 w-full h-[300px] bg-gradient-to-b from-primary/10 via-secondary/5 to-transparent pointer-events-none z-0"></div>
 
     <!-- Main Container -->
-    <div class="w-full max-w-[1920px] mx-auto px-6 md:px-10 relative z-10">
+    <div class="w-full max-w-[1920px] mx-auto px-3 md:px-6 lg:px-10 relative z-10">
         <!-- Filter Bar -->
         <?php
         $data = [
@@ -37,7 +37,7 @@ layout('client/header');
         <!-- Scrollable Grid Container -->
         <div class="mb-8">
             <!-- Movie Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-6">
                 <!-- Card  -->
                 <?php foreach ($movies as $movie):
                     $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';
@@ -45,7 +45,10 @@ layout('client/header');
                     <div class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">
                         <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60"></div>
-                            <div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="<?php echo $movie['tittle']; ?>" style='background-image: url("<?php echo $movie['poster_url']; ?>");'></div>
+                            <img loading="lazy"
+                                src="<?php echo $movie['poster_url']; ?>"
+                                alt="<?php echo $movie['tittle']; ?>"
+                                class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 lazy-fade-in">
                             <div class="absolute top-2 right-2 z-20 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-yellow-400 text-[12px]">star</span>
                                 <span class="text-xs font-bold"><?php echo $movie['imdb_rating'] ?></span>
@@ -123,6 +126,22 @@ layout('client/header');
             </div>
         </div>
     </div>
+    <style>
+        .lazy-fade-in {
+            opacity: 0;
+            animation: fadeIn 0.6s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
     <script>
         // Simple script to toggle shimmer/pulse animations on load
         document.addEventListener('DOMContentLoaded', () => {

@@ -18,19 +18,19 @@ layout('client/header');
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 mix-blend-overlay"></div>
     </div>
 
-    <div class="layout-container relative z-10 flex h-full grow flex-col pt-24">
-        <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40">
+    <div class="layout-container relative z-10 flex h-full grow flex-col pt-20 lg:pt-24">
+        <div class="flex flex-1 justify-center py-5 px-3 md:px-10 lg:px-40">
             <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
                 <!-- SIDE BAR -->
                 <?php layout('client/sidebarUser'); ?>
                 <!-- END SIDE BAR -->
 
-                <main class="flex-1 layout-content-container flex flex-col h-[700px]">
+                <main class="flex-1 layout-content-container flex flex-col min-h-[500px] lg:h-[700px]">
                     <div class="flex-1 user-glassmorphic rounded-2xl relative overflow-hidden flex flex-col">
                         <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
                         <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] pointer-events-none"></div>
 
-                        <div class="relative z-10 p-8 h-full flex flex-col custom-scroll overflow-y-auto">
+                        <div class="relative z-10 p-4 md:p-8 h-full flex flex-col custom-scroll overflow-y-auto">
                             <div class="space-y-4">
                                 <?php if (!empty($notices)): ?>
                                     <?php foreach ($notices as $item): ?>

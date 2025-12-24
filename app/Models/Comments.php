@@ -32,6 +32,12 @@ class Comments extends CoreModel
         return $this->getOne("SELECT * FROM comments WHERE $condition");
     }
 
+    // Lấy tổng số bình luận
+    public function getTotalComments()
+    {
+        return $this->getRows("SELECT id FROM comments");
+    }
+
     // ------------------------------------- CLIENT ------------------------------------------------------
     // Lấy danh sách bình luận của phim (kèm thông tin user)
     public function getCommentsByMovie($movieId, $userId = 0, $episodeId = null)
@@ -58,6 +64,17 @@ class Comments extends CoreModel
         $sql .= " ORDER BY c.created_at DESC";
 
         return $this->query($sql, $params);
+    }
+
+    public function countCommentsByMovie($movieId, $episodeId = null)
+    {
+        $sql = "SELECT COUNT(*) as total FROM comments WHERE movie_id = $movieId AND status = 1";
+
+        if ($episodeId !== null && $episodeId > 0) {
+            $sql .= " AND episode_id = $episodeId";
+        }
+
+        return $this->countRows($sql);
     }
 
     // Nếu like rồi thì xóa, chưa thì thêm

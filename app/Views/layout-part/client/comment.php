@@ -1,15 +1,15 @@
-                <div class="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
+                <div class="lg:col-span-8 flex flex-col gap-4 md:gap-6 order-1 lg:order-2">
                     <div class="flex items-center justify-between px-2">
-                        <h3 class="text-white text-xl font-bold">Reviews & Comments</h3>
-                        <span class="text-white/60 text-sm">14 comments</span>
+                        <h3 class="text-white text-lg md:text-xl font-bold">Bình luận</h3>
+                        <span class="text-white/60 text-sm"><?php echo $countAllCommentsByMovie; ?> bình luận</span>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-xl">
+                    <div class="glass-panel p-4 md:p-6 rounded-xl">
 
                         <?php if (!empty($_SESSION['auth'])): ?>
 
-                            <div class="flex gap-4 mb-8">
-                                <div class="size-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
+                            <div class="flex gap-3 md:gap-4 mb-6 md:mb-8">
+                                <div class="size-8 md:size-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
                                     <img src="<?php echo $_SESSION['auth']['avatar']; ?>"
                                         onerror="this.src='https://i.pravatar.cc/150?u=default'"
                                         class="w-full h-full object-cover">
@@ -25,7 +25,7 @@
                                             rows="3"
                                             placeholder="Viết cảm nghĩ của bạn về phim..."></textarea>
 
-                                        <div class="flex justify-between items-center mt-3">
+                                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-3">
                                             <div class="flex gap-1 opacity-50 cursor-not-allowed" title="Tính năng đang phát triển">
                                                 <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
                                                 <button type="button" class="text-yellow-500 material-symbols-outlined text-[20px]">star</button>
@@ -72,13 +72,13 @@
                                             echo '<div class="comment-thread-wrapper ' . $hiddenClass . '">';
                                         }
 
-                                        // Style thụt đầu dòng (Dùng Margin inline để tính toán chính xác theo cấp)
-                                        $marginLeftPx = $level * 48; // 48px ~ 3rem (ml-12)
-                                        $marginStyle = "margin-left: {$marginLeftPx}px";
+                                        // Style thụt đầu dòng - nhỏ hơn trên mobile
+                                        $marginLeftPx = $level * 24; // 24px on mobile base
+                                        $marginStyle = "margin-left: min({$marginLeftPx}px, calc({$level} * 3vw + 12px))";
 
-                                        $borderClass = ($level > 0) ? 'border-l-2 border-white/10 pl-4' : '';
-                                        $marginTop = ($level > 0) ? 'mt-4' : 'mt-6';
-                                        $avatarSize = ($level == 0) ? 'size-10' : 'size-8';
+                                        $borderClass = ($level > 0) ? 'border-l-2 border-white/10 pl-2 md:pl-4' : '';
+                                        $marginTop = ($level > 0) ? 'mt-3 md:mt-4' : 'mt-4 md:mt-6';
+                                        $avatarSize = ($level == 0) ? 'size-8 md:size-10' : 'size-6 md:size-8';
 
                                         // Check quyền
                                         $currentUserId = $_SESSION['auth']['id'] ?? 0;
@@ -87,7 +87,7 @@
                             ?>
 
                                         <div id="comment-<?php echo $item['id']; ?>"
-                                            class="flex gap-4 group comment-item animate-fade-in-down <?php echo $borderClass . ' ' . $marginTop; ?>"
+                                            class="flex gap-2 md:gap-4 group comment-item animate-fade-in-down <?php echo $borderClass . ' ' . $marginTop; ?>"
                                             style="<?php echo $marginStyle; ?>"
                                             data-level="<?php echo $level; ?>">
 

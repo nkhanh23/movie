@@ -14,8 +14,8 @@ layout('client/header');
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 mix-blend-overlay"></div>
     </div>
 
-    <div class="layout-container relative z-10 flex h-full grow flex-col pt-24">
-        <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40">
+    <div class="layout-container relative z-10 flex h-full grow flex-col pt-20 lg:pt-24">
+        <div class="flex flex-1 justify-center py-5 px-3 md:px-10 lg:px-40">
             <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
                 <!-- SIDE BAR -->
                 <?php layout('client/sidebarUser'); ?>
@@ -25,8 +25,8 @@ layout('client/header');
                     <!-- Page Header -->
                     <div class="px-2 py-2 flex items-end justify-between">
                         <div class="flex flex-col gap-2">
-                            <h2 class="text-white text-3xl font-bold tracking-tight drop-shadow-lg flex items-center gap-3">
-                                <span class="material-symbols-outlined text-primary text-4xl animate-pulse" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                            <h2 class="text-white text-2xl lg:text-3xl font-bold tracking-tight drop-shadow-lg flex items-center gap-2 lg:gap-3">
+                                <span class="material-symbols-outlined text-primary text-3xl lg:text-4xl animate-pulse" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                 Phim Yêu Thích
                             </h2>
                             <p class="text-slate-400 text-sm">Bộ sưu tập những bộ phim bạn yêu thích nhất.</p>
@@ -41,7 +41,7 @@ layout('client/header');
                     </div>
 
                     <!-- Movies Grid -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="favorite-movies-grid">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6" id="favorite-movies-grid">
                         <?php foreach ($favoriteMovies as $movie) : ?>
                             <div class="favorite-movie-card" id="movie-card-<?php echo $movie['id']; ?>">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-80"></div>

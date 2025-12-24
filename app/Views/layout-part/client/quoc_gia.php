@@ -14,7 +14,7 @@ layout('client/header');
     <div class="fixed top-0 left-0 w-full h-[300px] bg-gradient-to-b from-primary/10 via-secondary/5 to-transparent pointer-events-none z-0"></div>
 
     <!-- Main Container -->
-    <div class="w-full max-w-[1920px] mx-auto px-6 md:px-10 relative z-10">
+    <div class="w-full max-w-[1920px] mx-auto px-3 md:px-6 lg:px-10 relative z-10">
         <!-- Filter Bar -->
         <?php
         $data = [
@@ -37,7 +37,7 @@ layout('client/header');
         <!-- Scrollable Grid Container -->
         <div class="mb-8">
             <!-- Movie Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-6">
                 <!-- Card  -->
                 <?php foreach ($movies as $movie):
                     $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';

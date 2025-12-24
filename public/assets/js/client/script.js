@@ -423,6 +423,19 @@ const init = () => {
     initModal();
 
     // Initialize all Swipers
+    // Continue Watching with custom config (wider cards, more spacing)
+    initSwiperGeneric('.swiper-continue', '.sw-next-continue', '.sw-prev-continue', {
+        slidesPerView: 1.5,
+        spaceBetween: 20,
+        loop: false,  // Tắt loop để tránh lặp khi ít items
+        breakpoints: {
+            576: { slidesPerView: 2, spaceBetween: 20 },
+            768: { slidesPerView: 2.5, spaceBetween: 24 },
+            1024: { slidesPerView: 3, spaceBetween: 24 },
+            1200: { slidesPerView: 3.5, spaceBetween: 28 },
+        }
+    });
+
     initSwiperGeneric('.swiper-horror', '.sw-next-horror', '.sw-prev-horror');
     initSwiperGeneric('.swiper-love', '.sw-next-love', '.sw-prev-love');
 

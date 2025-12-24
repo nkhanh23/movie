@@ -9,7 +9,7 @@ $errors = getSessionFlash('errors');
 ?>
 
 <div class="min-h-screen bg-background-dark">
-    <div class="flex flex-1 justify-center py-5 md:px-10 lg:px-40 pt-24">
+    <div class="flex flex-1 justify-center py-5 px-3 md:px-10 lg:px-40 pt-20 lg:pt-24">
         <div class="flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:gap-8">
             <!-- SIDE BAR -->
             <?php layout('client/sidebarUser'); ?>
@@ -19,7 +19,7 @@ $errors = getSessionFlash('errors');
                 <!-- Page Header -->
                 <div class="px-2 py-2">
                     <div class="flex flex-col gap-2">
-                        <h2 class="text-white text-3xl font-bold tracking-tight drop-shadow-lg">Liên hệ hỗ trợ</h2>
+                        <h2 class="text-white text-2xl lg:text-3xl font-bold tracking-tight drop-shadow-lg">Liên hệ hỗ trợ</h2>
                         <p class="text-slate-400 text-sm">Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn 24/7. Hãy kết nối với chúng tôi.</p>
                     </div>
                 </div>
@@ -32,7 +32,7 @@ $errors = getSessionFlash('errors');
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Contact Form -->
                     <div class="lg:col-span-7 flex flex-col gap-6">
-                        <div class="user-glassmorphic rounded-2xl p-8 relative overflow-hidden h-full">
+                        <div class="user-glassmorphic rounded-2xl p-4 md:p-8 relative overflow-hidden h-full">
                             <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <div class="absolute bottom-10 left-10 w-20 h-20 bg-secondary/10 rounded-full blur-[40px] pointer-events-none animate-pulse"></div>
                             <form class="flex flex-col gap-6 relative z-10 h-full justify-between" method="POST">

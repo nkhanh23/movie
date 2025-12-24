@@ -5,6 +5,7 @@ class AccountController extends baseController
     private $notificationModel;
     private $usersModel;
     private $supportModel;
+    private $watchHistoryModel;
 
     public function __construct()
     {
@@ -12,6 +13,7 @@ class AccountController extends baseController
         $this->notificationModel = new Notifications();
         $this->usersModel = new User();
         $this->supportModel = new Support();
+        $this->watchHistoryModel = new WatchHistory();
     }
 
     public function showIntroduce()
@@ -403,6 +405,43 @@ class AccountController extends baseController
                 setSessionFlash('errors', $errors);
                 reload('/tai_khoan/bao_mat');
             }
+        }
+    }
+
+
+    public function showNextWatch()
+    {
+        // Lấy danh sách xem tiếp (nếu đã đăng nhập)
+        $getContinueWatching = [];
+        if (!empty($_SESSION['auth']['id'])) {
+            $getContinueWatching = $this->watchHistoryModel->getContinueWatchingList($_SESSION['auth']['id'], 10);
+        }
+        $data = [
+            'getContinueWatching' => $getContinueWatching
+        ];
+        $this->renderView('layout-part/client/user/xem_tiep', $data);
+    }
+    public function deleteHistoryDashboard()
+    {
+        $filter = filterData('get');
+        if (!empty($filter['id'])) {
+            $conditionDelete = 'id=' . $filter['id'];
+            $checkDelete = $this->watchHistoryModel->deleteHistory($conditionDelete);
+            reload('/');
+        } else {
+            reload('/');
+        }
+    }
+
+    public function deleteHistoryContinuePage()
+    {
+        $filter = filterData('get');
+        if (!empty($filter['id'])) {
+            $conditionDelete = 'id=' . $filter['id'];
+            $checkDelete = $this->watchHistoryModel->deleteHistory($conditionDelete);
+            reload(_HOST_URL . '/xem_tiep');
+        } else {
+            reload(_HOST_URL . '/xem_tiep');
         }
     }
 }

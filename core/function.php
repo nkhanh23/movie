@@ -6,6 +6,18 @@ use PHPMailer\PHPMailer\Exception;
 
 function sendMail($emailTo, $subject, $content, $replyToEmail = null, $replyToName = null)
 {
+    $settingModel = new Setting();
+    $settings = $settingModel->getAllSettings(); // Hàm lấy tất cả settings
+    // Convert sang mảng key=>value cho dễ dùng
+    $config = [];
+    foreach ($settings as $item) {
+        $config[$item['setting_key']] = $item['setting_value'];
+    }
+
+    // Kiểm tra xem đã cấu hình chưa
+    if (empty($config['smtp_host']) || empty($config['smtp_username'])) {
+        return false; // Chưa cấu hình thì không gửi
+    }
 
     //Import PHPMailer classes into the global namespace
     //These must be at the top of your script, not inside a function
@@ -16,15 +28,15 @@ function sendMail($emailTo, $subject, $content, $replyToEmail = null, $replyToNa
         //Server settings
         $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable verbose debug output
         $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->Host       = $config['smtp_host'];                     //Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = 'nkhanh2305@gmail.com';                     //SMTP username
-        $mail->Password   = 'cbxv eatt imhj bsks';                               //SMTP password
+        $mail->Username   = $config['smtp_username'];                     //SMTP username
+        $mail->Password   = $config['smtp_password'];                               //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-        $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+        $mail->Port       = $config['smtp_port'];                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
         //Recipients
-        $mail->setFrom('nkhanh2305@gmail.com', 'PHEPHIM');
+        $mail->setFrom($config['smtp_from_email'], $config['smtp_from_name']);
         $mail->addAddress($emailTo,);     // Gửi tới Admin
         //khi bấm Reply thì sẽ trả lời người dùng
         if ($replyToEmail) {
@@ -280,13 +292,22 @@ function renderMoviePlayer($url)
             </div>';
 }
 
-//Hàm đổi phút sang giờ
+// Hàm đổi phút sang giờ
 function convertMinutesToHours($minutes)
 {
-    $hours = floor($minutes / 60);
-    $minutes = $minutes % 60;
-    return $hours . 'h ' . $minutes . 'm';
+    $minutes = (int)$minutes;
+    if ($minutes < 0) $minutes = 0; // tuỳ bạn có muốn chặn âm không
+
+    $hours = intdiv($minutes, 60);
+    $mins  = $minutes % 60;
+
+    if ($hours === 0) {
+        return $mins . 'm';
+    }
+
+    return $hours . 'h ' . $mins . 'm';
 }
+
 
 // Check login
 function isLogin()
@@ -364,4 +385,36 @@ function timeAgo($datetime)
     if ($diff < 604800) return floor($diff / 86400) . ' ngày trước';
 
     return date('d/m/Y H:i', $time);
+}
+
+// Hàm lấy settings từ database (có cache)
+function getSiteSettings()
+{
+    static $settings = null;
+
+    if ($settings === null) {
+        $settingModel = new Setting();
+        $settingsArray = $settingModel->getAllSettings();
+
+        // Convert array thành key-value
+        $settings = [];
+        foreach ($settingsArray as $item) {
+            $settings[$item['setting_key']] = $item['setting_value'];
+        }
+
+        // Set default values nếu chưa có
+        $defaults = [
+            'site_name' => 'PhePhim',
+            'site_description' => 'Trải nghiệm xem phim đỉnh cao',
+            'site_email' => 'contact@phephim.com',
+        ];
+
+        foreach ($defaults as $key => $value) {
+            if (!isset($settings[$key]) || empty($settings[$key])) {
+                $settings[$key] = $value;
+            }
+        }
+    }
+
+    return $settings;
 }

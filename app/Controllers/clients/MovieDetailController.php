@@ -78,8 +78,8 @@ class MovieDetailController extends baseController
 
             if (!empty($sourceInfo)) {
                 $episodeDetail[] = [
-                    'id' => $sourceInfo['id'],
-                    'name' => $sourceInfo['voice_type'] ?? 'Vietsub', // Fallback tên
+                    'id' => $sourceInfo['episode_id'],
+                    'name' => $sourceInfo['voice_type'] ?? 'Vietsub',
                     'link' => $sourceInfo['source_url'],
                 ];
             } else {
@@ -103,6 +103,8 @@ class MovieDetailController extends baseController
             $movieIsFavorited = !empty($checkFavorite);
         }
 
+        $countAllCommentsByMovie = $this->commentsModel->countCommentsByMovie($idMovie);
+
         $data = [
             'idMovie' => $idMovie,
             'idEpisode' => $idEpisode,
@@ -114,6 +116,7 @@ class MovieDetailController extends baseController
             'comments' => $comments,
             'listComments' => $commentsTree,
             'totalComments' => $totalComments,
+            'countAllCommentsByMovie' => $countAllCommentsByMovie[0]['total'],
             'similarMovies' => $similarMovies,
             'movieIsFavorited' => $movieIsFavorited
         ];

@@ -10,21 +10,21 @@ layout('client/header');
 ?>
 
 <body class="font-display text-white overflow-x-hidden min-h-screen relative">
-    <div class="layout-container flex flex-col min-h-screen pt-32">
-        <div class="flex-1 flex justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="layout-container flex flex-col min-h-screen pt-20 md:pt-32">
+        <div class="flex-1 flex justify-center py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
             <div class="flex flex-col max-w-[1920px] w-full gap-8">
 
                 <div class="flex justify-center">
                     <div class="glass-panel rounded-full p-1 flex gap-1 shadow-neon">
                         <a href="?tab=actors"
-                            class="px-8 py-3 rounded-full text-sm font-medium transition-all flex items-center
+                            class="px-4 md:px-8 py-2.5 md:py-3 rounded-full text-xs md:text-sm font-medium transition-all flex items-center
                <?php echo ($currentTab === 'actors') ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'; ?>">
                             <span class="material-symbols-outlined text-lg mr-2">person</span>
                             Diễn Viên
                         </a>
 
                         <a href="?tab=directors"
-                            class="px-8 py-3 rounded-full text-sm font-medium transition-all flex items-center
+                            class="px-4 md:px-8 py-2.5 md:py-3 rounded-full text-xs md:text-sm font-medium transition-all flex items-center
                <?php echo ($currentTab === 'directors') ? 'bg-secondary text-white shadow-lg' : 'text-gray-400 hover:text-white'; ?>">
                             <span class="material-symbols-outlined text-lg mr-2">movie</span>
                             Đạo Diễn
@@ -40,7 +40,7 @@ layout('client/header');
                                 Danh Sách Diễn Viên
                             </h2>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6">
                             <?php if (!empty($getAllActors)): ?>
                                 <?php foreach ($getAllActors as $actor): ?>
                                     <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien/chi_tiet?id=<?php echo $actor['id'] ?>';" class="glass-card rounded-xl p-4 flex flex-col items-center text-center gap-4 group cursor-pointer hover:shadow-neon transition-all">
@@ -71,7 +71,7 @@ layout('client/header');
                                 Danh Sách Đạo Diễn
                             </h2>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-6">
                             <?php if (!empty($getAllDirectors)): ?>
                                 <?php foreach ($getAllDirectors as $director): ?>
                                     <div class="glass-card rounded-xl p-4 flex gap-4 items-center group cursor-pointer hover:shadow-neon transition-all overflow-hidden">

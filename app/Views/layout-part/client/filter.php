@@ -29,7 +29,7 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
 </button>
 
 <!-- Filter Panel (Collapsible) -->
-<div id="filterPanel" class="glass-panel rounded-2xl p-6 md:p-10 mb-8 border border-glass-border">
+<div id="filterPanel" class="glass-panel rounded-2xl p-4 md:p-6 lg:p-10 mb-8 border border-glass-border">
 
     <form method="GET" id="filterForm">
         <!-- Hidden fields để giữ route -->
@@ -183,7 +183,7 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex gap-3 justify-end mt-8">
+        <div class="flex flex-col sm:flex-row gap-3 justify-end mt-6 md:mt-8">
             <button type="button" onclick="resetFilters()" class="btn-reset">
                 <span class="material-symbols-outlined text-[18px]">refresh</span>
                 Xóa bộ lọc
@@ -195,156 +195,6 @@ $clsInactive = "bg-white/5 text-gray-400 border border-white/10 hover:border-pri
         </div>
     </form>
 </div>
-
-<style>
-    /* ====================================
-       FILTER PANEL ANIMATIONS - OPTIMIZED
-       GPU-accelerated với max-height + opacity
-       ==================================== */
-    #filterPanel {
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        margin-bottom: 0;
-        transition:
-            max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.25s ease,
-            padding 0.35s ease,
-            margin 0.35s ease;
-        will-change: max-height, opacity;
-    }
-
-    #filterPanel.filter-open {
-        max-height: 1000px;
-        /* Đủ lớn để chứa tất cả nội dung */
-        opacity: 1;
-        padding-top: 1.5rem !important;
-        /* p-6 = 1.5rem */
-        padding-bottom: 1.5rem !important;
-        margin-bottom: 2rem;
-        /* mb-8 = 2rem */
-    }
-
-    @media (min-width: 768px) {
-        #filterPanel.filter-open {
-            padding-top: 2.5rem !important;
-            /* md:p-10 = 2.5rem */
-            padding-bottom: 2.5rem !important;
-        }
-    }
-
-    /* Filter Checkbox/Radio Styles */
-    .filter-checkbox {
-        position: relative;
-        cursor: pointer;
-        display: inline-block;
-    }
-
-    .filter-checkbox input[type="checkbox"],
-    .filter-checkbox input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-    .filter-label {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        transition: all 0.3s;
-        /* Inactive: bg-white/5 text-gray-400 border-white/10 */
-        background: rgba(255, 255, 255, 0.05);
-        color: #9ca3af;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .filter-checkbox input:checked~.filter-label {
-        /* Active: bg-primary/20 text-primary border-primary/30 - Using orange/yellow theme */
-        background: rgba(251, 146, 60, 0.2);
-        color: #fb923c;
-        border-color: rgba(251, 146, 60, 0.3);
-        box-shadow: 0 0 10px rgba(251, 146, 60, 0.3);
-    }
-
-    .filter-checkbox:hover .filter-label {
-        /* Hover: border-primary/30 text-primary */
-        border-color: rgba(251, 146, 60, 0.3);
-        color: #fb923c;
-    }
-
-    /* Select Styles */
-    .filter-select {
-        width: 100%;
-        padding: 10px 15px;
-        border-radius: 8px;
-        background: #0a0a0a;
-        color: #e5e7eb;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .filter-select option {
-        background: #0a0a0a;
-        color: #e5e7eb;
-        padding: 10px;
-    }
-
-    .filter-select:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
-    }
-
-    .filter-select:hover {
-        border-color: rgba(var(--primary-rgb), 0.3);
-    }
-
-    /* Button Styles */
-    .btn-reset {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 24px;
-        border-radius: 8px;
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .btn-reset:hover {
-        background: rgba(239, 68, 68, 0.2);
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-submit {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 32px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
-    }
-
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.4);
-    }
-</style>
 
 <script>
     const filterToggle = document.getElementById('filterToggle');

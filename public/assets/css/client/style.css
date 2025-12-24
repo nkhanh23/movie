@@ -13,6 +13,14 @@
 }
 
 
+
+
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #141414;
@@ -1493,6 +1501,7 @@ input[type=range]::-webkit-slider-runnable-track {
         opacity: 0;
         transform: translateY(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1504,6 +1513,7 @@ input[type=range]::-webkit-slider-runnable-track {
     0% {
         transform: translateX(-100%);
     }
+
     100% {
         transform: translateX(200%);
     }
