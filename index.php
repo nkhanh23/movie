@@ -3,6 +3,9 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 session_start();
 ob_start(); // tranh loi tu cac ham header, cooke
 
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL); // Vẫn báo lỗi nhưng chỉ ghi vào file log, không hiện ra màn hình
 // Load Composer libraries
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';

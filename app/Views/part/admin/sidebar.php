@@ -6,6 +6,9 @@ if (!defined('_nkhanhh')) {
 // Lấy URL hiện tại để xác định tab active
 $currentPath = $_SERVER['REQUEST_URI'];
 $currentPath = parse_url($currentPath, PHP_URL_PATH);
+// Loại bỏ project name (VD: /movie) để so sánh đúng
+$projectName = '/movie';
+$currentPath = str_replace($projectName, '', $currentPath);
 
 // Hàm helper để check active
 function isActive($path, $currentPath)

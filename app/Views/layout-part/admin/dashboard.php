@@ -128,8 +128,10 @@
                         <?php if (!empty($logs)): ?>
                             <?php foreach ($logs as $log) : ?>
                                 <?php
-                                // 1. Xử lý dữ liệu JSON
-                                $logData = json_decode($log['new_values'], true) ?? json_decode($log['old_values'], true);
+                                // 1. Xử lý dữ liệu JSON (kiểm tra null trước khi decode)
+                                $newValues = !empty($log['new_values']) ? json_decode($log['new_values'], true) : null;
+                                $oldValues = !empty($log['old_values']) ? json_decode($log['old_values'], true) : null;
+                                $logData = $newValues ?? $oldValues ?? [];
 
                                 // Tìm tên hiển thị mặc định
                                 $targetName = $logData['tittle'] ?? $logData['name'] ?? $logData['fullname'] ?? ('ID: ' . $log['entity_id']);

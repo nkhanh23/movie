@@ -117,6 +117,9 @@ $router->get('/admin/logs/delete', 'ActivityController@delete');
 //ADMIN CRAWLER
 $router->get('/admin/crawler', 'CrawlerController@list');
 $router->get('/admin/crawler/sync-api', 'CrawlerController@syncApi');
+$router->post('/admin/crawler/sync-api', 'CrawlerController@syncApi');
+$router->get('/admin/crawler/searchMovies', 'CrawlerController@searchMovies');
+$router->get('/admin/crawler/test', 'CrawlerController@test');
 
 //ADMIN SUPPORT
 $router->get('/admin/support', 'SupportController@list');

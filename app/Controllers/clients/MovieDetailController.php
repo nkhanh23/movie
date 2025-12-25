@@ -69,7 +69,9 @@ class MovieDetailController extends baseController
                 $conditionEpisode = 'season_id=' . $currentSeasonId;
                 $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
             } else {
-                $episodeDetail = $this->moviesModel->getAll("SELECT * FROM episodes WHERE movie_id = $idMovie ORDER BY id ASC");
+                // Phim bộ không có season -> lấy theo movie_id
+                $conditionEpisode = 'movie_id=' . $idMovie;
+                $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
             }
         } else {
             // --- LOGIC PHIM LẺ --

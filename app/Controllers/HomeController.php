@@ -137,7 +137,7 @@ class HomeController extends baseController
         $this->renderView('/layout-part/client/search', $data);
     }
 
-    private function renderMoviesByType($typeId, $genresId = null, $countriesId = null, $viewPath)
+    private function renderMoviesByType($typeId, $viewPath, $genresId = null, $countriesId = null)
     {
         $filter = filterData('get');
         $filterParams = [
@@ -176,17 +176,17 @@ class HomeController extends baseController
 
     public function phimLe()
     {
-        $this->renderMoviesByType(1, null, null, '/layout-part/client/phim-le');
+        $this->renderMoviesByType(1, '/layout-part/client/phim-le');
     }
 
     public function phimBo()
     {
-        $this->renderMoviesByType(2, null, null, '/layout-part/client/phim-bo');
+        $this->renderMoviesByType(2, '/layout-part/client/phim-bo');
     }
 
     public function phimChieuRap()
     {
-        $this->renderMoviesByType(3, null, null, '/layout-part/client/phim-chieu-rap');
+        $this->renderMoviesByType(3, '/layout-part/client/phim-chieu-rap');
     }
 
 
@@ -194,14 +194,14 @@ class HomeController extends baseController
     {
         $filter = filterData();
         $genresId = $filter['id'];
-        $this->renderMoviesByType(1, $genresId, null, '/layout-part/client/the_loai');
+        $this->renderMoviesByType(1, '/layout-part/client/the_loai', $genresId);
     }
 
     public function quocGia()
     {
         $filter = filterData();
         $countriesId = $filter['id'];
-        $this->renderMoviesByType(1, null, $countriesId, '/layout-part/client/quoc_gia');
+        $this->renderMoviesByType(1, '/layout-part/client/quoc_gia', null, $countriesId);
     }
 
     public function dienVien()

@@ -150,10 +150,12 @@ $siteSettings = getSiteSettings();
           </svg>
         </button>
 
-        <img
-          src="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim.png"
-          alt=""
-          class="h-8 w-auto object-contain min-w-0 max-w-[110px] xs:max-w-[130px] sm:max-w-[160px]">
+        <a href="<?php echo _HOST_URL; ?>/">
+          <img
+            src="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim.png"
+            alt=""
+            class="h-8 w-auto object-contain min-w-0 max-w-[110px] xs:max-w-[130px] sm:max-w-[160px]">
+        </a>
       </div>
     </div>
 
@@ -162,7 +164,7 @@ $siteSettings = getSiteSettings();
 
       <!-- Desktop LEFT -->
       <div class="flex items-center gap-4 min-w-0">
-        <img src="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim.png" alt="" class="h-10 w-auto">
+        <a href="<?php echo _HOST_URL; ?>/"><img src="<?php echo _HOST_URL_PUBLIC; ?>/img/logo/PhePhim.png" alt="" class="h-10 w-auto"></a>
 
         <div class="flex items-center gap-6 text-sm font-medium text-gray-300 ml-4">
           <a href="<?php echo _HOST_URL ?>" class="text-white font-bold">Trang chủ</a>
@@ -338,7 +340,7 @@ $siteSettings = getSiteSettings();
               <div class="py-2">
                 <?php if ($_SESSION['auth']['group_id'] == '2'): ?>
                   <a href="<?php echo _HOST_URL; ?>/admin/dashboard" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
-                    <i data-lucide="heart" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
+                    <i data-lucide="shield" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
                     <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Trang admin</span>
                   </a>
                 <?php endif; ?>

@@ -326,6 +326,15 @@ class Movies extends CoreModel
 
     public function incrementMovieView($movieId)
     {
+        // Kiểm tra movie có tồn tại không trước khi insert
+        $checkSql = "SELECT id FROM movies WHERE id = :movie_id LIMIT 1";
+        $movieExists = $this->getOne($checkSql, ['movie_id' => $movieId]);
+
+        if (!$movieExists) {
+            // Movie không tồn tại, bỏ qua không insert view
+            return false;
+        }
+
         $sql = "INSERT INTO movie_views_daily (movie_id, view_date, views) 
             VALUES (:movie_id, :view_date, 1) 
             ON DUPLICATE KEY UPDATE views = views + 1";
@@ -388,7 +397,7 @@ class Movies extends CoreModel
     // Lấy phim Hoa Kỳ
     public function getMoviesUSUK()
     {
-        return $this->getAll("SELECT * FROM movies WHERE country_id = 7 ORDER BY created_at DESC LIMIT 10");
+        return $this->getAll("SELECT * FROM movies WHERE country_id = 45 ORDER BY created_at DESC LIMIT 10");
     }
 
     // Lấy phim Trung Quốc
@@ -413,7 +422,7 @@ class Movies extends CoreModel
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
-        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 56)
+        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 76)
         GROUP BY m.id
         ORDER BY id 
         DESC LIMIT 12");
@@ -445,7 +454,7 @@ class Movies extends CoreModel
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
         LEFT JOIN qualities q ON m.quality_id = q.id
-        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 1)
+        WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 62)
         GROUP BY m.id
         ORDER BY id 
         DESC LIMIT 12");
@@ -486,20 +495,24 @@ class Movies extends CoreModel
     // Lấy thông tin season
     public function getSeasonDetail($condition)
     {
+        // ORDER BY s.id ASC để đảm bảo Phần 1 luôn được lấy trước
         return $this->getAll("SELECT s.*,
         m.tittle as movie_name
         FROM seasons s
         LEFT JOIN movies m ON s.movie_id = m.id
-        WHERE s.$condition");
+        WHERE s.$condition
+        ORDER BY s.id ASC");
     }
 
     // Lấy thông tin episode
     public function getEpisodeDetail($condition)
     {
+        // GROUP BY e.id để mỗi tập chỉ hiện 1 lần (khi có nhiều video sources)
         return $this->getAll("SELECT e.*, vs.source_url, vs.voice_type
                 FROM episodes e
                 LEFT JOIN video_sources vs ON e.id = vs.episode_id
                 WHERE e.$condition 
+                GROUP BY e.id
                 ORDER BY e.id ASC");
     }
 

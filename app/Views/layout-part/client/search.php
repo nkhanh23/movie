@@ -6,8 +6,8 @@ layout('client/header');
 ?>
 
 <!-- Ambient Background Lighting -->
-<div class="ambient-glow w-[600px] h-[600px] bg-primary top-[-200px] left-[-100px]"></div>
-<div class="ambient-glow w-[500px] h-[500px] bg-secondary bottom-[10%] right-[-100px]"></div>
+<div class="hidden md:block ambient-glow w-[600px] h-[600px] bg-primary top-[-200px] left-[-100px]"></div>
+<div class="hidden md:block ambient-glow w-[500px] h-[500px] bg-secondary bottom-[10%] right-[-100px]"></div>
 
 <!-- Micro Particles -->
 <div class="particle w-1 h-1 top-20 left-1/4"></div>
@@ -80,7 +80,7 @@ layout('client/header');
             <?php if (!empty($getAllMovies) && is_array($getAllMovies)) : ?>
 
                 <?php foreach ($getAllMovies as $movie) : ?>
-                    <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[420px]">
+                    <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px]">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90 z-10"></div>
 
                         <img

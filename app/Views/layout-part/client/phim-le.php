@@ -37,7 +37,7 @@ layout('client/header');
         <!-- Scrollable Grid Container -->
         <div class="mb-8">
             <!-- Movie Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-6">
+            <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2 md:gap-4">
                 <!-- Card  -->
                 <?php foreach ($movies as $movie):
                     $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';

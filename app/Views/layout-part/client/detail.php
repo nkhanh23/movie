@@ -34,9 +34,12 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                 <!-- Movie Poster -->
                 <div class="lg:col-span-1 flex justify-center items-start">
                     <div class="glow-border w-52 sm:w-60 md:w-72 mx-auto sticky top-8">
-                        <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden aspect-[2/3] rounded-xl"
-                            data-alt="<?php echo $movieDetail['tittle']; ?>"
-                            style='background-image: url("<?php echo $movieDetail['poster_url']; ?>");'></div>
+                        <div class="w-full overflow-hidden aspect-[2/3] rounded-xl bg-[#1a1a2e]">
+                            <img src="<?php echo $movieDetail['poster_url']; ?>"
+                                alt="<?php echo $movieDetail['tittle']; ?>"
+                                class="w-full h-full object-cover"
+                                onerror="this.src='<?php echo _HOST_URL; ?>/public/img/no-poster.png';">
+                        </div>
                         <div class="flex items-center gap-2">
                         </div>
                     </div>
@@ -401,12 +404,12 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                 if (data && data.length > 0) {
                     let html = '';
                     const hostUrl = '<?php echo _HOST_URL; ?>';
+                    const movieId = '<?php echo $movieDetail['id']; ?>'; // ID của phim hiện tại
                     data.forEach(ep => {
                         // --- Tạo HTML nút bấm Grid ---
-                        // Lưu ý: Sửa đường dẫn href theo đúng logic routing của bạn
-                        // Ví dụ: ?mod=client&act=watch&id=...
+                        // Sử dụng movieId cho id và ep.id cho episode_id
                         html += `
-                            <a href="${hostUrl}/watch?id=${ep.id}"
+                            <a href="${hostUrl}/watch?id=${movieId}&episode_id=${ep.id}"
                                class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
                                 
                                 <span class="text-sm font-semibold truncate">

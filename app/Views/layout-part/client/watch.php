@@ -119,7 +119,8 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                     <h3 class="text-base sm:text-lg font-bold">Details</h3>
                                     <div class="flex gap-2 flex-wrap">
                                         <?php
-                                        $genres = explode(',', $movieDetail['genre_name']);
+                                        $genreName = isset($movieDetail['genre_name']) ? $movieDetail['genre_name'] : '';
+                                        $genres = !empty($genreName) ? explode(',', $genreName) : [];
                                         ?>
                                         <?php foreach ($genres as $genre): ?>
                                             <div
@@ -437,12 +438,13 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
 
                 if (data && data.length > 0) {
                     let html = '';
+                    const hostUrl = '<?php echo _HOST_URL; ?>';
+                    const movieId = '<?php echo $idMovie; ?>'; // ID của phim hiện tại
                     data.forEach(ep => {
                         // --- Tạo HTML nút bấm Grid ---
-                        // Lưu ý: Sửa đường dẫn href theo đúng logic routing của bạn
-                        // Ví dụ: ?mod=client&act=watch&id=...
+                        // Sử dụng movieId cho id và ep.id cho episode_id
                         html += `
-                            <a href="?mod=client&act=watch&id=${ep.id}"
+                            <a href="${hostUrl}/watch?id=${movieId}&episode_id=${ep.id}"
                                class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
                                 
                                 <span class="text-sm font-semibold truncate">

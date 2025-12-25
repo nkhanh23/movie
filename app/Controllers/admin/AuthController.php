@@ -63,47 +63,47 @@ class AuthController extends baseController
                     if (!empty($checkStatus['password'])) {
                         $checkPassword = password_verify($password, $checkStatus['password']);
                         if ($checkPassword) {
-                            // User chỉ được đăng nhập 1 nơi
+                            // User đăng nhập - kiểm tra và xóa token cũ nếu có
                             $user_id = $checkStatus['id'];
                             $checkAlready = $this->coreModel->getRows("SELECT * FROM token_login WHERE user_id = $user_id");
                             if ($checkAlready > 0) {
-                                setSessionFlash('msg', 'Tài khoản đang được đăng nhập ở 1 nơi khác, vui lòng thử lại sau.');
+                                // Xóa token cũ trước khi tạo token mới
+                                $this->coreModel->delete('token_login', "user_id = $user_id");
+                            }
+
+                            // Tạo token mới
+                            $tokenLogin = sha1(uniqid() . time());
+                            $dataToken = [
+                                'user_id' => $user_id,
+                                'token' => $tokenLogin
+                            ];
+                            $checkInsert = $this->coreModel->insert('token_login', $dataToken);
+                            $getOne = $this->coreModel->getOne("SELECT * FROM users WHERE id = $user_id");
+                            if ($checkInsert) {
+                                // Ghi log
+                                $logData = [
+                                    'name' => $getOne['name'],
+                                    'email' => $getOne['email']
+                                ];
+                                $this->activityModel->log(
+                                    $user_id,
+                                    'login',
+                                    'users',
+                                    $user_id,
+                                    null,
+                                    $logData
+                                );
+                                if ($checkStatus['group_id'] == 1) {
+                                    setSession('tokenLogin', $tokenLogin);
+                                    reload('/');
+                                } elseif ($checkStatus['group_id'] == 2) {
+                                    setSession('tokenLogin', $tokenLogin);
+                                    reload('/admin/dashboard');
+                                }
+                            } else {
+                                setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
                                 setSessionFlash('msg_type', 'danger');
                                 setSessionFlash('active_tab', 'login');
-                            } else {
-                                $tokenLogin = sha1(uniqid() . time());
-                                $dataToken = [
-                                    'user_id' => $user_id,
-                                    'token' => $tokenLogin
-                                ];
-                                $checkInsert = $this->coreModel->insert('token_login', $dataToken);
-                                $getOne = $this->coreModel->getOne("SELECT * FROM users WHERE id = $user_id");
-                                if ($checkInsert) {
-                                    // Ghi log
-                                    $logData = [
-                                        'name' => $getOne['name'],
-                                        'email' => $getOne['email']
-                                    ];
-                                    $this->activityModel->log(
-                                        $user_id,
-                                        'login',
-                                        'users',
-                                        $user_id,
-                                        null,
-                                        $logData
-                                    );
-                                    if ($checkStatus['group_id'] == 1) {
-                                        setSession('tokenLogin', $tokenLogin);
-                                        reload('/');
-                                    } elseif ($checkStatus['group_id'] == 2) {
-                                        setSession('tokenLogin', $tokenLogin);
-                                        reload('/admin/dashboard');
-                                    }
-                                } else {
-                                    setSessionFlash('msg', 'Lỗi hệ thống. Đăng nhập thất bại');
-                                    setSessionFlash('msg_type', 'danger');
-                                    setSessionFlash('active_tab', 'login');
-                                }
                             }
                         } else {
                             setSessionFlash('msg', 'Email hoặc mật khẩu không chính xác!');
@@ -297,7 +297,7 @@ class AuthController extends baseController
             $token = $this->client->fetchAccessTokenWithAuthCode($_GET['code']);
             if (!isset($token['error'])) {
                 $this->client->setAccessToken($token['access_token']);
-                $google_auth = new Google\Service\Oauth2($this->client);
+                $google_auth = new \Google\Service\Oauth2($this->client);
                 $google_account_info = $google_auth->userinfo->get();
 
                 $email = $google_account_info->email;
@@ -319,19 +319,14 @@ class AuthController extends baseController
 
                     $user_id = $checkUser['id'];
 
-                    // 1. Kiểm tra xem user này đã đăng nhập ở đâu chưa
+                    // Kiểm tra và xóa token cũ nếu có
                     $checkAlready = $this->coreModel->getRows("SELECT * FROM token_login WHERE user_id = $user_id");
-
                     if ($checkAlready > 0) {
-                        // 2. NẾU ĐÃ ĐĂNG NHẬP: Báo lỗi và quay về trang login (giống hàm login)
-                        setSessionFlash('msg', 'Tài khoản đang được đăng nhập ở 1 nơi khác, vui lòng thử lại sau.');
-                        setSessionFlash('msg_type', 'danger');
-                        setSessionFlash('active_tab', 'login');
-                        reload('/login');
-                        return; // Dừng code tại đây, không chạy xuống phần insert bên dưới
+                        // Xóa token cũ trước khi tạo token mới
+                        $this->coreModel->delete('token_login', "user_id = $user_id");
                     }
 
-                    // 3. NẾU CHƯA ĐĂNG NHẬP: Tiến hành tạo token và đăng nhập
+                    // Tạo token mới
                     $tokenLogin = sha1(uniqid() . time());
                     $dataLogin = [
                         'user_id' => $user_id,
@@ -440,7 +435,6 @@ class AuthController extends baseController
             $removeToken = $this->coreModel->delete('token_login', "token = '$token'");
 
             if ($removeToken) {
-
                 // Bước 3: Hủy session hiện tại
                 session_destroy();
 

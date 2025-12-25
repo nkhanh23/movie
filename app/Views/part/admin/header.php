@@ -43,7 +43,9 @@ $siteSettings = getSiteSettings();
         <header class="header">
             <div class="header-left">
                 <button id="sidebar-toggle" class="btn-icon"><i class="fa-solid fa-bars"></i></button>
-                <h1 class="logo"><?php echo htmlspecialchars($siteSettings['site_name']); ?></h1>
+                <a href="<?php echo _HOST_URL; ?>/" class="logo-link" style="text-decoration: none;">
+                    <h1 class="logo"><?php echo htmlspecialchars($siteSettings['site_name']); ?></h1>
+                </a>
             </div>
             <div class="header-right">
                 <button class="btn-icon"><i class="fa-solid fa-bell"></i></button>

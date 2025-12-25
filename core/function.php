@@ -1,66 +1,83 @@
 <?php
-//Hàm gửi mail
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 function sendMail($emailTo, $subject, $content, $replyToEmail = null, $replyToName = null)
 {
+    // 1. Lấy cấu hình từ DB
     $settingModel = new Setting();
-    $settings = $settingModel->getAllSettings(); // Hàm lấy tất cả settings
-    // Convert sang mảng key=>value cho dễ dùng
+    $settings = $settingModel->getAllSettings();
+
     $config = [];
     foreach ($settings as $item) {
         $config[$item['setting_key']] = $item['setting_value'];
     }
 
-    // Kiểm tra xem đã cấu hình chưa
-    if (empty($config['smtp_host']) || empty($config['smtp_username'])) {
-        return false; // Chưa cấu hình thì không gửi
+    // Validate cấu hình
+    if (empty($config['smtp_host']) || empty($config['smtp_username']) || empty($config['smtp_password'])) {
+        // Log lỗi lại nếu cần thiết
+        error_log("SendMail Error: Thiếu cấu hình SMTP");
+        return false;
     }
 
-    //Import PHPMailer classes into the global namespace
-    //These must be at the top of your script, not inside a function
-    //Create an instance; passing `true` enables exceptions
     $mail = new PHPMailer(true);
 
     try {
-        //Server settings
-        $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable verbose debug output
-        $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = $config['smtp_host'];                     //Set the SMTP server to send through
-        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = $config['smtp_username'];                     //SMTP username
-        $mail->Password   = $config['smtp_password'];                               //SMTP password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-        $mail->Port       = $config['smtp_port'];                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+        // 2. Cấu hình Server
+        // Bật debug mức 0 khi chạy production, mức 2 khi cần sửa lỗi
+        // Trên InfinityFree, nếu lỗi, hãy đổi thành SMTP::DEBUG_SERVER để xem log
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
 
-        //Recipients
-        $mail->setFrom($config['smtp_from_email'], $config['smtp_from_name']);
-        $mail->addAddress($emailTo,);     // Gửi tới Admin
-        //khi bấm Reply thì sẽ trả lời người dùng
+        $mail->isSMTP();
+        $mail->Host       = $config['smtp_host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $config['smtp_username'];
+        $mail->Password   = $config['smtp_password'];
+        $mail->Port       = (int)$config['smtp_port'];
+
+        // 3. Xử lý logic chọn giao thức mã hóa dựa trên Port
+        if ($mail->Port == 465) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL
+        } elseif ($mail->Port == 587) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // TLS
+        } else {
+            // Port 25 hoặc các port khác (ít dùng)
+            $mail->SMTPAutoTLS = false;
+            $mail->SMTPSecure = '';
+        }
+
+        // 4. Settings người nhận
+        $mail->setFrom($config['smtp_from_email'], $config['smtp_from_name'] ?? 'Movie WebApp');
+        $mail->addAddress($emailTo);
+
         if ($replyToEmail) {
-            // Nếu không có tên thì dùng chính email làm tên
             $mail->addReplyTo($replyToEmail, $replyToName ?? $replyToEmail);
         }
-        //Content
+
+        // 5. Nội dung Email
         $mail->CharSet = 'UTF-8';
-        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $content;
 
-        //Custom connection options
+        // 6. Fix lỗi SSL Certificate trên Hosting miễn phí (Quan trọng)
+        // Hosting miễn phí thường lỗi SSL verify, đoạn này giúp bỏ qua check đó
         $mail->SMTPOptions = array(
             'ssl' => array(
-                'verify_peer'  => true,
-                'verify_depth' => 3,
-                'allow_self_signed' => true,
+                'verify_peer'       => false, // Tắt verify peer
+                'verify_peer_name'  => false, // Tắt verify name
+                'allow_self_signed' => true
             )
         );
 
-        return $mail->send();
+        $mail->send();
+        return true;
     } catch (Exception $e) {
-        echo "Gửi thất bại. Mailer Error: {$mail->ErrorInfo}";
+        // Ghi log lỗi vào file của server thay vì echo ra màn hình làm vỡ giao diện
+        error_log("Mailer Error: {$mail->ErrorInfo}");
+        return false;
     }
 }
 
