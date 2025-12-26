@@ -35,7 +35,7 @@ $errors = getSessionFlash('errors');
                         <div class="user-glassmorphic rounded-2xl p-4 md:p-8 relative overflow-hidden h-full">
                             <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <div class="absolute bottom-10 left-10 w-20 h-20 bg-secondary/10 rounded-full blur-[40px] pointer-events-none animate-pulse"></div>
-                            <form class="flex flex-col gap-6 relative z-10 h-full justify-between" method="POST">
+                            <form class="flex flex-col gap-6 relative z-10 h-full justify-between" method="POST" enctype="multipart/form-data">
                                 <input type="hidden" name="user_id" value="<?= $userInfor['id'] ?>">
                                 <div class="flex flex-col gap-6">
                                     <!-- Name & Email Row -->
@@ -92,6 +92,26 @@ $errors = getSessionFlash('errors');
                                             echo formError($errors, 'content');
                                         }
                                         ?>
+                                    </div>
+
+                                    <!-- Image Upload -->
+                                    <div class="flex flex-col gap-2 group">
+                                        <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider pl-1">Ảnh đính kèm (không bắt buộc)</label>
+                                        <div class="relative">
+                                            <input type="file" name="image" id="support_image" accept="image/*" class="hidden" />
+                                            <label for="support_image" class="contact-input cursor-pointer flex items-center gap-3 !pl-12">
+                                                <span class="material-symbols-outlined contact-input-icon">image</span>
+                                                <span id="file-name-display" class="text-slate-400">Chọn ảnh để đính kèm...</span>
+                                            </label>
+                                        </div>
+                                        <div id="image-preview-container" class="hidden mt-2">
+                                            <div class="relative inline-block">
+                                                <img id="image-preview" src="" alt="Preview" class="max-w-[200px] max-h-[150px] rounded-lg border border-slate-600/50" />
+                                                <button type="button" id="remove-image" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
+                                                    <span class="material-symbols-outlined text-white text-sm">close</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -183,3 +203,54 @@ $errors = getSessionFlash('errors');
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('support_image');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageBtn = document.getElementById('remove-image');
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check if file is an image
+                if (!file.type.startsWith('image/')) {
+                    alert('Vui lòng chọn file ảnh!');
+                    this.value = '';
+                    return;
+                }
+
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Kích thước ảnh không được vượt quá 5MB!');
+                    this.value = '';
+                    return;
+                }
+
+                // Update file name display
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('text-slate-400');
+                fileNameDisplay.classList.add('text-white');
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeImageBtn.addEventListener('click', function() {
+            imageInput.value = '';
+            fileNameDisplay.textContent = 'Chọn ảnh để đính kèm...';
+            fileNameDisplay.classList.add('text-slate-400');
+            fileNameDisplay.classList.remove('text-white');
+            imagePreviewContainer.classList.add('hidden');
+            imagePreview.src = '';
+        });
+    });
+</script>

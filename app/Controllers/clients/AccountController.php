@@ -52,6 +52,34 @@ class AccountController extends baseController
                 $errors['content']['required'] = ' Nội dung tin nhắn bắt buộc phải nhập';
             }
             if (empty($errors)) {
+                // Xử lý upload ảnh
+                $imagePath = null;
+                if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === 0) {
+                    $uploadDir = 'public/img/support/';
+                    // Kiểm tra và tạo thư mục nếu chưa có
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+
+                    // Lấy thông tin file
+                    $fileName = basename($_FILES['image']['name']);
+                    $imageFileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $allowTypes = array('jpg', 'png', 'jpeg', 'gif', 'webp');
+
+                    // Kiểm tra loại file
+                    if (in_array($imageFileType, $allowTypes)) {
+                        // Kiểm tra kích thước (max 5MB)
+                        if ($_FILES['image']['size'] <= 5 * 1024 * 1024) {
+                            $newFileName = 'support_' . time() . '_' . uniqid() . '.' . $imageFileType;
+                            $targetFile = $uploadDir . $newFileName;
+
+                            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+                                $imagePath = _HOST_URL . '/' . $targetFile;
+                            }
+                        }
+                    }
+                }
+
                 // Lấy tên loại hỗ trợ
                 $supportTypeName = '';
                 $allSupportTypes = $this->supportModel->getAllSupportType();
@@ -123,6 +151,20 @@ class AccountController extends baseController
                 <div style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; padding: 15px; color: #e2e8f0; font-size: 14px; line-height: 1.7; white-space: pre-wrap;">' . htmlspecialchars($filter['content']) . '</div>
             </div>
             
+            ' . ($imagePath ? '<!-- Attached Image -->
+            <div style="background: rgba(139, 92, 246, 0.05); border-left: 4px solid #8b5cf6; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 18px;">🖼️</span>
+                    <h3 style="margin: 0; color: #c4b5fd; font-size: 14px; font-weight: 600;">ẢNH ĐÍNH KÈM</h3>
+                </div>
+                <div style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; padding: 15px; text-align: center;">
+                    <img src="' . $imagePath . '" alt="Ảnh đính kèm" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);" />
+                    <p style="margin: 10px 0 0 0; color: #94a3b8; font-size: 12px;">
+                        <a href="' . $imagePath . '" style="color: #8b5cf6; text-decoration: none;">📥 Xem ảnh gốc</a>
+                    </p>
+                </div>
+            </div>' : '') . '
+            
             <!-- Quick Action Button -->
             <div style="text-align: center; margin: 30px 0;">
                 <a href="' . _HOST_URL . '/admin/support" style="display: inline-block; background: linear-gradient(135deg, #D96C16 0%, #F29F05 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 15px rgba(217, 108, 22, 0.3); transition: all 0.3s;">
@@ -153,6 +195,7 @@ class AccountController extends baseController
                     'fullname' => $filter['fullname'],
                     'email' => $filter['email'],
                     'content' => $filter['content'],
+                    'image' => $imagePath,
                     'support_type_id' => $filter['support_type'],
                     'support_status_id' => 1,
                     'created_at' => date('Y:m:d H:i:s')

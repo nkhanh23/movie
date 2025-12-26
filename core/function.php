@@ -283,13 +283,18 @@ function renderMoviePlayer($url)
 
     // --- TRƯỜNG HỢP 1: Link HLS (.m3u8) từ API KKPhim ---
     if (strpos($url, '.m3u8') !== false) {
+        // Tạo ID duy nhất để tránh xung đột nếu có nhiều player
+        $playerId = 'hls-video-' . uniqid();
+
         return '
-        <div class="video-container" style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000;">
-            <video id="hls-video" controls style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain;" playsinline>
+        <div class="video-container" id="container-' . $playerId . '" data-player-id="' . $playerId . '">
+            
+            <video id="' . $playerId . '" controls playsinline class="mode-fit" data-src="' . htmlspecialchars($url) . '">
                 <source src="' . htmlspecialchars($url) . '" type="application/x-mpegURL">
-                Trình duyệt không hỗ trợ phát video này.
+                Trình duyệt của bạn không hỗ trợ video này.
             </video>
-        </div>';
+        </div>
+        ';
     }
 
     // --- TRƯỜNG HỢP 2: Link Embed Iframe (Dữ liệu cũ) ---

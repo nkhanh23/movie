@@ -19,6 +19,9 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
 }
 ?>
 
+<!-- Player CSS -->
+<link rel="stylesheet" href="<?php echo _HOST_URL; ?>/public/assets/css/client/player.css">
+
 <div class="relative min-h-screen w-full flex-col overflow-x-hidden">
     <!-- Background Gradients -->
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
@@ -49,7 +52,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                             // 1. Lấy ID tập đang xem từ URL (nếu có)
                             $currentEpisodeId = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
 
-                            // Biến tạm để lưu tập đầu tiên (dùng làm backup)
+                            // Biến tạm để lưu tập đầu tiên
                             $firstEpLink = '';
 
                             foreach ($episodeDetail as $index => $ep) {
@@ -116,7 +119,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                 </div>
                                 <!-- Tags and Metadata -->
                                 <div class="md:col-span-1 flex flex-col gap-3 sm:gap-4 glass-panel p-3 sm:p-4 rounded-xl">
-                                    <h3 class="text-base sm:text-lg font-bold">Details</h3>
+                                    <h3 class="text-base sm:text-lg font-bold">Chi tiết phim</h3>
                                     <div class="flex gap-2 flex-wrap">
                                         <?php
                                         $genreName = isset($movieDetail['genre_name']) ? $movieDetail['genre_name'] : '';
@@ -348,127 +351,151 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
     </div>
 </div>
 </body>
+<!-- MODULE 1: CORE PLAYER + SPEED CONTROL (X2) -->
 <script>
-    // -----------------------------------------------------------------------
-    // 1. CÁC HÀM XỬ LÝ GIAO DIỆN (UI)
-    // -----------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', function() {
+        // -----------------------------------------------------------------------
+        // MODULE 1: CORE PLAYER + SPEED CONTROL (X2)
+        // -----------------------------------------------------------------------
 
-    function toggleSeasonDropdown() {
-        const dropdown = document.getElementById('season-list');
-        const arrow = document.getElementById('season-arrow');
+        const container = document.querySelector('.video-container[data-player-id]');
+        if (!container) return;
 
-        if (dropdown.classList.contains('hidden')) {
-            dropdown.classList.remove('hidden');
-            dropdown.classList.add('block', 'animate-fade-in-up');
-            arrow.style.transform = 'rotate(180deg)';
-        } else {
-            dropdown.classList.add('hidden');
-            dropdown.classList.remove('block');
-            arrow.style.transform = 'rotate(0deg)';
-        }
-    }
+        const playerId = container.getAttribute('data-player-id');
+        const video = document.getElementById(playerId);
+        if (!video) return;
 
-    // Sự kiện: Click ra ngoài thì tự đóng menu
-    window.addEventListener('click', function(e) {
-        const container = document.getElementById('season-dropdown-container');
-        // Kiểm tra nếu container tồn tại (phòng trường hợp xem phim lẻ không có nút này)
-        if (container && !container.contains(e.target)) {
-            const dropdown = document.getElementById('season-list');
-            const arrow = document.getElementById('season-arrow');
-            if (dropdown && !dropdown.classList.contains('hidden')) {
-                dropdown.classList.add('hidden');
-                arrow.style.transform = 'rotate(0deg)';
+        // --- 1. KÍCH HOẠT HLS ---
+        const videoSrc = video.getAttribute('data-src') || video.querySelector('source')?.src;
+        if (videoSrc && videoSrc.includes('.m3u8')) {
+            if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
             }
         }
-    });
 
-    // -----------------------------------------------------------------------
-    // 2. LOGIC CHỌN SEASON & GỌI API (AJAX)
-    // -----------------------------------------------------------------------
+        // --- 2. LOGIC TUA NHANH (SPEED) ---
 
-    function selectSeason(seasonId, seasonName, element) {
-        // A. Cập nhật text hiển thị
-        const textElement = document.getElementById('current-season-text');
-        if (textElement) textElement.innerText = seasonName;
+        const HOLD_THRESHOLD = 200;
+        let speedTimer = null;
+        let isSpeeding = false;
+        let preventNextClick = false;
+        let spacePressTime = 0;
 
-        // B. Đóng menu
-        toggleSeasonDropdown();
-
-        // C. Cập nhật style cho item trong menu
-        const allItems = document.querySelectorAll('.season-item');
-        allItems.forEach(item => {
-            const checkIcon = item.querySelector('.season-check');
-            item.classList.remove('text-primary', 'font-bold', 'bg-white/5');
-            item.classList.add('text-gray-300', 'hover:bg-white/5');
-            if (checkIcon) checkIcon.classList.add('invisible');
-        });
-
-        if (element) {
-            element.classList.remove('text-gray-300', 'hover:bg-white/5');
-            element.classList.add('text-primary', 'font-bold', 'bg-white/5');
-            const activeCheck = element.querySelector('.season-check');
-            if (activeCheck) activeCheck.classList.remove('invisible');
+        function enableSpeed() {
+            if (!isSpeeding) {
+                isSpeeding = true;
+                video.playbackRate = 2.0;
+                preventNextClick = true;
+                if (video.paused) video.play();
+            }
         }
 
-        // D. Gọi Ajax load lại danh sách tập phim
-        loadEpisodes(seasonId);
-    }
-    // -----------------------------------------------------------------------
-    // 3. LOGIC LẤY DANH SÁCH TẬP PHIM (AJAX)
-    // -----------------------------------------------------------------------
-    function loadEpisodes(seasonId) {
-        const listContainer = document.getElementById('episode-list');
-        if (!listContainer) return;
+        function disableSpeed() {
+            if (speedTimer) {
+                clearTimeout(speedTimer);
+                speedTimer = null;
+            }
+            if (isSpeeding) {
+                isSpeeding = false;
+                video.playbackRate = 1.0;
+                if (video.paused) video.play();
+            }
+        }
 
-        // 1. Hiện thông báo đang tải (dùng col-span-full để căn giữa khung grid)
-        listContainer.innerHTML =
-            '<div class="col-span-full text-white/50 text-sm py-8 text-center">Đang tải danh sách tập...</div>';
+        // A. Chuột (PC)
+        container.addEventListener('mousedown', function(e) {
+            if (e.button === 0) { // Chuột trái
+                preventNextClick = false;
+                speedTimer = setTimeout(enableSpeed, HOLD_THRESHOLD);
+            }
+        });
+        container.addEventListener('mouseup', disableSpeed);
+        container.addEventListener('mouseleave', disableSpeed);
 
-        // 2. Gọi fetch (DÙNG ĐÚNG LINK BẠN YÊU CẦU)
-        fetch('./api/get-episodes?season_id=' + seasonId)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Lỗi kết nối server');
+        // Chặn Click Pause sau khi tua
+        container.addEventListener('click', function(e) {
+            if (preventNextClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                setTimeout(() => {
+                    preventNextClick = false;
+                }, 50);
+            }
+        }, true);
+
+        // B. Phím Space (PC)
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                const tag = e.target.tagName.toUpperCase();
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!e.repeat) {
+                        spacePressTime = Date.now();
+                        speedTimer = setTimeout(enableSpeed, HOLD_THRESHOLD);
+                    }
                 }
-                return response.json();
-            })
-            .then(data => {
-                // 3. Xóa nội dung loading
-                listContainer.innerHTML = '';
+            }
+        }, true); // Capture Phase
 
-                if (data && data.length > 0) {
-                    let html = '';
-                    const hostUrl = '<?php echo _HOST_URL; ?>';
-                    const movieId = '<?php echo $idMovie; ?>'; // ID của phim hiện tại
-                    data.forEach(ep => {
-                        // --- Tạo HTML nút bấm Grid ---
-                        // Sử dụng movieId cho id và ep.id cho episode_id
-                        html += `
-                            <a href="${hostUrl}/watch?id=${movieId}&episode_id=${ep.id}"
-                               class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
-                                
-                                <span class="text-sm font-semibold truncate">
-                                    ${ep.name}
-                                </span>
-                            </a>
-                        `;
-                    });
-                    listContainer.innerHTML = html;
-                } else {
-                    listContainer.innerHTML =
-                        '<div class="col-span-full text-gray-400 text-sm py-4 text-center">Chưa có tập phim nào.</div>';
+        document.addEventListener('keyup', function(e) {
+            if (e.code === 'Space') {
+                const tag = e.target.tagName.toUpperCase();
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (speedTimer) clearTimeout(speedTimer);
+
+                    if (isSpeeding) {
+                        disableSpeed(); // Tắt tua, chạy tiếp
+                    } else {
+                        // Bấm nhanh -> Toggle Play/Pause
+                        if (video.paused) video.play();
+                        else video.pause();
+                    }
                 }
-            })
-            .catch(err => {
-                console.error(err);
-                listContainer.innerHTML =
-                    '<div class="col-span-full text-red-400 text-sm py-4 text-center">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
-            });
-    }
+            }
+        }, true); // Capture Phase
+
+        // C. Cảm ứng (Mobile)
+        container.addEventListener('touchstart', function(e) {
+            // Kiểm tra: Nếu chạm vào nút Zoom (được tạo ở script kia) thì không tua
+            if (e.target.closest('.btn-zoom-mobile')) return;
+
+            preventNextClick = false;
+            speedTimer = setTimeout(enableSpeed, HOLD_THRESHOLD);
+        }, {
+            passive: true
+        });
+
+        container.addEventListener('touchend', disableSpeed);
+        container.addEventListener('touchcancel', disableSpeed);
+    });
 </script>
+
+<!-- MODULE 2: WATCH HISTORY -->
 <script>
     // ========================================================================
-    // UNIFIED HLS PLAYER + WATCH HISTORY SCRIPT
+    // MODULE 2: WATCH HISTORY 
     // ========================================================================
     const MOVIE_ID = <?php echo isset($idMovie) ? (int)$idMovie : 0; ?>;
     const EPISODE_ID = <?php echo isset($idEpisode) && $idEpisode ? (int)$idEpisode : 0; ?>;
@@ -480,58 +507,16 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
     console.log("Movie:", MOVIE_ID, "| Episode:", EPISODE_ID);
 
     document.addEventListener("DOMContentLoaded", function() {
-        const player = document.getElementById('hls-video');
+        // Tìm video player bằng selector - hỗ trợ dynamic ID
+        const container = document.querySelector('.video-container[data-player-id]');
+        const player = container ? document.getElementById(container.getAttribute('data-player-id')) : null;
 
         if (!player) {
             console.warn("Player not found (iframe mode?)");
             return;
         }
 
-        console.log(" Player found:", player.tagName);
-
-        // ====================================================================
-        // 1. HLS.JS INITIALIZATION (for .m3u8 streams)
-        // ====================================================================
-        const videoSrc = player.querySelector('source')?.src;
-
-        if (videoSrc && videoSrc.includes('.m3u8')) {
-            console.log(" Initializing HLS.js for:", videoSrc);
-
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(videoSrc);
-                hls.attachMedia(player);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    console.log(" HLS manifest parsed successfully");
-                });
-
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        console.error(" HLS Fatal Error:", data.type);
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log(" Network error, retrying...");
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.log(" Media error, recovering...");
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                console.log(" Unrecoverable error, destroying HLS");
-                                hls.destroy();
-                                break;
-                        }
-                    }
-                });
-            }
-            // Safari native HLS support
-            else if (player.canPlayType("application/vnd.apple.mpegurl")) {
-                console.log(" Using Safari native HLS");
-                player.src = videoSrc;
-            }
-        }
+        console.log("✓ Player found:", player.id);
 
         // ====================================================================
         // 2. WATCH HISTORY - RESUME PLAYBACK

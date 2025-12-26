@@ -335,37 +335,42 @@ class Movies extends CoreModel
             return false;
         }
 
+        // Dùng CURDATE() của MySQL để đảm bảo timezone nhất quán
         $sql = "INSERT INTO movie_views_daily (movie_id, view_date, views) 
-            VALUES (:movie_id, :view_date, 1) 
+            VALUES (:movie_id, CURDATE(), 1) 
             ON DUPLICATE KEY UPDATE views = views + 1";
 
         $this->execute($sql, [
-            'movie_id' => $movieId,
-            'view_date' => date('Y-m-d')
+            'movie_id' => $movieId
         ]);
         return true;
     }
 
     private function seedFakeViewsIfEmpty()
     {
-        $checkSql = "SELECT 1 FROM movie_views_daily WHERE view_date = CURDATE() LIMIT 1";
+        $checkSql = "SELECT * FROM movie_views_daily WHERE view_date = CURDATE() LIMIT 1";
         $result = $this->getRows($checkSql);
         if ($result) {
             return;
         }
-        //Nếu chưa có -> Tiến hành Fake
-        $sqlMovies = "SELECT id FROM movies ORDER BY RAND() LIMIT 20";
-        $movies = $this->getAll($sqlMovies);
+
+        // Lấy 10 phim lẻ (type_id = 1) để đảm bảo Top 10 Phim Lẻ có đủ dữ liệu
+        $sqlMoviesType1 = "SELECT id FROM movies WHERE type_id = 1 ORDER BY RAND() LIMIT 10";
+        // Lấy 10 phim bộ (type_id = 2) để đảm bảo Top 10 Phim Bộ có đủ dữ liệu
+        $sqlMoviesType2 = "SELECT id FROM movies WHERE type_id = 2 ORDER BY RAND() LIMIT 10";
+
+        $moviesType1 = $this->getAll($sqlMoviesType1);
+        $moviesType2 = $this->getAll($sqlMoviesType2);
+        $movies = array_merge($moviesType1, $moviesType2);
+
         $countMovies = count($movies);
         if ($countMovies > 0) {
-            $today = date('Y-m-d');
-            $insertSql = "INSERT INTO movie_views_daily (movie_id, view_date, views) VALUES (:movie_id, :view_date, :views)";
+            $insertSql = "INSERT IGNORE INTO movie_views_daily (movie_id, view_date, views) VALUES (:movie_id, CURDATE(), :views)";
             foreach ($movies as $movie) {
                 $fakeViews = rand(100, 5000);
                 $movieId = $movie['id'];
                 $this->execute($insertSql, [
                     'movie_id' => $movieId,
-                    'view_date' => $today,
                     'views' => $fakeViews
                 ]);
             }

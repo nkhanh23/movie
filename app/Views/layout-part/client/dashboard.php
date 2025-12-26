@@ -682,7 +682,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
     </div>
 
     <!-- Horror section  -->
-    <div class="cards-row px-3 sm:px-4 md:px-12 cards-slide wide section-horror pt-16 sm:pt-24 md:pt-28">
+    <div class="cards-row px-3 sm:px-4 md:px-12 cards-slide wide section-horror pt-8 sm:pt-12 md:pt-16">
         <div class="row-header">
             <h2 class="category-name">
                 <span style="color: var(--primary-color);">Cảm Giác Mạnh &</span> Kinh Dị

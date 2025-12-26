@@ -43,6 +43,21 @@ $errors = getSessionFlash('errors');
                             <?php echo $oldData['content']; ?>
                         </div>
                     </div>
+                    <?php if (!empty($oldData['image'])): ?>
+                        <div style="margin-top: 15px;">
+                            <label style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Ảnh đính kèm:</label>
+                            <div style="margin-top: 8px; padding: 15px; background: var(--bg-card); border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                                <a href="<?php echo $oldData['image']; ?>" target="_blank" style="display: inline-block;">
+                                    <img src="<?php echo $oldData['image']; ?>" alt="Ảnh đính kèm" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" />
+                                </a>
+                                <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <a href="<?php echo $oldData['image']; ?>" target="_blank" style="color: #8b5cf6; text-decoration: none;">
+                                        <i class="fa-solid fa-external-link"></i> Xem ảnh gốc
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

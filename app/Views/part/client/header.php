@@ -26,6 +26,23 @@ $siteSettings = getSiteSettings();
   <meta name="referrer" content="no-referrer">
   <title><?php echo htmlspecialchars($siteSettings['site_name']); ?></title>
 
+  <link rel="manifest" href="/manifest.php?v=<?php echo time(); ?>">
+  <meta name="theme-color" content="#FFD875">
+  <link rel="apple-touch-icon" href="/public/img/logo/apple-touch-icon.png">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('PWA ServiceWorker đăng ký thành công: ', registration.scope);
+          }, function(err) {
+            console.log('PWA ServiceWorker lỗi: ', err);
+          });
+      });
+    }
+  </script>
+
   <!-- Favicon -->
   <?php
   $faviconPath = !empty($siteSettings['site_favicon']) ? _HOST_URL . '/' . $siteSettings['site_favicon'] : '';

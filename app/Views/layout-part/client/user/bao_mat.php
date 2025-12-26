@@ -60,7 +60,10 @@ $errors = getSessionFlash('errors');
                                             <div class="user-glass-input rounded-xl p-0.5 relative group/input">
                                                 <div class="flex items-center px-4">
                                                     <span class="material-symbols-outlined text-slate-400 text-[20px]">key</span>
-                                                    <input type="password" name="current_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="Nhập mật khẩu hiện tại">
+                                                    <input type="password" name="current_password" id="current_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 pr-10 rounded-lg text-sm" placeholder="Nhập mật khẩu hiện tại">
+                                                    <button type="button" class="toggle-password absolute right-4 text-slate-400 hover:text-white transition-colors" data-target="current_password">
+                                                        <span class="material-symbols-outlined text-[20px]">visibility_off</span>
+                                                    </button>
                                                 </div>
                                                 <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
                                             </div>
@@ -75,7 +78,10 @@ $errors = getSessionFlash('errors');
                                             <div class="user-glass-input rounded-xl p-0.5 relative group/input">
                                                 <div class="flex items-center px-4">
                                                     <span class="material-symbols-outlined text-slate-400 text-[20px]">lock_reset</span>
-                                                    <input type="password" name="new_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="Nhập mật khẩu mới">
+                                                    <input type="password" name="new_password" id="new_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 pr-10 rounded-lg text-sm" placeholder="Nhập mật khẩu mới">
+                                                    <button type="button" class="toggle-password absolute right-4 text-slate-400 hover:text-white transition-colors" data-target="new_password">
+                                                        <span class="material-symbols-outlined text-[20px]">visibility_off</span>
+                                                    </button>
                                                 </div>
                                                 <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
                                             </div>
@@ -90,7 +96,10 @@ $errors = getSessionFlash('errors');
                                             <div class="user-glass-input rounded-xl p-0.5 relative group/input">
                                                 <div class="flex items-center px-4">
                                                     <span class="material-symbols-outlined text-slate-400 text-[20px]">lock</span>
-                                                    <input type="confirmpassword" name="confirm_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 rounded-lg text-sm" placeholder="Nhập lại mật khẩu mới">
+                                                    <input type="password" name="confirm_password" id="confirm_password" class="w-full bg-transparent border-none text-white placeholder-slate-500 focus:ring-0 py-3 pl-3 pr-10 rounded-lg text-sm" placeholder="Nhập lại mật khẩu mới">
+                                                    <button type="button" class="toggle-password absolute right-4 text-slate-400 hover:text-white transition-colors" data-target="confirm_password">
+                                                        <span class="material-symbols-outlined text-[20px]">visibility_off</span>
+                                                    </button>
                                                 </div>
                                                 <div class="absolute inset-0 rounded-xl pointer-events-none border border-transparent group-focus-within/input:border-primary/30 transition-colors"></div>
                                             </div>
@@ -310,4 +319,45 @@ $errors = getSessionFlash('errors');
         content: "ℹ";
         color: #3b82f6;
     }
+
+    .toggle-password {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .toggle-password:focus {
+        outline: none;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('.material-symbols-outlined');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = 'visibility';
+                    this.classList.remove('text-slate-400');
+                    this.classList.add('text-primary');
+                } else {
+                    input.type = 'password';
+                    icon.textContent = 'visibility_off';
+                    this.classList.remove('text-primary');
+                    this.classList.add('text-slate-400');
+                }
+            });
+        });
+    });
+</script>
