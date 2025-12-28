@@ -484,10 +484,65 @@ function getCachedFilterData()
 }
 
 /**
- * Xóa cache filter data (gọi khi admin thêm/sửa/xóa genres, countries, etc.)
+ * Xóa cache filter data (gọi khi admin thêm/sửa/xóa genres, countries,...)
  */
 function clearFilterDataCache()
 {
     unset($_SESSION['cached_filter_data']);
     unset($_SESSION['cached_filter_data_time']);
+}
+
+/**
+ * Hàm lấy dữ liệu Dashboard có cache (các section phim)
+ * Cache được lưu trong SESSION với TTL 5 phút
+ * 
+ * @return array Mảng chứa tất cả movie sections cho dashboard
+ */
+function getCachedDashboardData()
+{
+    $cacheKey = 'cached_dashboard_data';
+    $cacheTTL = 300; // 5 phút (tính bằng giây)
+
+    // Kiểm tra cache trong SESSION
+    if (isset($_SESSION[$cacheKey]) && isset($_SESSION[$cacheKey . '_time'])) {
+        $cacheTime = $_SESSION[$cacheKey . '_time'];
+
+        // Nếu cache chưa hết hạn, trả về data từ cache
+        if ((time() - $cacheTime) < $cacheTTL) {
+            return $_SESSION[$cacheKey];
+        }
+    }
+
+    // Cache miss hoặc hết hạn - lấy data từ database
+    $moviesModel = new Movies();
+    $genresModel = new Genres();
+
+    $dashboardData = [
+        'getMoviesHeroSection' => $moviesModel->getMoviesHeroSection(),
+        'getGenresGrid'        => $genresModel->getGenresGrid(),
+        'getMoviesKorean'      => $moviesModel->getMoviesKorean(),
+        'getMoviesUSUK'        => $moviesModel->getMoviesUSUK(),
+        'getMoviesChinese'     => $moviesModel->getMoviesChinese(),
+        'getTopDailyByType1'   => $moviesModel->getTopTrendingToday(1),
+        'getTopDailyByType2'   => $moviesModel->getTopTrendingToday(2),
+        'getCinemaMovie'       => $moviesModel->getCinemaMovie(),
+        'getAnimeMovies'       => $moviesModel->getAnimeMovies(),
+        'getLoveMovies'        => $moviesModel->getLoveMovies(),
+        'getHorrorMovies'      => $moviesModel->getHorrorMovies(),
+    ];
+
+    // Lưu vào cache
+    $_SESSION[$cacheKey] = $dashboardData;
+    $_SESSION[$cacheKey . '_time'] = time();
+
+    return $dashboardData;
+}
+
+/**
+ * Xóa cache dashboard data (gọi khi admin thêm/sửa phim)
+ */
+function clearDashboardCache()
+{
+    unset($_SESSION['cached_dashboard_data']);
+    unset($_SESSION['cached_dashboard_data_time']);
 }

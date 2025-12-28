@@ -47,48 +47,38 @@ class HomeController extends baseController
 
     public function index()
     {
-        $getMoviesHeroSection = $this->moviesModel->getMoviesHeroSection();
-        $getGenresGrid = $this->genresModel->getGenresGrid();
-        $getMoviesKorean = $this->moviesModel->getMoviesKorean();
-        $getMoviesUSUK = $this->moviesModel->getMoviesUSUK();
-        $getMoviesChinese = $this->moviesModel->getMoviesChinese();
-        $getTopDailyByType1 = $this->moviesModel->getTopTrendingToday(1);
-        $getTopDailyByType2 = $this->moviesModel->getTopTrendingToday(2);
-        $getCinemaMovie = $this->moviesModel->getCinemaMovie();
-        $getAnimeMovies = $this->moviesModel->getAnimeMovies();
-        $getLoveMovies = $this->moviesModel->getLoveMovies();
-        $getHorrorMovies = $this->moviesModel->getHorrorMovies();
+        // Sử dụng cached dashboard data thay vì 11 queries riêng lẻ
+        $cachedData = getCachedDashboardData();
 
-
-        // Lấy danh sách xem tiếp (nếu đã đăng nhập)
+        // Lấy danh sách xem tiếp (nếu đã đăng nhập) - không cache vì theo user
         $getContinueWatching = [];
         if (!empty($_SESSION['auth']['id'])) {
             $getContinueWatching = $this->watchHistoryModel->getContinueWatchingList($_SESSION['auth']['id'], 10);
         }
 
-        // Kiểm tra trạng thái favorite cho hero movie
+        // Kiểm tra trạng thái favorite cho hero movie - không cache vì theo user
         $heroIsFavorited = false;
-        if (!empty($_SESSION['auth']) && !empty($getMoviesHeroSection[0])) {
+        if (!empty($_SESSION['auth']) && !empty($cachedData['getMoviesHeroSection'][0])) {
             $userId = $_SESSION['auth']['id'];
-            $heroMovieId = $getMoviesHeroSection[0]['id'];
+            $heroMovieId = $cachedData['getMoviesHeroSection'][0]['id'];
             $checkFavorite = $this->moviesModel->checkIsFavorite($userId, $heroMovieId);
             $heroIsFavorited = !empty($checkFavorite);
         }
 
         $data = [
-            'getMoviesHeroSection' => $getMoviesHeroSection,
-            'getGenresGrid' => $getGenresGrid,
-            'getMoviesKorean' => $getMoviesKorean,
-            'getMoviesUSUK' => $getMoviesUSUK,
-            'getMoviesChinese' => $getMoviesChinese,
-            'getTopDailyByType1' => $getTopDailyByType1,
-            'getTopDailyByType2' => $getTopDailyByType2,
-            'getCinemaMovie' => $getCinemaMovie,
-            'getAnimeMovies' => $getAnimeMovies,
-            'getLoveMovies' => $getLoveMovies,
-            'getHorrorMovies' => $getHorrorMovies,
-            'heroIsFavorited' => $heroIsFavorited,
-            'getContinueWatching' => $getContinueWatching
+            'getMoviesHeroSection' => $cachedData['getMoviesHeroSection'],
+            'getGenresGrid'        => $cachedData['getGenresGrid'],
+            'getMoviesKorean'      => $cachedData['getMoviesKorean'],
+            'getMoviesUSUK'        => $cachedData['getMoviesUSUK'],
+            'getMoviesChinese'     => $cachedData['getMoviesChinese'],
+            'getTopDailyByType1'   => $cachedData['getTopDailyByType1'],
+            'getTopDailyByType2'   => $cachedData['getTopDailyByType2'],
+            'getCinemaMovie'       => $cachedData['getCinemaMovie'],
+            'getAnimeMovies'       => $cachedData['getAnimeMovies'],
+            'getLoveMovies'        => $cachedData['getLoveMovies'],
+            'getHorrorMovies'      => $cachedData['getHorrorMovies'],
+            'heroIsFavorited'      => $heroIsFavorited,
+            'getContinueWatching'  => $getContinueWatching
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }
