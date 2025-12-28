@@ -11,8 +11,8 @@ $dbname = _DB;
 $username = _USER;
 $password = _PASS;
 
-$tmdbApiKey = '0e3b943475e881fdc65dcdcbcc13cbaf';
-$tmdbImageBase = 'https://image.tmdb.org/t/p/w500';
+$tmdbApiKey = defined('_TMDB_API_KEY') ? _TMDB_API_KEY : '';
+$tmdbImageBase = defined('_TMDB_IMAGE_BASE') ? _TMDB_IMAGE_BASE : 'https://image.tmdb.org/t/p/w500';
 
 set_time_limit(0);
 
