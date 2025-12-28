@@ -134,9 +134,9 @@ $errors = getSessionFlash('errors');
 
 <script>
     // CẤU HÌNH API KEY
-    const TMDB_API_KEY = '0e3b943475e881fdc65dcdcbcc13cbaf';
-    const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/original';
-    const TMDB_AVATAR_THUMB = 'https://image.tmdb.org/t/p/w185'; // Ảnh nhỏ cho list gợi ý
+    const TMDB_API_KEY = '<?php echo defined('_TMDB_API_KEY') ? _TMDB_API_KEY : ''; ?>';
+    const TMDB_IMAGE_BASE = '<?php echo defined('_TMDB_IMAGE_BASE') ? _TMDB_IMAGE_BASE : 'https://image.tmdb.org/t/p/original'; ?>';
+    const TMDB_AVATAR_THUMB = '<?php echo defined('_TMDB_AVATAR_THUMB') ? _TMDB_AVATAR_THUMB : 'https://image.tmdb.org/t/p/w185'; ?>'; // Ảnh nhỏ cho list gợi ý
 
     // Hàm 1: Tìm kiếm NGƯỜI (Person)
     async function searchTMDB() {

@@ -4,7 +4,7 @@ class CrawlerController extends baseController
     private $conn;
     private $apiBase = "https://phimapi.com";
     private $ophimBase = "https://ophim1.com";
-    private $tmdbApiKey = "0e3b943475e881fdc65dcdcbcc13cbaf";
+    private $tmdbApiKey;
     private $tmdbBase = "https://api.themoviedb.org/3";
     private $currentApiSource = 'phimapi'; // 'phimapi' or 'ophim'
     private $currentListType = 'phim-moi-cap-nhat'; // Loại danh sách đang crawl
@@ -15,6 +15,7 @@ class CrawlerController extends baseController
         set_time_limit(0);
 
         $this->conn = Database::connectPDO();
+        $this->tmdbApiKey = defined('_TMDB_API_KEY') ? _TMDB_API_KEY : '';
     }
 
     // Lưu page cao nhất đã crawl

@@ -364,8 +364,8 @@ $errors = getSessionFlash('errors');
 </script>
 <script>
     // --- CẤU HÌNH ---
-    const TMDB_API_KEY = '0e3b943475e881fdc65dcdcbcc13cbaf';
-    const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/original';
+    const TMDB_API_KEY = '<?php echo defined('_TMDB_API_KEY') ? _TMDB_API_KEY : ''; ?>';
+    const TMDB_IMAGE_BASE = '<?php echo defined('_TMDB_IMAGE_BASE') ? _TMDB_IMAGE_BASE : 'https://image.tmdb.org/t/p/original'; ?>';
 
     // Helper: Chuyển text thành Slug
     function createSlug(string) {
