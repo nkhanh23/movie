@@ -48,10 +48,11 @@ layout('client/header');
                                 <?php echo $personDetail['bio'] ?>
                             </p>
                             <div class="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
-                                <button class="js-favorite-btn flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-secondary text-white font-bold rounded-lg shadow-[0_0_15px_rgba(217,108,22,0.4)] hover:shadow-[0_0_25px_rgba(242,159,5,0.6)] transition-all duration-300 transform hover:-translate-y-0.5"
+                                <?php $personFavClass = !empty($personIsFavorited) ? 'is-favorited' : ''; ?>
+                                <button class="js-favorite-actor-btn flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-secondary text-white font-bold rounded-lg shadow-[0_0_15px_rgba(217,108,22,0.4)] hover:shadow-[0_0_25px_rgba(242,159,5,0.6)] transition-all duration-300 transform hover:-translate-y-0.5 <?= $personFavClass ?>"
                                     data-person-id="<?php echo $personDetail['id']; ?>">
                                     <span class="material-symbols-outlined text-sm">favorite</span>
-                                    Yêu thích
+                                    <span class="fav-text"><?= !empty($personIsFavorited) ? 'Đã yêu thích' : 'Yêu thích' ?></span>
                                 </button>
                                 <button class="flex items-center gap-2 px-6 py-2.5 bg-transparent border border-white/20 hover:border-white/50 hover:bg-white/5 text-white font-bold rounded-lg transition-all duration-300">
                                     <span class="material-symbols-outlined text-sm">share</span>

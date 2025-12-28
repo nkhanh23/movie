@@ -1383,6 +1383,22 @@ input[type=range]::-webkit-slider-runnable-track {
     border-color: rgba(239, 68, 68, 0.5) !important;
 }
 
+/* Actor Favorite Button Styling */
+.js-favorite-actor-btn.is-favorited {
+    background: rgba(239, 68, 68, 0.8) !important;
+    border-color: rgba(239, 68, 68, 0.9) !important;
+}
+
+.js-favorite-actor-btn.is-favorited .material-symbols-outlined {
+    color: #fff !important;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.js-favorite-actor-btn.is-favorited:hover {
+    background: rgba(239, 68, 68, 1) !important;
+    border-color: rgba(239, 68, 68, 1) !important;
+}
+
 /* =========================================
    MESSAGE ALERT STYLES (for getMsg)
    ========================================= */
@@ -1503,7 +1519,6 @@ input[type=range]::-webkit-slider-runnable-track {
     }
 }
 
-/* Shimmer effect */
 @keyframes shimmer-message {
     0% {
         transform: translateX(-100%);
@@ -1511,5 +1526,87 @@ input[type=range]::-webkit-slider-runnable-track {
 
     100% {
         transform: translateX(200%);
+    }
+}
+
+/* =========================================
+   SWIPER FOUC FIX (Flash of Unstyled Content)
+   Ngăn vỡ layout khi Swiper chưa khởi tạo
+   ========================================= */
+
+/* Ẩn swiper-wrapper cho đến khi Swiper initialized */
+.swiper:not(.swiper-initialized) .swiper-wrapper {
+    display: flex;
+    overflow: hidden;
+}
+
+/* Giới hạn kích thước mặc định cho các slide trước khi Swiper khởi tạo */
+.swiper:not(.swiper-initialized) .swiper-slide {
+    flex-shrink: 0;
+    width: 180px !important; /* Kích thước mặc định nhỏ */
+    max-width: 180px;
+}
+
+/* Giới hạn kích thước ảnh trong slide */
+.swiper:not(.swiper-initialized) .swiper-slide img {
+    width: 100%;
+    height: auto;
+    max-height: 270px;
+    object-fit: cover;
+}
+
+/* Fix cho Hero Section slider nếu có */
+.swiper:not(.swiper-initialized) .swiper-slide .sw-item {
+    max-width: 100%;
+}
+
+/* Đảm bảo swiper container có overflow hidden */
+.swiper {
+    overflow: hidden;
+}
+
+/* Skeleton loading effect trong khi chờ Swiper */
+.swiper:not(.swiper-initialized)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    animation: shimmer-swiper 1.5s infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes shimmer-swiper {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Responsive widths cho các slide */
+@media (max-width: 768px) {
+    .swiper:not(.swiper-initialized) .swiper-slide {
+        width: 140px !important;
+        max-width: 140px;
+    }
+    
+    .swiper:not(.swiper-initialized) .swiper-slide img {
+        max-height: 210px;
+    }
+}
+
+@media (max-width: 480px) {
+    .swiper:not(.swiper-initialized) .swiper-slide {
+        width: 120px !important;
+        max-width: 120px;
+    }
+    
+    .swiper:not(.swiper-initialized) .swiper-slide img {
+        max-height: 180px;
     }
 }

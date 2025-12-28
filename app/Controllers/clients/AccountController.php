@@ -6,6 +6,7 @@ class AccountController extends baseController
     private $usersModel;
     private $supportModel;
     private $watchHistoryModel;
+    private $actorModel;
 
     public function __construct()
     {
@@ -14,6 +15,7 @@ class AccountController extends baseController
         $this->usersModel = new User();
         $this->supportModel = new Support();
         $this->watchHistoryModel = new WatchHistory();
+        $this->actorModel = new Person();
     }
 
     public function showIntroduce()
@@ -222,7 +224,6 @@ class AccountController extends baseController
     }
 
     // Thêm/Xóa phim khỏi danh sách yêu thích
-
     public function toggleFavoriteApi()
     {
         error_reporting(0);
@@ -274,6 +275,83 @@ class AccountController extends baseController
             ]);
             exit;
         }
+    }
+
+    //Thêm xóa diễn viên yêu thích
+    public function toggleFavoriteActorApi()
+    {
+        // Suppress errors and start output buffering
+        error_reporting(0);
+        ini_set('display_errors', 0);
+
+        // Clear any previous output
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        ob_start();
+
+        // Set JSON header immediately
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            // Kiểm tra đăng nhập
+            if (empty($_SESSION['auth'])) {
+                ob_end_clean();
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Vui lòng đăng nhập để thực hiện chức năng này.',
+                    'code' => 401
+                ]);
+                exit;
+            }
+
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $filter = filterData();
+                $actorId = isset($filter['actor_id']) ? (int)$filter['actor_id'] : 0;
+                $userId = $_SESSION['auth']['id'];
+
+                if ($actorId <= 0) {
+                    ob_end_clean();
+                    echo json_encode(['status' => 'error', 'message' => 'Dữ liệu diễn viên không hợp lệ.', 'code' => 400]);
+                    exit;
+                }
+
+                // Gọi Model xử lý toggle
+                $action = $this->actorModel->toggleFavorite($userId, $actorId);
+
+                ob_end_clean();
+                echo json_encode([
+                    'status' => 'success',
+                    'action' => $action,
+                    'message' => ($action === 'added') ? 'Đã thêm vào yêu thích' : 'Đã xóa khỏi yêu thích'
+                ]);
+                exit;
+            } else {
+                ob_end_clean();
+                echo json_encode(['status' => 'error', 'message' => 'Method not allowed', 'code' => 405]);
+                exit;
+            }
+        } catch (Throwable $e) {
+            ob_end_clean();
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Lỗi server: ' . $e->getMessage(),
+                'code' => 500
+            ]);
+            exit;
+        }
+    }
+
+    public function showFavoriteActor()
+    {
+        $userInfor = $_SESSION['auth'];
+        $userID = $userInfor['id'];
+        $favoriteActors = $this->actorModel->getFavoriteActors($userID);
+        $data = [
+            'favoriteActors' => $favoriteActors
+        ];
+        $this->renderView('layout-part/client/user/actor_favorite', $data);
     }
 
     public function showNotice()

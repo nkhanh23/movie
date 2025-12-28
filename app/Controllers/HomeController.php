@@ -155,6 +155,9 @@ class HomeController extends baseController
         $sort = $filter['sort'] ?? 'newest';
         $result = $this->moviesModel->getMoviesByBuilder($whereData, $sort, $page);
 
+        // Sử dụng cached filter data thay vì query riêng lẻ
+        $cachedFilterData = getCachedFilterData();
+
         $data = [
             'movies'            => $result['data'],
             'pagination'        => $result['pagination'],
@@ -162,13 +165,13 @@ class HomeController extends baseController
             'sort'              => $sort,
             'page'              => $page,
             'maxPage'           => $result['pagination']['maxPage'],
-            'getAllGenres'      => $this->genresModel->getAllGenres(),
-            'getAllCountries'   => $this->moviesModel->getAllCountries(),
-            'getAllTypes'       => $this->moviesModel->getAllType(),
-            'getAllVoiceType'   => $this->moviesModel->getVoiceType(),
-            'getAllQuality'     => $this->moviesModel->getQuality(),
-            'getAllAge'         => $this->moviesModel->getAge(),
-            'getAllReleaseYear' => $this->moviesModel->getReleaseYear(),
+            'getAllGenres'      => $cachedFilterData['getAllGenres'],
+            'getAllCountries'   => $cachedFilterData['getAllCountries'],
+            'getAllTypes'       => $cachedFilterData['getAllTypes'],
+            'getAllVoiceType'   => $cachedFilterData['getAllVoiceType'],
+            'getAllQuality'     => $cachedFilterData['getAllQuality'],
+            'getAllAge'         => $cachedFilterData['getAllAge'],
+            'getAllReleaseYear' => $cachedFilterData['getAllReleaseYear'],
         ];
 
         $this->renderView($viewPath, $data);

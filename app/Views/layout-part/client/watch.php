@@ -92,6 +92,38 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                 </h1>
                                 <!-- Nút hành động -->
                                 <div class="flex items-center gap-2 shrink-0">
+                                    <?php
+                                    // Nút Tập tiếp theo - chỉ hiển thị cho phim bộ
+                                    $isSeries = ($movieDetail['type_id'] == 2);
+                                    if ($isSeries && !empty($episodeDetail)):
+                                        // Tìm tập tiếp theo
+                                        $currentEpId = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
+                                        $nextEpisodeUrl = null;
+
+                                        // Nếu không có episode_id, tập tiếp theo là tập thứ 2 (nếu có)
+                                        if (!$currentEpId && count($episodeDetail) > 1) {
+                                            $nextEpisodeUrl = "?mod=client&act=watch&id={$idMovie}&episode_id=" . $episodeDetail[1]['id'];
+                                        } else {
+                                            // Tìm vị trí tập hiện tại và lấy tập tiếp theo
+                                            foreach ($episodeDetail as $index => $ep) {
+                                                if ($ep['id'] == $currentEpId && isset($episodeDetail[$index + 1])) {
+                                                    $nextEpisodeUrl = "?mod=client&act=watch&id={$idMovie}&episode_id=" . $episodeDetail[$index + 1]['id'];
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if ($nextEpisodeUrl):
+                                    ?>
+                                            <a href="<?php echo $nextEpisodeUrl; ?>" class="group flex items-center justify-center gap-1.5 h-10 px-4 rounded-full bg-primary/20 hover:bg-primary border border-primary/50 hover:border-primary transition-all" title="Tập tiếp theo">
+                                                <span class="text-primary group-hover:text-[#191B24] text-sm font-semibold transition-colors">Tập tiếp</span>
+                                                <span class="material-symbols-outlined text-primary group-hover:text-[#191B24] text-xl transition-colors">skip_next</span>
+                                            </a>
+                                    <?php
+                                        endif;
+                                    endif;
+                                    ?>
+
                                     <button class="group flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/20 border border-white/10 transition-all js-favorite-btn" data-movie-id="<?php echo $movieDetail['id']; ?>" title="Thêm vào yêu thích">
                                         <span class="material-symbols-outlined text-white/70 group-hover:text-red-500 text-xl transition-colors">favorite</span>
                                     </button>
@@ -220,15 +252,30 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                         <?php if (!empty($episodeDetail)): ?>
 
                                             <?php if ($isSeries): ?>
+                                                <?php
+                                                // Lấy episode_id từ URL để xác định tập đang xem
+                                                $currentEpisodeIdForHighlight = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
+                                                // Nếu không có episode_id trong URL, mặc định là tập đầu tiên
+                                                if (!$currentEpisodeIdForHighlight && !empty($episodeDetail)) {
+                                                    $currentEpisodeIdForHighlight = $episodeDetail[0]['id'];
+                                                }
+                                                ?>
                                                 <?php foreach ($episodeDetail as $item): ?>
+                                                    <?php
+                                                    $isActiveEpisode = ($item['id'] == $currentEpisodeIdForHighlight);
+                                                    $activeClass = $isActiveEpisode
+                                                        ? 'bg-primary border-primary text-[#191B24] shadow-[0_0_15px_rgba(255,216,117,0.3)]'
+                                                        : 'bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]';
+                                                    ?>
                                                     <a href="?mod=client&act=watch&id=<?php echo $idMovie; ?>&episode_id=<?php echo $item['id']; ?>"
-                                                        class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
+                                                        class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg <?php echo $activeClass; ?>">
 
                                                         <span class="text-sm font-semibold truncate">
                                                             <?php echo $item['name']; ?>
                                                         </span>
                                                     </a>
                                                 <?php endforeach; ?>
+
 
                                             <?php else: ?>
                                                 <?php foreach ($episodeDetail as $item): ?>

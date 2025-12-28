@@ -440,3 +440,54 @@ function getSiteSettings()
 
     return $settings;
 }
+
+/**
+ * Hàm lấy tất cả filter data có cache (Genres, Countries, Types, etc.)
+ * Cache được lưu trong SESSION với TTL 10 phút để giảm tải database
+ * 
+ * @return array Mảng chứa tất cả filter data
+ */
+function getCachedFilterData()
+{
+    $cacheKey = 'cached_filter_data';
+    $cacheTTL = 600; // 10 phút (tính bằng giây)
+
+    // Kiểm tra cache trong SESSION
+    if (isset($_SESSION[$cacheKey]) && isset($_SESSION[$cacheKey . '_time'])) {
+        $cacheTime = $_SESSION[$cacheKey . '_time'];
+
+        // Nếu cache chưa hết hạn, trả về data từ cache
+        if ((time() - $cacheTime) < $cacheTTL) {
+            return $_SESSION[$cacheKey];
+        }
+    }
+
+    // Cache miss hoặc hết hạn - lấy data từ database
+    $moviesModel = new Movies();
+    $genresModel = new Genres();
+
+    $filterData = [
+        'getAllGenres'      => $genresModel->getAllGenres(),
+        'getAllCountries'   => $moviesModel->getAllCountries(),
+        'getAllTypes'       => $moviesModel->getAllType(),
+        'getAllVoiceType'   => $moviesModel->getVoiceType(),
+        'getAllQuality'     => $moviesModel->getQuality(),
+        'getAllAge'         => $moviesModel->getAge(),
+        'getAllReleaseYear' => $moviesModel->getReleaseYear(),
+    ];
+
+    // Lưu vào cache
+    $_SESSION[$cacheKey] = $filterData;
+    $_SESSION[$cacheKey . '_time'] = time();
+
+    return $filterData;
+}
+
+/**
+ * Xóa cache filter data (gọi khi admin thêm/sửa/xóa genres, countries, etc.)
+ */
+function clearFilterDataCache()
+{
+    unset($_SESSION['cached_filter_data']);
+    unset($_SESSION['cached_filter_data_time']);
+}

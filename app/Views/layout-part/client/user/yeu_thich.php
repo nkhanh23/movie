@@ -79,11 +79,26 @@ layout('client/header');
      * @param {HTMLElement} element - Nút bấm (dùng để thêm hiệu ứng loading)
      */
     function removeFavorite(movieId, element) {
-        // >> BƯỚC 1: HỎI XÁC NHẬN
-        if (!confirm('Bạn có chắc chắn muốn xóa phim này khỏi danh sách yêu thích không?')) {
-            return;
-        }
+        // >> BƯỚC 1: HỎI XÁC NHẬN với SweetAlert
+        Swal.fire({
+            title: 'Xác nhận',
+            text: 'Bạn có chắc chắn muốn xóa phim này khỏi danh sách yêu thích không?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#D96C16',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            background: 'rgba(26, 26, 26, 0.95)',
+            color: '#fff',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performRemoveFavorite(movieId, element);
+            }
+        });
+    }
 
+    function performRemoveFavorite(movieId, element) {
         const hostUrl = '<?php echo _HOST_URL; ?>';
 
         // Chặn spam click và thiết lập loading
@@ -110,40 +125,76 @@ layout('client/header');
             })
             .then(data => {
                 if (data.status === 'success' && data.action === 'removed') {
-                    // >> BƯỚC 3: XÓA PHIM KHỎI GIAO DIỆN (Ngay lập tức sau API)
+                    // >> BƯỚC 3: XÓA PHIM KHỎI GIAO DIỆN
                     const movieCard = document.getElementById(`movie-card-${movieId}`);
                     if (movieCard) {
-                        // Áp dụng hiệu ứng mờ dần và thu nhỏ
                         movieCard.style.opacity = 0;
                         movieCard.style.transform = 'scale(0.8)';
-                        movieCard.style.transition = 'all 0.3s ease-out'; // Đảm bảo có transition
+                        movieCard.style.transition = 'all 0.3s ease-out';
 
-                        // Xóa hẳn khỏi DOM sau khi animation kết thúc
                         setTimeout(() => {
                             movieCard.remove();
-                            // KHÔNG GỌI alert(data.message) để không làm gián đoạn việc xóa.
 
-                            // Optional: Xử lý hiển thị thông báo "Không có phim nào" nếu danh sách rỗng
+                            // Hiển thị thông báo toast
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                background: 'rgba(26, 26, 26, 0.95)',
+                                color: '#fff',
+                            });
+
+                            // Kiểm tra nếu không còn phim nào
                             const grid = document.getElementById('favorite-movies-grid');
                             if (grid && grid.children.length === 0) {
-                                // Bạn có thể thêm logic hiển thị thông báo rỗng tại đây
+                                location.reload();
                             }
                         }, 300);
                     }
                 } else {
-                    alert(data.message || 'Xóa khỏi danh sách thất bại. Vui lòng thử lại.');
-                    element.innerHTML = originalIcon; // Khôi phục icon nếu thất bại
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: data.message || 'Xóa khỏi danh sách thất bại',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        background: 'rgba(26, 26, 26, 0.95)',
+                        color: '#fff',
+                    });
+                    element.innerHTML = originalIcon;
                 }
             })
             .catch(error => {
                 console.error('Error removing favorite:', error);
                 if (error.message === 'Chưa đăng nhập') {
-                    alert('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
-                    window.location.href = `${hostUrl}/login`;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Phiên hết hạn',
+                        text: 'Vui lòng đăng nhập lại.',
+                        confirmButtonColor: '#D96C16',
+                        background: 'rgba(26, 26, 26, 0.95)',
+                        color: '#fff',
+                    }).then(() => {
+                        window.location.href = `${hostUrl}/login`;
+                    });
                 } else {
-                    alert('Lỗi kết nối server.');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Lỗi kết nối server',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        background: 'rgba(26, 26, 26, 0.95)',
+                        color: '#fff',
+                    });
                 }
-                element.innerHTML = originalIcon; // Khôi phục icon nếu lỗi
+                element.innerHTML = originalIcon;
             })
             .finally(() => {
                 element.classList.remove('is-processing');

@@ -210,7 +210,139 @@
                 }
             }
         });
+
+        // Xử lý nút yêu thích diễn viên
+        document.body.addEventListener('click', function(e) {
+            const btn = e.target.closest('.js-favorite-actor-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const personId = btn.getAttribute('data-person-id');
+                if (personId) {
+                    toggleFavoriteActor(personId, btn);
+                }
+            }
+        });
     });
+
+    // Hàm xử lý toggle favorite cho diễn viên
+    function toggleFavoriteActor(personId, element) {
+        // Kiểm tra trạng thái đăng nhập
+        const userId = '<?php echo $_SESSION['auth']['id'] ?? 0; ?>';
+        if (userId == 0) {
+            alert('Vui lòng đăng nhập để thực hiện chức năng này.');
+            window.location.href = '<?php echo _HOST_URL; ?>/login';
+            return;
+        }
+
+        // Chặn spam click
+        if (element.classList.contains('is-processing')) return;
+        element.classList.add('is-processing');
+
+        // Chuẩn bị dữ liệu
+        const formData = new FormData();
+        formData.append('actor_id', personId);
+
+        // Gửi AJAX request
+        fetch('<?php echo _HOST_URL; ?>/api/toggle-favorite-actor', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const materialIcon = element.querySelector('.material-symbols-outlined');
+                    const favText = element.querySelector('.fav-text');
+
+                    if (data.action === 'added') {
+                        element.classList.add('is-favorited');
+
+                        if (materialIcon) {
+                            materialIcon.style.color = '#ef4444';
+                            materialIcon.style.fontVariationSettings = '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24';
+                        }
+
+                        if (favText) {
+                            favText.textContent = 'Đã yêu thích';
+                        }
+
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            background: 'rgba(26, 26, 26, 0.95)',
+                            color: '#fff',
+                            iconColor: '#ef4444',
+                            customClass: {
+                                popup: 'colored-toast'
+                            }
+                        });
+                    } else if (data.action === 'removed') {
+                        element.classList.remove('is-favorited');
+
+                        if (materialIcon) {
+                            materialIcon.style.color = '';
+                            materialIcon.style.fontVariationSettings = '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24';
+                        }
+
+                        if (favText) {
+                            favText.textContent = 'Yêu thích';
+                        }
+
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'info',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            background: 'rgba(26, 26, 26, 0.95)',
+                            color: '#fff',
+                            iconColor: '#6b7280',
+                            customClass: {
+                                popup: 'colored-toast'
+                            }
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: 'rgba(26, 26, 26, 0.95)',
+                        color: '#fff',
+                        iconColor: '#ef4444'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling favorite actor:', error);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra khi kết nối. Vui lòng thử lại.',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: 'rgba(26, 26, 26, 0.95)',
+                    color: '#fff',
+                    iconColor: '#ef4444'
+                });
+            })
+            .finally(() => {
+                element.classList.remove('is-processing');
+            });
+    }
 </script>
 </body>
 

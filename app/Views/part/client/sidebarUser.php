@@ -7,7 +7,8 @@ $current_path = parse_url($current_page, PHP_URL_PATH);
 $is_gioi_thieu = strpos($current_path, '/gioi_thieu') !== false;
 $is_lien_he = strpos($current_path, '/lien_he') !== false;
 $is_xem_tiep = strpos($current_path, '/xem_tiep') !== false;
-$is_yeu_thich = strpos($current_path, '/yeu_thich') !== false;
+$is_yeu_thich_dien_vien = strpos($current_path, '/dien_vien/yeu_thich') !== false;
+$is_yeu_thich = strpos($current_path, '/yeu_thich') !== false && !$is_yeu_thich_dien_vien;
 $is_tai_khoan = strpos($current_path, '/tai_khoan') !== false;
 $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
 ?>
@@ -59,6 +60,12 @@ $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
                 <a href="<?= _HOST_URL ?>/xem_tiep" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_xem_tiep ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_xem_tiep ? 'group-hover:text-primary' : ''; ?> sidebar-icon">play_arrow</span>
                     <p class="text-sm font-medium sidebar-text">Xem tiếp phim</p>
+                </a>
+
+                <!-- Yêu thích diễn viên -->
+                <a href="<?= _HOST_URL ?>/dien_vien/yeu_thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich_dien_vien ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                    <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_yeu_thich_dien_vien ? 'group-hover:text-primary' : ''; ?> sidebar-icon" <?php echo $is_yeu_thich_dien_vien ? 'style="font-variation-settings: \'FILL\' 1;"' : ''; ?>>stars</span>
+                    <p class="text-sm font-medium sidebar-text">Diễn viên yêu thích</p>
                 </a>
 
                 <!-- Yêu thích -->

@@ -1,0 +1,21 @@
+# Config files with sensitive information
+configs/configs.php
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dependencies (nếu bạn dùng composer sau này)
+/vendor/
+
+# Cache
+*.cache

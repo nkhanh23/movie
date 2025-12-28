@@ -36,8 +36,21 @@ layout('client/header');
         <div class="absolute top-20 -left-40 w-80 h-80 bg-highlight/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
         <!-- Scrollable Grid Container -->
         <div class="mb-8">
-            <!-- Movie Grid -->
-            <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2 md:gap-4">
+            <!-- Skeleton Loading (hiển thị ngay khi trang load, ẩn khi có data) -->
+            <div id="skeletonGrid" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2 md:gap-4">
+                <?php for ($i = 0; $i < 14; $i++): ?>
+                    <div class="skeleton-card glass-card rounded-xl p-3 flex flex-col gap-3 animate-pulse">
+                        <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden bg-white/10"></div>
+                        <div class="px-1">
+                            <div class="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-white/5 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                <?php endfor; ?>
+            </div>
+
+            <!-- Movie Grid (ẩn ban đầu, hiện khi có data) -->
+            <div id="movieGrid" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2 md:gap-4" style="display: none;">
                 <!-- Card  -->
                 <?php foreach ($movies as $movie):
                     $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';
@@ -143,13 +156,22 @@ layout('client/header');
         }
     </style>
     <script>
-        // Simple script to toggle shimmer/pulse animations on load
+        // Ẩn skeleton và hiện movie grid khi trang load xong
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.group');
-            cards.forEach((card, i) => {
+            const skeletonGrid = document.getElementById('skeletonGrid');
+            const movieGrid = document.getElementById('movieGrid');
+
+            if (skeletonGrid && movieGrid) {
+                skeletonGrid.style.display = 'none';
+                movieGrid.style.display = 'grid';
+            }
+
+            // Fade in animation cho cards
+            const cards = movieGrid?.querySelectorAll('.group');
+            cards?.forEach((card, i) => {
                 setTimeout(() => {
                     card.style.opacity = 1;
-                }, i * 100);
+                }, i * 50);
             });
         });
     </script>

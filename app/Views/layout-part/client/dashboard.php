@@ -592,7 +592,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
     </div>
 
     <!-- Anime Section (New Design) -->
-    <div class="max-w-[1900px] px-3 sm:px-5 md:px-12 mx-auto mt-16 sm:mt-20 md:mt-12 mb-36 sm:mb-52 md:mb-64"> <!-- Increased mt for spacing from previous section -->
+    <div class="max-w-[1900px] px-3 sm:px-5 md:px-12 mx-auto mt-16 sm:mt-20 md:mt-12 mb-44 sm:mb-52 md:mb-64">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
             <h2 class="text-lg sm:text-2xl md:text-3xl font-bold text-white uppercase tracking-tight">Kho Tàng Anime Mới Nhất</h2>
             <a href="/c/anime" class="flex items-center gap-2 text-gray-400 hover:text-[#FFD875] transition-colors text-xs sm:text-sm font-semibold group">

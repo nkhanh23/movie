@@ -16,6 +16,13 @@ class PersonDetailController extends baseController
         //Lấy thông tin chi tiết của người
         $personDetail = $this->personModel->getPersonDetail($idPerson);
 
+        // Check if current user has favorited this actor
+        $personIsFavorited = false;
+        if (!empty($_SESSION['auth']['id'])) {
+            $checkFav = $this->personModel->checkIsFavorite($_SESSION['auth']['id'], $idPerson);
+            $personIsFavorited = !empty($checkFav);
+        }
+
         //Lấy danh sách phim của người
         $maxData = $this->personModel->countPersonMovies($idPerson);
         $perPage = 10;
@@ -64,6 +71,7 @@ class PersonDetailController extends baseController
             'maxPage' => $maxPage,
             'queryString' => $queryString,
             'countMovies' => $maxData,
+            'personIsFavorited' => $personIsFavorited,
         ];
         $this->renderView('layout-part/client/persons', $data);
     }

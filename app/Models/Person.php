@@ -153,4 +153,43 @@ class Person extends CoreModel
 
         return $this->getAll($sql);
     }
+
+    // Kiểm tra diễn viên đã được yêu thích chưa
+    public function checkIsFavorite($userId, $actorId)
+    {
+        // Giả định bảng favorites có cột user_id và personId
+        $sql = "SELECT id 
+        FROM favorites_persons 
+        WHERE user_id = ? AND person_id = ?";
+        return $this->getOne($sql, [$userId, $actorId]);
+    }
+
+    public function toggleFavorite($userId, $actorId)
+    {
+        $checkFavorite = $this->checkIsFavorite($userId, $actorId);
+        // Nếu đã yêu thích
+        if (!empty($checkFavorite)) {
+            $condition = 'id=' . $checkFavorite['id'];
+            $this->delete('favorites_persons', $condition);
+            return 'removed';
+        } else {
+            // Nếu chưa yêu thích
+            $data = [
+                'user_id' => $userId,
+                'person_id' => $actorId,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            $this->insert('favorites_persons', $data);
+            return 'added';
+        }
+    }
+
+    public function getFavoriteActors($userId)
+    {
+        $sql = "SELECT p.id, p.name, p.avatar
+        FROM persons p
+        JOIN favorites_persons fp ON p.id = fp.person_id
+        WHERE fp.user_id = ?";
+        return $this->getAll($sql, [$userId]);
+    }
 }

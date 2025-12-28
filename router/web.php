@@ -202,6 +202,8 @@ $router->get('/quoc_gia', 'HomeController@quocGia');
 
 //PAGE DIEN VIEN
 $router->get('/dien_vien', 'HomeController@dienVien');
+$router->get('/dien_vien/yeu_thich', 'AccountController@showFavoriteActor');
+
 
 //PAGE LIEN HE
 $router->get('/lien_he', 'AccountController@showContact');
@@ -219,6 +221,8 @@ $router->get('/tai_khoan', 'AccountController@showAccount');
 //PAGE YEU THICH
 $router->get('/yeu_thich', 'AccountController@showFavorite');
 $router->post('/api/toggle-favorite', 'AccountController@toggleFavoriteApi');
+$router->post('/api/toggle-favorite-actor', 'AccountController@toggleFavoriteActorApi');
+
 
 //PAGE EDIT
 $router->get('/tai_khoan/chinh_sua', 'AccountController@showEdit');
