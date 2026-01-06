@@ -173,6 +173,8 @@ class MoviesController extends baseController
         $getAllType = $this->moviesModel->getAllType();
         $getAllPersons = $this->personModel->getAllPersonsSimple();
         $getAllRoles = $this->roleModel->getAllRole();
+        $getAllYears = $this->moviesModel->getAllYears();
+        $getAllAge = $this->moviesModel->getAllAge();
 
         $data = [
             'getAllGenres' => $getAllGenres,
@@ -180,7 +182,9 @@ class MoviesController extends baseController
             'getAllCountries' => $getAllCountries,
             'getAllType' => $getAllType,
             'getAllPersons' => $getAllPersons,
-            'getAllRoles' => $getAllRoles
+            'getAllRoles' => $getAllRoles,
+            'getAllYears' => $getAllYears,
+            'getAllAge' => $getAllAge
         ];
         $this->renderView('/layout-part/admin/movies/add', $data);
     }
@@ -280,6 +284,10 @@ class MoviesController extends baseController
                         null,
                         $logData
                     );
+
+                    // Clear dashboard cache khi thêm phim mới
+                    clearDashboardCache();
+
                     setSessionFlash('msg', 'Thêm phim mới thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/film/list');
@@ -310,6 +318,8 @@ class MoviesController extends baseController
         $getAllCountries = $this->moviesModel->getAllCountries();
         $getAllStatus = $this->moviesModel->getAllStatus();
         $getAllType = $this->moviesModel->getAllType();
+        $getAllYears = $this->moviesModel->getAllYears();
+        $getAllAge = $this->moviesModel->getAllAge();
         $condition2 = 'movie_id=' . $idMovie;
         $movieGenresData = $this->moviesModel->getAllMoviesGenres("SELECT * FROM movie_genres WHERE $condition2");
         //Chuyen doi thanh mang 1 chieu chua cac id
@@ -329,8 +339,10 @@ class MoviesController extends baseController
             'listAllGenres' => $listAllGenres,
             'selectedGenresId' => $selectedGenresId,
             'getAllCountries' => $getAllCountries,
+            'getAllAge' => $getAllAge,
             'getAllStatus' => $getAllStatus,
             'getAllType' => $getAllType,
+            'getAllYears' => $getAllYears,
             'currentCast'   => $currentCast,
             'getAllPersons' => $getAllPersons,
             'getAllRoles'   => $getAllRoles
@@ -376,7 +388,8 @@ class MoviesController extends baseController
                     'tittle' => $filter['tittle'],
                     'original_tittle' => $filter['original_title'],
                     'slug' => $filter['slug'],
-                    'release_year' => $filter['release_year'],
+                    'release_year' => !empty($filter['release_year']) ? $filter['release_year'] : null,
+                    'age' => !empty($filter['age']) ? $filter['age'] : null,
                     'duration' => $filter['duration'],
                     'country_id' => $filter['country_id'],
                     'type_id' => $filter['type_id'],
@@ -456,6 +469,9 @@ class MoviesController extends baseController
                     setSessionFlash('msg_type', 'danger');
                     reload('/admin/film/edit?id=' . $idMovie);
                 }
+
+                // Clear dashboard cache khi cập nhật phim
+                clearDashboardCache();
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
                 setSessionFlash('msg_type', 'danger');
@@ -489,6 +505,10 @@ class MoviesController extends baseController
                         $checkID, // Lưu data cũ để audit
                         null
                     );
+
+                    // Clear dashboard cache khi xóa phim
+                    clearDashboardCache();
+
                     setSessionFlash('msg', 'Xoá phim thành công.');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/film/list');

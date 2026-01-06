@@ -168,7 +168,7 @@ $errors = getSessionFlash('errors');
 
                                 <!-- Action Buttons -->
                                 <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/5 justify-end">
-                                    <button type="button" onclick="window.location.href='<?php echo _HOST_URL; ?>/tai_khoan'" class="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-semibold tracking-wide">
+                                    <button type="button" onclick="window.location.href='<?php echo _HOST_URL; ?>/tai-khoan'" class="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-semibold tracking-wide">
                                         Hủy
                                     </button>
                                     <button type="submit" class="relative group overflow-hidden px-8 py-3 rounded-xl bg-primary/20 border border-primary/40 text-white shadow-[0_0_20px_rgba(217,108,22,0.3)] hover:shadow-[0_0_30px_rgba(217,108,22,0.5)] transition-all duration-300">

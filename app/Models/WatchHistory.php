@@ -54,12 +54,14 @@ class WatchHistory extends CoreModel
     {
         $sql = "SELECT 
                 wh.*, 
-                m.tittle, m.slug as movie_slug, m.thumbnail, m.poster_url, m.original_tittle, m.release_year, m.duration as movie_duration,
+                m.tittle, m.slug as movie_slug, m.thumbnail, m.poster_url, m.original_tittle, m.release_year, m.duration as movie_duration, m.type_id,
                 e.name as episode_name, e.duration as episode_duration,
-                se.name as season_name
+                se.name as season_name,
+                (SELECT COUNT(*) + 1 FROM seasons s2 WHERE s2.movie_id = m.id AND (s2.name + 0) < (se.name + 0)) as season_number,
+                (SELECT COUNT(*) + 1 FROM episodes e2 WHERE e2.season_id = wh.season_id AND e2.id < wh.episode_id) as episode_number
             FROM watch_history wh
             JOIN movies m ON wh.movie_id = m.id
-            LEFT  JOIN seasons se ON wh.season_id = se.id   
+            LEFT JOIN seasons se ON wh.season_id = se.id   
             LEFT JOIN episodes e ON wh.episode_id = e.id
             WHERE wh.user_id = :user_id
             ORDER BY wh.updated_at DESC

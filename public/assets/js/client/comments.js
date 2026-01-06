@@ -1,5 +1,14 @@
 
 /**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
  * Post new comment
  */
 function postComment(event) {
@@ -51,7 +60,7 @@ function postComment(event) {
                 <span class="material-symbols-outlined text-[16px]">star</span>
             </div>
 
-            <p class="text-white/80 text-sm leading-relaxed">${data.data.content}</p>
+            <p class="text-white/80 text-sm leading-relaxed whitespace-pre-line">${escapeHtml(data.data.content.trim())}</p>
             
             <div class="flex gap-4 mt-3">
                 <button onclick="toggleLike(${data.data.id}, this)" class="text-white/40 hover:text-primary text-xs flex items-center gap-1">
@@ -307,9 +316,9 @@ function renderReplyItem(data, parentId, parentName = null) {
                 <span class="text-white/40 text-[10px]">Vừa xong</span>
             </div>
 
-            <div class="text-white/80 text-sm leading-relaxed">
+            <div class="text-white/80 text-sm leading-relaxed whitespace-pre-line">
                 ${nameTag}
-                ${data.content}
+                ${escapeHtml(data.content.trim())}
             </div>
 
             <div class="flex gap-4 mt-2">

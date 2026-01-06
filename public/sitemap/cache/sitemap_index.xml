@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- Main pages sitemap -->
+    <sitemap>
+        <loc>http://localhost/movie/sitemap-main.xml</loc>
+        <lastmod>2025-12-31</lastmod>
+    </sitemap>
+
+    <!-- Movies sitemap (paginated) -->
+            <sitemap>
+            <loc>http://localhost/movie/sitemap-movies-1.xml</loc>
+            <lastmod>2025-12-31</lastmod>
+        </sitemap>
+    
+    <!-- Genres sitemap -->
+    <sitemap>
+        <loc>http://localhost/movie/sitemap-genres.xml</loc>
+        <lastmod>2025-12-31</lastmod>
+    </sitemap>
+
+    <!-- Countries sitemap -->
+    <sitemap>
+        <loc>http://localhost/movie/sitemap-countries.xml</loc>
+        <lastmod>2025-12-31</lastmod>
+    </sitemap>
+
+    <!-- Persons (actors/directors) sitemap -->
+    <sitemap>
+        <loc>http://localhost/movie/sitemap-persons.xml</loc>
+        <lastmod>2025-12-31</lastmod>
+    </sitemap>
+</sitemapindex>

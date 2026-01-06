@@ -1,5 +1,11 @@
-# Config files with sensitive information
+# Cache files
+/core/cache/*.json
+/core/cache/dashboard_cache.json
+/core/cache/filter_cache.json
+
+# Config files (contains sensitive data)
 configs/configs.php
+/configs.php
 
 # IDE
 .idea/

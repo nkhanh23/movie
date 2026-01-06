@@ -56,10 +56,16 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                 IMDb <span><?php echo $movieDetail['imdb_rating']; ?></span>
                             </div>
 
-                            <div class="glass-tag tag-age">T16</div>
+                            <?php if (isset($movieDetail['age_name'])) { ?>
+                                <div class="glass-tag tag-age"><?php echo $movieDetail['age_name']; ?></div>
+                            <?php } ?>
+
+                            <?php if (isset($movieDetail['release_year_name'])) { ?>
+                                <div class="glass-tag tag-info"><?php echo $movieDetail['release_year_name']; ?></div>
+                            <?php } ?>
 
                             <div class="glass-tag tag-info">
-                                <?php echo $movieDetail['release_year']; ?>
+                                <?php echo convertMinutesToHours($movieDetail['duration']); ?>
                             </div>
 
                             <div class="glass-tag tag-info">
@@ -83,9 +89,13 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
                             <?php
                             // Tạo URL xem phim với episode_id của tập đầu tiên
-                            $watchUrl = _HOST_URL . '/watch?id=' . $movieDetail['id'];
-                            if (!empty($episodeDetail) && isset($episodeDetail[0]['id'])) {
-                                $watchUrl .= '&episode_id=' . $episodeDetail[0]['id'];
+                            $isSeries = ($movieDetail['type_id'] == 2);
+                            if ($isSeries && !empty($seasonDetail)) {
+                                $watchUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ss=1&ep=1';
+                            } elseif ($isSeries) {
+                                $watchUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ep=1';
+                            } else {
+                                $watchUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'];
                             }
                             ?>
                             <button onclick="window.location.href='<?php echo $watchUrl; ?>'"
@@ -133,14 +143,15 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                     <div id="season-list"
                                         class="hidden absolute left-0 z-50 mt-2 w-56 origin-top-left rounded-xl bg-[#202331]/95 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200">
                                         <div class="py-1">
-                                            <?php foreach ($seasonDetail as $item): ?>
+                                            <?php foreach ($seasonDetail as $ssIndex => $item): ?>
                                                 <?php
+                                                $ssNum = $ssIndex + 1;
                                                 $isActive = ($item['id'] == $currentSeasonId);
                                                 $textClass = $isActive ? 'text-primary font-bold bg-white/5' : 'text-gray-300 hover:bg-white/5';
                                                 $iconClass = $isActive ? '' : 'invisible';
                                                 ?>
                                                 <a href="javascript:void(0)"
-                                                    onclick="selectSeason(<?php echo $item['id']; ?>, '<?php echo $item['name']; ?>', this)"
+                                                    onclick="selectSeason(<?php echo $item['id']; ?>, '<?php echo $item['name']; ?>', <?php echo $ssNum; ?>, this)"
                                                     class="season-item flex items-center justify-between px-4 py-3 text-sm transition-colors <?php echo $textClass; ?>">
                                                     <span><?php echo $item['name']; ?></span>
                                                     <span
@@ -165,9 +176,6 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                             <div class="flex-1 max-h-[450px] overflow-y-auto custom-scroll pr-1">
                                 <!-- Phim bộ  -->
                                 <?php
-
-                                // Phim bộ (type_id = 2) → Grid layout (bất kể có season hay không)
-                                // Phim lẻ (type_id != 2) → List layout
                                 $layoutClass = ($movieDetail['type_id'] == 2)
                                     ? 'grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2'
                                     : 'flex flex-col gap-3';
@@ -178,8 +186,17 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                     <?php if (!empty($episodeDetail)): ?>
 
                                         <?php if ($isSeries): ?>
-                                            <?php foreach ($episodeDetail as $item): ?>
-                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>"
+                                            <?php foreach ($episodeDetail as $epIndex => $item): ?>
+                                                <?php
+                                                $epNum = $epIndex + 1;
+                                                // Tạo URL cho từng tập
+                                                if (!empty($seasonDetail)) {
+                                                    $epUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ss=' . $currentSeasonNumber . '&ep=' . $epNum;
+                                                } else {
+                                                    $epUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ep=' . $epNum;
+                                                }
+                                                ?>
+                                                <a href="<?php echo $epUrl; ?>"
                                                     class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
 
                                                     <span class="text-sm font-semibold truncate">
@@ -190,7 +207,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
                                         <?php else: ?>
                                             <?php foreach ($episodeDetail as $item): ?>
-                                                <a href="<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>"
+                                                <a href="<?php echo _HOST_URL . '/xem-phim/' . $movieDetail['slug']; ?>"
                                                     class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
                                                     <div class="relative w-[70px] h-[95px] shrink-0 rounded-lg overflow-hidden border border-white/5">
@@ -206,8 +223,8 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                                     <div class="flex-1 min-w-0 py-1">
                                                         <div class="flex items-center gap-2 mb-1.5">
                                                             <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
-                                                                <span class="material-symbols-outlined text-[12px]">closed_caption</span>
-                                                                <?php echo !empty($item['voice_type']) ? $item['voice_type'] : 'Vietsub'; ?>
+                                                                <span class="material-symbols-outlined text-[12px]">cloud</span>
+                                                                <?php echo !empty($item['source_name']) ? $item['source_name'] : 'Server 1'; ?>
                                                             </span>
                                                         </div>
                                                         <h4 class="text-white font-bold text-sm leading-tight truncate group-hover:text-primary transition-colors mb-1">
@@ -217,7 +234,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                                             <span class="text-xs text-gray-400 font-medium">
                                                                 Server: <span class="text-white"><?php echo $item['name']; ?></span>
                                                             </span>
-                                                            <span onclick="window.location.href='<?php echo _HOST_URL; ?>/watch?id=<?php echo $movieDetail['id']; ?>&episode_id=<?php echo $item['id']; ?>'"
+                                                            <span
                                                                 class="text-[11px] bg-white/5 text-gray-300 px-2 py-1 rounded group-hover:bg-primary group-hover:text-[#191B24] transition-colors font-bold flex items-center gap-1 cursor-pointer">
                                                                 Xem ngay <span class="material-symbols-outlined text-[10px]">arrow_forward</span>
                                                             </span>
@@ -238,7 +255,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                 <div class="space-y-1">
                                     <?php foreach ($getCastByMovieId as $item): ?>
 
-                                        <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien/chi_tiet?id=<?php echo $item['id'] ?>';" class="group flex items-center gap-3 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-lg cursor-pointer hover:scale-[1.02]">
+                                        <div onclick="window.location.href='<?php echo _HOST_URL; ?>/dien-vien/<?php echo $item['slug'] ?>';" class="group flex items-center gap-3 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-lg cursor-pointer hover:scale-[1.02]">
 
                                             <img class="size-12 rounded-full object-cover border border-white/10 group-hover:border-primary transition-colors duration-300"
                                                 src="<?php echo $item['avatar'] ?>"
@@ -272,7 +289,7 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
 
                     <div class="flex flex-col gap-4">
                         <?php foreach ($similarMovies as $movie): ?>
-                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';"
+                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';"
                                 class="flex gap-4 group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors items-center">
                                 <div class="w-20 shrink-0 aspect-[2/3] rounded-lg overflow-hidden relative shadow-lg">
                                     <img src="<?php echo $movie['poster_url']; ?>" alt="<?php echo $movie['tittle']; ?>"
@@ -285,9 +302,13 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                                         <?php echo $movie['tittle']; ?></h4>
                                     <p class="text-white/40 text-xs mt-1"><?php echo $movie['original_tittle']; ?></p>
                                     <div class="flex items-center gap-3 mt-2">
-                                        <span
-                                            class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded"><?php echo $movie['imdb_rating']; ?></span>
-                                        <span class="text-white/60 text-xs font-medium"><?php echo $movie['release_year']; ?></span>
+                                        <?php if (isset($movie['imdb_rating'])): ?>
+                                            <span
+                                                class="text-primary text-xs font-bold bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded"><?php echo $movie['imdb_rating']; ?></span>
+                                        <?php endif; ?>
+                                        <?php if (isset($movie['release_year_name'])): ?>
+                                            <span class="text-white/60 text-xs font-medium"><?php echo $movie['release_year_name']; ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -351,15 +372,15 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
     // 2. LOGIC CHỌN SEASON & GỌI API (AJAX)
     // -----------------------------------------------------------------------
 
-    function selectSeason(seasonId, seasonName, element) {
-        // A. Cập nhật text hiển thị
+    function selectSeason(seasonId, seasonName, seasonNumber, element) {
+        // Cập nhật text hiển thị
         const textElement = document.getElementById('current-season-text');
         if (textElement) textElement.innerText = seasonName;
 
-        // B. Đóng menu
+        // Đóng menu
         toggleSeasonDropdown();
 
-        // C. Cập nhật style cho item trong menu
+        // Cập nhật style cho item trong menu
         const allItems = document.querySelectorAll('.season-item');
         allItems.forEach(item => {
             const checkIcon = item.querySelector('.season-check');
@@ -375,22 +396,22 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
             if (activeCheck) activeCheck.classList.remove('invisible');
         }
 
-        // D. Gọi Ajax load lại danh sách tập phim
-        loadEpisodes(seasonId);
+        // Gọi Ajax load lại danh sách tập phim với seasonNumber
+        loadEpisodes(seasonId, seasonNumber);
     }
     // -----------------------------------------------------------------------
-    // 3. LOGIC LẤY DANH SÁCH TẬP PHIM (AJAX)
+    // LOGIC LẤY DANH SÁCH TẬP PHIM (AJAX)
     // -----------------------------------------------------------------------
-    function loadEpisodes(seasonId) {
+    function loadEpisodes(seasonId, seasonNumber = 1) {
         const listContainer = document.getElementById('episode-list');
         if (!listContainer) return;
 
-        // 1. Hiện thông báo đang tải (dùng col-span-full để căn giữa khung grid)
+        // Hiện thông báo đang tải (dùng col-span-full để căn giữa khung grid)
         listContainer.innerHTML =
             '<div class="col-span-full text-white/50 text-sm py-8 text-center">Đang tải danh sách tập...</div>';
 
-        // 2. Gọi fetch (DÙNG ĐÚNG LINK BẠN YÊU CẦU)
-        fetch('./api/get-episodes?season_id=' + seasonId)
+        // Gọi fetch với URL tuyệt đối
+        fetch('<?php echo _HOST_URL; ?>/api/get-episodes?season_id=' + seasonId)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Lỗi kết nối server');
@@ -398,18 +419,19 @@ $favClass = $movieIsFavorited ? 'is-favorited' : '';
                 return response.json();
             })
             .then(data => {
-                // 3. Xóa nội dung loading
+                // Xóa nội dung loading
                 listContainer.innerHTML = '';
 
                 if (data && data.length > 0) {
                     let html = '';
                     const hostUrl = '<?php echo _HOST_URL; ?>';
-                    const movieId = '<?php echo $movieDetail['id']; ?>'; // ID của phim hiện tại
-                    data.forEach(ep => {
-                        // --- Tạo HTML nút bấm Grid ---
-                        // Sử dụng movieId cho id và ep.id cho episode_id
+                    const movieSlug = '<?php echo $movieDetail["slug"]; ?>';
+                    const currentSeasonNum = seasonNumber; // Số thứ tự season hiện tại
+                    data.forEach((ep, epIndex) => {
+                        const epNum = epIndex + 1;
+                        const epUrl = `${hostUrl}/xem-phim/${movieSlug}?ss=${currentSeasonNum}&ep=${epNum}`;
                         html += `
-                            <a href="${hostUrl}/watch?id=${movieId}&episode_id=${ep.id}"
+                            <a href="${epUrl}"
                                class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]">
                                 
                                 <span class="text-sm font-semibold truncate">

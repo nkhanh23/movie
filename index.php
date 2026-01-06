@@ -3,15 +3,19 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 session_start();
 ob_start(); // tranh loi tu cac ham header, cooke
 
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(E_ALL); // Vẫn báo lỗi nhưng chỉ ghi vào file log, không hiện ra màn hình
+ini_set('display_errors', 1); // BẬT TẠM ĐỂ DEBUG
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Load Composer libraries
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
-foreach (glob(__DIR__ . '/configs/*php') as $filename) {
+
+foreach (glob(__DIR__ . '/configs/*.php') as $filename) {
+    if (strpos($filename, '.example.php') !== false) {
+        continue;
+    }
     require_once $filename;
 }
 
@@ -23,14 +27,13 @@ require_once './core/mailer/Exception.php';
 require_once './core/mailer/PHPMailer.php';
 require_once './core/mailer/SMTP.php';
 
-// Kiểm tra chế độ bảo trì (Maintenance Mode)
-// [START] MAINTENANCE MODE CHECK
+// chế độ bảo trì (Maintenance Mode)
+
 try {
     // 1. Kết nối Database
     $connect = Database::connectPDO();
 
     // 2. Lấy toàn bộ thông tin cần thiết (Trạng thái, Lời nhắn, Thời gian)
-    // Sửa lại đúng tên cột: setting_key, setting_value
     $stmt = $connect->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('maintenance_mode', 'maintenance_message', 'maintenance_end')");
     $stmt->execute();
 
@@ -42,7 +45,7 @@ try {
 
     if ($isMaintenance) {
         // 4. Kiểm tra URL chuẩn (Dùng REQUEST_URI giống Router phía dưới để chính xác nhất)
-        $projectName = '/movie'; // Cần khớp với biến $projectName ở dưới
+        $projectName = '/movie';
         $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         // Loại bỏ tên dự án nếu có để lấy đường dẫn thực tế
@@ -61,16 +64,14 @@ try {
             // Xóa buffer để tránh in ra HTML thừa từ header/footer nếu có lỡ load
             if (ob_get_level()) ob_end_clean();
 
-            // Load view
+
             require_once __DIR__ . '/app/Views/bao_tri.php';
-            exit; // Dừng hệ thống ngay lập tức
+            exit;
         }
     }
 } catch (Exception $e) {
-    // Nếu lỗi DB, log lại và cho qua (để tránh web sập trắng trang chỉ vì lỗi check bảo trì)
-    // error_log($e->getMessage());
 }
-// [END] MAINTENANCE MODE CHECK
+
 
 $router = new Router();
 

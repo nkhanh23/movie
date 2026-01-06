@@ -11,7 +11,6 @@ layout('admin/sidebar');
 $msg = getSessionFlash('msg');
 $msg_type = getSessionFlash('msg_type');
 ?>
-<!-- ACTIVITY LOG FULL VIEW -->
 <section id="activities-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
         <h2>Nhật ký hệ thống (Activity Log)</h2>
@@ -63,8 +62,13 @@ $msg_type = getSessionFlash('msg_type');
                 <?php if (!empty($logs)): ?>
                     <?php foreach ($logs as $log): ?>
                         <?php
-                        // Xử lý dữ liệu JSON
-                        $logData = json_decode($log['new_values'], true) ?? json_decode($log['old_values'], true);
+                        // Xử lý dữ liệu JSON - Kiểm tra null trước khi decode
+                        $logData = null;
+                        if (!empty($log['new_values'])) {
+                            $logData = json_decode($log['new_values'], true);
+                        } elseif (!empty($log['old_values'])) {
+                            $logData = json_decode($log['old_values'], true);
+                        }
                         $targetName = $logData['tittle'] ?? $logData['name'] ?? $logData['fullname'] ?? ('ID: ' . $log['entity_id']);
 
                         // Entity Map

@@ -48,7 +48,7 @@ layout('client/header');
                             </div>
                             <h3 class="text-white text-xl font-semibold mb-2">Chưa có diễn viên yêu thích</h3>
                             <p class="text-slate-400 text-sm max-w-md mb-6">Bạn chưa thêm diễn viên nào vào danh sách yêu thích. Hãy khám phá và thêm các diễn viên bạn yêu thích nhé!</p>
-                            <a href="<?= _HOST_URL ?>/dien_vien" class="flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-secondary text-white text-sm font-medium transition-all shadow-lg shadow-primary/20">
+                            <a href="<?= _HOST_URL ?>/dien-vien" class="flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-secondary text-white text-sm font-medium transition-all shadow-lg shadow-primary/20">
                                 <span class="material-symbols-outlined">explore</span>
                                 Khám phá diễn viên
                             </a>
@@ -58,7 +58,7 @@ layout('client/header');
                             <?php foreach ($favoriteActors as $actor) : ?>
                                 <div class="actor-card group relative overflow-hidden rounded-xl h-80 cursor-pointer transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(217,108,22,0.2)]"
                                     id="actor-card-<?php echo $actor['id']; ?>"
-                                    onclick="window.location.href='<?= _HOST_URL ?>/dien_vien/chi_tiet?id=<?= $actor['id'] ?>'">
+                                    onclick="window.location.href='<?= _HOST_URL ?>/dien-vien/<?= $actor['slug'] ?>'">
 
                                     <!-- Background Image -->
                                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"

@@ -1,4 +1,19 @@
         RewriteEngine On
+        
+        # Allow Google verification files
+        RewriteRule ^google.*\.html$ - [L]
+        
+        # Sitemap rewrites - dynamic XML generation
+        RewriteRule ^sitemap\.xml$ public/sitemap/sitemap.php [L]
+        RewriteRule ^sitemap-main\.xml$ public/sitemap/sitemap-main.php [L]
+        RewriteRule ^sitemap-movies-(\d+)\.xml$ public/sitemap/sitemap-movies.php?page=$1 [L,QSA]
+        RewriteRule ^sitemap-genres\.xml$ public/sitemap/sitemap-genres.php [L]
+        RewriteRule ^sitemap-countries\.xml$ public/sitemap/sitemap-countries.php [L]
+        RewriteRule ^sitemap-persons\.xml$ public/sitemap/sitemap-persons.php [L]
+        
+        # Dynamic robots.txt
+        RewriteRule ^robots\.txt$ robots.php [L]
+        
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteCond %{REQUEST_FILENAME} !-d
         RewriteRule ^(.*)$ index.php [L,QSA]

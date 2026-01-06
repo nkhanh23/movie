@@ -250,7 +250,25 @@ class EpisodeController extends baseController
                         if (!empty($followers) && !empty($movieInfo)) {
                             $movieName = $movieInfo['tittle'];
                             $msg = "Phim <b>" . $movieName . "</b> vừa được thêm tập <b>" . $episodeName . "</b>";
-                            $link = _HOST_URL . '/watch/id=' . $idMovie . '&episode_id=' . $idEpisode;
+                            // Đếm số tập hiện tại
+                            $conditionCountEpisodes = "movie_id = $idMovie";
+                            if (!empty($idSeason)) {
+                                $conditionCountEpisodes .= " AND season_id = $idSeason";
+                            }
+                            $currentEpisodes = $this->episodeModel->getAllEpisode("SELECT * FROM episodes WHERE $conditionCountEpisodes");
+                            $episodeNumber = count($currentEpisodes);
+
+                            // Lấy season number (nếu có)
+                            $seasonNumber = 1; // Mặc định season 1
+                            if (!empty($idSeason)) {
+                                $seasonInfo = $this->seasonsModel->getOneSeason("id = $idSeason");
+                                if (!empty($seasonInfo['name'])) {
+                                    preg_match('/\d+/', $seasonInfo['name'], $seasonMatches);
+                                    $seasonNumber = !empty($seasonMatches[0]) ? $seasonMatches[0] : 1;
+                                }
+                            }
+
+                            $link = _HOST_URL . '/xem-phim/' . $movieInfo['slug'] . '?ss=' . $seasonNumber . '&ep=' . $episodeNumber;
                         }
                         //gui thong bao cho nguoi dung da thich phim
                         foreach ($followers as $item) {

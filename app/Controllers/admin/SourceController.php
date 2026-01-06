@@ -153,11 +153,16 @@ class SourceController extends baseController
     {
         $filter = filterData();
         $idSource = $filter['id'];
-        $condition = 'id=' . $idSource;
+
+        // JOIN với episodes để lấy movie_id và season_id
+        $condition = "vs.id = $idSource";
+
         $getOneSource = $this->sourceModel->getOneSource($condition);
-        $idMovie = $getOneSource['movie_id'];
-        $idSeason = $getOneSource['season_id'];
-        $idEpisode = $getOneSource['episode_id'];
+
+        $idMovie = $getOneSource['movie_id'] ?? '';
+        $idSeason = $getOneSource['season_id'] ?? '';
+        $idEpisode = $getOneSource['episode_id'] ?? '';
+
         $data = [
             'oldData' => $getOneSource,
             'idMovie' => $idMovie,
@@ -177,9 +182,13 @@ class SourceController extends baseController
             'voice_type' => $filter['voice_type'],
             'source_url' => $filter['source_url'],
         ];
-        $condition = 'id=' . $filter['id'];
-        $oldData = $this->sourceModel->getOneSource($condition);
-        $checkUpdate = $this->sourceModel->updateVideoSource($data, $condition);
+
+        $conditionSelect = 'vs.id=' . $filter['id'];
+
+        $conditionUpdate = 'id=' . $filter['id'];
+
+        $oldData = $this->sourceModel->getOneSource($conditionSelect);
+        $checkUpdate = $this->sourceModel->updateVideoSource($data, $conditionUpdate);
         if ($checkUpdate) {
             // Lặp qua dataUpdate để xem trường nào thay đổi
             $changes = [];

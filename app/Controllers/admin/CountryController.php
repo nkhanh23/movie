@@ -115,6 +115,10 @@ class CountryController extends baseController
                         'Thêm Quốc gia',
                         'Quốc gia: ' . $filter['name']
                     );
+
+                    // Clear filter cache khi thêm quốc gia mới
+                    clearFilterDataCache();
+
                     setSessionFlash('msg', 'Thêm Quốc gia thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/country');
@@ -190,6 +194,10 @@ class CountryController extends baseController
                         $data
                     );
                 }
+
+                // Clear filter cache khi cập nhật quốc gia
+                clearFilterDataCache();
+
                 setSessionFlash('msg', 'Cập nhật Quốc gia thành công');
                 setSessionFlash('msg_type', 'success');
                 reload('/admin/country');
@@ -225,6 +233,10 @@ class CountryController extends baseController
                 $this->countryModel->getOneCountry($id),
                 null
             );
+
+            // Clear filter cache khi xóa quốc gia
+            clearFilterDataCache();
+
             setSessionFlash('msg', 'Xóa Quốc gia thành công');
             setSessionFlash('msg_type', 'success');
             reload('/admin/country');

@@ -205,6 +205,7 @@ class AuthController extends baseController
                     'email' => $filter['email'],
                     'password' => password_hash($filter['password'], PASSWORD_DEFAULT),
                     'active_token' => $activeToken,
+                    'status' => 0, // 0 = chưa kích hoạt, user phải click link email để active
                     'group_id' => 1,
                     'avartar' => $avatarFinal,
                     'created_at' => date('Y:m:d H:i:s')

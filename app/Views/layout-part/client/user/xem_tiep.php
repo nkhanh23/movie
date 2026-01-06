@@ -44,8 +44,17 @@ layout('client/header');
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6" id="favorite-movies-grid">
                         <?php foreach ($getContinueWatching as $movie) : ?>
                             <div class="favorite-movie-card" id="movie-card-<?php echo $movie['id']; ?>">
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-80"></div>
-                                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('<?= $movie['poster_url']; ?>');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-80 pointer-events-none"></div>
+                                <?php
+                                // Tạo URL xem phim với đúng season và episode đang xem dở
+                                $watchUrl = _HOST_URL . '/xem-phim/' . $movie['movie_slug'];
+                                if (!empty($movie['season_number']) && !empty($movie['episode_number'])) {
+                                    $watchUrl .= '?ss=' . $movie['season_number'] . '&ep=' . $movie['episode_number'];
+                                } elseif (!empty($movie['episode_number'])) {
+                                    $watchUrl .= '?ep=' . $movie['episode_number'];
+                                }
+                                ?>
+                                <div onclick="window.location.href='<?php echo $watchUrl; ?>';" class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 cursor-pointer z-5" style="background-image: url('<?= $movie['poster_url']; ?>');"></div>
                                 <div class="absolute top-2 right-2 z-20">
                                     <button onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/delete-history-continue-page?id=<?php echo $movie['id']; ?>';"
                                         class="p-1.5 rounded-full bg-black/80 hover:bg-red-500 transition-all duration-300 shadow-md border border-white/30 hover:border-red-500"

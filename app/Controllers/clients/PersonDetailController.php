@@ -9,12 +9,24 @@ class PersonDetailController extends baseController
         $this->movieModel = new Movies();
     }
 
-    public function showPerson()
+    public function showPerson($slug = null)
     {
+        // Nếu không có slug
+        if (empty($slug)) {
+            header("Location: " . _HOST_URL);
+            exit;
+        }
+
+        // Tìm diễn viên theo slug
+        $personDetail = $this->personModel->findBySlug($slug);
+
+        if (!$personDetail) {
+            header("Location: " . _HOST_URL);
+            exit;
+        }
+
+        $idPerson = $personDetail['id'];
         $filter = filterData('get');
-        $idPerson = $filter['id'];
-        //Lấy thông tin chi tiết của người
-        $personDetail = $this->personModel->getPersonDetail($idPerson);
 
         // Check if current user has favorited this actor
         $personIsFavorited = false;
@@ -64,6 +76,10 @@ class PersonDetailController extends baseController
             $queryString = str_replace('&page=' . $page, '', $queryString);
         }
 
+        // SEO Data
+        $personName = $personDetail['name'];
+        $personBio = !empty($personDetail['biography']) ? mb_substr(strip_tags($personDetail['biography']), 0, 150) . '...' : 'Thông tin diễn viên ' . $personName;
+
         $data = [
             'personDetail' => $personDetail,
             'getPersonMovies' => $getPersonMovies,
@@ -72,6 +88,12 @@ class PersonDetailController extends baseController
             'queryString' => $queryString,
             'countMovies' => $maxData,
             'personIsFavorited' => $personIsFavorited,
+            // SEO
+            'seoTitle' => $personName . ' - Tiểu Sử và Danh Sách Phim | Phê Phim',
+            'seoDescription' => $personBio . ' Xem danh sách ' . $maxData . ' phim có ' . $personName . ' tham gia.',
+            'seoKeywords' => $personName . ', diễn viên ' . $personName . ', phim ' . $personName . ', tiểu sử ' . $personName,
+            'seoImage' => $personDetail['avatar'] ?? '',
+            'seoCanonical' => _HOST_URL . '/dien-vien/' . $slug
         ];
         $this->renderView('layout-part/client/persons', $data);
     }

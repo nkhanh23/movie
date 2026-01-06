@@ -11,12 +11,12 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 // die();
 ?>
 
-<div class="min-h-screen selection:bg-secondary/30 selection:text-white relative">
+<div class="min-h-screen selection:bg-secondary/30 selection:text-white relative overflow-x-hidden">
     <!-- Ambient Header Gradient -->
     <div class="fixed top-0 left-0 w-full h-[300px] bg-gradient-to-b from-primary/10 via-secondary/5 to-transparent pointer-events-none z-0"></div>
 
     <!-- Hero Section -->
-    <div class="relative h-[60vh] sm:h-[70vh] md:h-[95vh] w-full flex items-center overflow-hidden group transition-all duration-500">
+    <div class="relative left-0 h-[60vh] sm:h-[70vh] md:h-[95vh] w-screen flex items-center overflow-hidden group transition-all duration-500">
         <?php
         $heroFirst = !empty($getMoviesHeroSection) ? $getMoviesHeroSection[0] : null;
         if (!$heroFirst): ?>
@@ -38,8 +38,8 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                 <div id="heroMeta" class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-4 text-xs sm:text-sm font-bold text-white">
                     <span class="js-meta-imdb bg-[#e2b616] text-black px-1 rounded font-bold">IMDb <?php echo $heroFirst['imdb_rating']; ?></span>
-                    <span class="js-meta-age bg-red-600 px-1 rounded"><?php echo $heroFirst['age']; ?></span>
-                    <span class="js-meta-year text-gray-300"><?php echo $heroFirst['release_year']; ?></span>
+                    <span class="js-meta-age bg-red-600 px-1 rounded"><?php echo $heroFirst['age_name']; ?></span>
+                    <span class="js-meta-year text-gray-300"><?php echo $heroFirst['release_year_name']; ?></span>
                     <span class="js-meta-duration text-gray-300"><?php echo convertMinutesToHours($heroFirst['duration']); ?></span>
                     <span class="js-meta-type bg-gray-700 px-1 rounded text-xs"><?php echo $heroFirst['type_name']; ?></span>
                 </div>
@@ -55,7 +55,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                 <p id="heroDesc" class="hidden sm:block text-sm sm:text-base md:text-lg text-gray-200 mb-4 sm:mb-8 drop-shadow-md max-w-2xl leading-relaxed" style="display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"><?php echo $heroFirst['description']; ?></p>
                 <div class="flex gap-2 sm:gap-4">
-                    <a id="heroPlay" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $heroFirst['id'] ?>" class="group/btn flex items-center gap-2 sm:gap-3 bg-[#e2b616] hover:bg-[#ffc107] text-black px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(226,182,22,0.4)]">
+                    <a id="heroPlay" href="<?php echo _HOST_URL; ?>/phim/<?php echo $heroFirst['slug'] ?>" class="group/btn flex items-center gap-2 sm:gap-3 bg-[#e2b616] hover:bg-[#ffc107] text-black px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(226,182,22,0.4)]">
                         <i data-lucide="play" class="w-4 h-4 sm:w-5 sm:h-5 fill-current"></i>
                     </a>
 
@@ -75,8 +75,8 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                         data-bg="<?php echo $value['thumbnail'] ?>"
 
                         data-imdb="<?php echo $value['imdb_rating'] ?>"
-                        data-year="<?php echo $value['release_year'] ?>"
-                        data-age="<?php echo $value['age']; ?>"
+                        data-year="<?php echo $value['release_year_name'] ?>"
+                        data-age="<?php echo $value['age_name']; ?>"
                         data-duration="<?php echo convertMinutesToHours($value['duration']); ?>"
                         data-type="<?php echo $value['type_name']; ?>"
 
@@ -113,7 +113,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
 
-                <div class="swiper swiper-continue overflow-visible">
+                <div class="swiper swiper-continue overflow-hidden">
                     <div class="swiper-wrapper">
                         <?php foreach ($getContinueWatching as $item):
                             $totalDuration = ($item['episode_id'] > 0 && !empty($item['episode_duration'])) ? $item['episode_duration'] : $item['movie_duration'];
@@ -122,7 +122,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             if ($totalDuration > 0) {
                                 $percent = min(100, max(0, ($currentMinutes / $totalDuration) * 100));
                             }
-                            $link = _HOST_URL . '/watch?id=' . $item['movie_id'] . '&episode_id=' . $item['episode_id'];
+                            $link = _HOST_URL . '/xem-phim/' . $item['movie_slug'];
                             $image = !empty($item['thumbnail']) ? $item['thumbnail'] : $item['poster_url'];
                         ?>
                             <div class="swiper-slide w-[200px] sm:w-[260px] md:w-[350px]">
@@ -130,7 +130,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                     <!-- Image Container -->
                                     <div class="relative aspect-video w-full overflow-hidden">
                                         <!-- Remove Button (X) -->
-                                        <button onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/delete-history-dashboard?id=<?php echo $item['id']; ?>';"
+                                        <button onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/delete-history-dashboard?slug=<?php echo $item['movie_slug']; ?>';"
                                             class="js-remove-history absolute top-2 right-2 z-30 w-8 h-8 rounded-full bg-black/80 hover:bg-red-500 text-white/70 hover:text-white flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/30 hover:border-red-500 hover:scale-110"
                                             data-movie-id="<?php echo $item['movie_id']; ?>"
                                             data-episode-id="<?php echo $item['episode_id']; ?>"
@@ -223,7 +223,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             <?php foreach ($getMoviesKorean as $item): ?>
                                 <div class="swiper-slide">
                                     <div class="sw-item">
-                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>">
+                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>">
                                             <div class="pin-new m-pin-new">
                                                 <div class="line-center line-pd">Full HD</div>
                                                 <div class="line-center line-tm">Vietsub</div>
@@ -231,16 +231,16 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                             <div class="image-wrapper">
                                                 <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                     <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
                                                 </div>
                                             </div>
                                         </a>
                                         <div class="info">
-                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>"><?php echo $item['tittle']; ?></a></h4>
                                             <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
                                             <div class="meta-info">
-                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                                <span><?php echo $item['release_year_name']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -281,7 +281,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             <?php foreach ($getMoviesChinese as $item): ?>
                                 <div class="swiper-slide">
                                     <div class="sw-item">
-                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>">
+                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>">
                                             <div class="pin-new m-pin-new">
                                                 <div class="line-center line-pd">Full HD</div>
                                                 <div class="line-center line-tm">Vietsub</div>
@@ -289,16 +289,16 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                             <div class="image-wrapper">
                                                 <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                     <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
                                                 </div>
                                             </div>
                                         </a>
                                         <div class="info">
-                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>"><?php echo $item['tittle']; ?></a></h4>
                                             <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
                                             <div class="meta-info">
-                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                                <span><?php echo $item['release_year_name']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -339,7 +339,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                             <?php foreach ($getMoviesUSUK as $item): ?>
                                 <div class="swiper-slide">
                                     <div class="sw-item">
-                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>">
+                                        <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>">
                                             <div class="pin-new m-pin-new">
                                                 <div class="line-center line-pd">Full HD</div>
                                                 <div class="line-center line-tm">Vietsub</div>
@@ -347,16 +347,16 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                             <div class="image-wrapper">
                                                 <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                                 <div class="play-overlay">
-                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';"><i class="fa-solid fa-play"></i></div>
+                                                    <div class="btn-action btn-play" onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';"><i class="fa-solid fa-play"></i></div>
                                                     <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
                                                 </div>
                                             </div>
                                         </a>
                                         <div class="info">
-                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>"><?php echo $item['tittle']; ?></a></h4>
+                                            <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>"><?php echo $item['tittle']; ?></a></h4>
                                             <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
                                             <div class="meta-info">
-                                                <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                                <span><?php echo $item['release_year_name']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -423,11 +423,11 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                                             <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
-                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                                    <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm"><?php echo $item['age_name']; ?></span>
+                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year_name']; ?></span>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
                                                     <button class="js-favorite-btn border-0 bg-transparent p-0" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i></button>
                                                 </div>
                                             </div>
@@ -495,10 +495,10 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                             <div class="flex items-center justify-between opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-75">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded font-bold text-white shadow-sm">T16</span>
-                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year']; ?></span>
+                                                    <span class="text-[10px] text-gray-300 font-medium"><?php echo $item['release_year_name']; ?></span>
                                                 </div>
                                                 <div class="flex gap-2">
-                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
+                                                    <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';" data-lucide="play-circle" class="w-8 h-8 text-white fill-white/20 hover:scale-110 transition-transform cursor-pointer"></i>
                                                     <button class="js-favorite-btn border-0 bg-transparent p-0" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-8 h-8 text-white/70 hover:text-red-500 hover:scale-110 transition-transform cursor-pointer"></i></button>
                                                 </div>
                                             </div>
@@ -563,7 +563,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                             <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300 flex flex-col items-center gap-4">
                                                 <div class="flex items-center gap-3">
                                                     <button class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform shadow-lg shadow-amber-500/50 quick-view-btn">
-                                                        <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
+                                                        <i onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';" data-lucide="play" class="w-5 h-5 fill-current ml-1"></i>
                                                     </button>
                                                     <button class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 hover:scale-110 transition-all shadow-lg js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>">
                                                         <i data-lucide="heart" class="w-5 h-5"></i>
@@ -579,7 +579,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                         <p class="text-gray-500 text-xs truncate mt-1 font-medium flex items-center gap-2">
                                             <span><?php echo $item['original_tittle']; ?></span>
                                             <span class="w-1 h-1 rounded-full bg-gray-600"></span>
-                                            <span><?php echo $item['release_year']; ?></span>
+                                            <span><?php echo $item['release_year_name']; ?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -610,7 +610,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                     <div class="anime-slide absolute inset-0 transition-all duration-700 ease-in-out <?php echo $activeClass; ?>" data-index="<?php echo $key; ?>">
                         <!-- Background Image -->
                         <div class="absolute inset-0">
-                            <img loading="lazy" src="<?php echo $item['thumbnail']; ?>" class="w-full h-full object-cover">
+                            <img loading="lazy" src="<?php echo $item['thumbnail'] ?? $item['poster_url']; ?>" class="w-full h-full object-cover">
                             <!-- Gradient Overlay -->
                             <div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/60 to-transparent"></div>
@@ -627,9 +627,9 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                             <!-- Tags -->
                             <div class="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-bold">
-                                <span class="bg-[#e2b616] text-black px-2 py-0.5 rounded shadow-sm">IMDb <?php echo $item['imdb_rating']; ?></span>
-                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['age']; ?></span>
-                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['release_year']; ?></span>
+                                <span class="bg-[#e2b616] text-black px-2 py-0.5 rounded shadow-sm">IMDb <?php echo $item['imdb_rating'] ?? 'N/A'; ?></span>
+                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['age_name'] ?? 'T16'; ?></span>
+                                <span class="bg-white/10 text-white border border-white/20 px-2 py-0.5 rounded backdrop-blur-sm"><?php echo $item['release_year_name']; ?></span>
                                 <span class="text-[#FFD875] border border-[#FFD875] px-2 py-0.5 rounded bg-[#FFD700]/10">Tập 10</span>
                             </div>
 
@@ -647,7 +647,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
 
                             <!-- Buttons -->
                             <div class="flex items-center gap-2 sm:gap-4 pt-2 sm:pt-4">
-                                <a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>" class="group/play w-10 h-10 md:w-12 md:h-12 bg-[#FFD875] hover:bg-[#ffc107] rounded-full flex items-center justify-center text-[#191B24] transition-all hover:scale-110 shadow-[0_0_20px_rgba(255,216,117,0.4)]">
+                                <a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>" class="group/play w-10 h-10 md:w-12 md:h-12 bg-[#FFD875] hover:bg-[#ffc107] rounded-full flex items-center justify-center text-[#191B24] transition-all hover:scale-110 shadow-[0_0_20px_rgba(255,216,117,0.4)]">
                                     <i data-lucide="play" class="w-4 h-4 md:w-5 md:h-5 fill-current ml-1 group-hover/play:scale-110 transition-transform"></i>
                                 </a>
                                 <div class="flex gap-3">
@@ -710,7 +710,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                     <?php foreach ($getHorrorMovies as $key => $item): ?>
                         <div class="swiper-slide">
                             <div class="sw-item">
-                                <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>">
+                                <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>">
 
                                     <div class="pin-new m-pin-new">
                                         <div class="line-center line-pd">Full HD</div>
@@ -718,16 +718,16 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                     <div class="image-wrapper">
                                         <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                         <div class="play-overlay">
-                                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
                                             <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
                                         </div>
                                     </div>
                                 </a>
                                 <div class="info">
-                                    <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>"><?php echo $item['tittle']; ?></a></h4>
+                                    <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>"><?php echo $item['tittle']; ?></a></h4>
                                     <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
                                     <div class="meta-info">
-                                        <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                        <span><?php echo $item['release_year_name']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -768,7 +768,7 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                     <?php foreach ($getLoveMovies as $key => $item): ?>
                         <div class="swiper-slide">
                             <div class="sw-item">
-                                <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>">
+                                <a class="v-thumbnail" href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>">
                                     <div class="pin-new m-pin-new">
                                         <div class="line-center line-pd">Full HD</div>
                                         <div class="line-center line-tm">Vietsub</div>
@@ -776,16 +776,16 @@ $favClass = $heroIsFavorited ? 'is-favorited' : '';
                                     <div class="image-wrapper">
                                         <img loading="lazy" class="movie-thumb" src="<?php echo $item['poster_url']; ?>" alt="<?php echo $item['tittle']; ?>">
                                         <div class="play-overlay">
-                                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
+                                            <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>';" class="btn-action btn-play"><i class="fa-solid fa-play"></i></div>
                                             <button class="btn-action btn-fav js-favorite-btn" data-movie-id="<?php echo $item['id']; ?>"><i data-lucide="heart" class="w-5 h-5"></i></button>
                                         </div>
                                     </div>
                                 </a>
                                 <div class="info">
-                                    <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/detail?id=<?php echo $item['id'] ?>"><?php echo $item['tittle']; ?></a></h4>
+                                    <h4 class="item-title lim-1"><a href="<?php echo _HOST_URL; ?>/phim/<?php echo $item['slug'] ?>"><?php echo $item['tittle']; ?></a></h4>
                                     <h4 class="alias-title lim-1"><?php echo $item['original_tittle']; ?></h4>
                                     <div class="meta-info">
-                                        <span><?php echo $item['release_year']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
+                                        <span><?php echo $item['release_year_name']; ?></span> <span class="dot">•</span> <span><?php echo convertMinutesToHours($item['duration']); ?></span>
                                     </div>
                                 </div>
                             </div>

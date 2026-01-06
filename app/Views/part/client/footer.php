@@ -17,10 +17,10 @@
                 <h4 class="text-white font-bold mb-3 md:mb-4 text-sm md:text-base">Danh Mục</h4>
                 <ul class="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-400">
                     <li><a href="<?php echo _HOST_URL; ?>" class="hover:text-primary transition-colors">Trang chủ</a></li>
-                    <li><a href="<?php echo _HOST_URL; ?>/phim_le" class="hover:text-primary transition-colors">Phim lẻ</a></li>
-                    <li><a href="<?php echo _HOST_URL; ?>/phim_bo" class="hover:text-primary transition-colors">Phim bộ</a></li>
-                    <li><a href="<?php echo _HOST_URL; ?>/phim_chieu_rap" class="hover:text-primary transition-colors">Phim chiếu rạp</a></li>
-                    <li><a href="<?php echo _HOST_URL; ?>/dien_vien" class="hover:text-primary transition-colors">Diễn viên</a></li>
+                    <li><a href="<?php echo _HOST_URL; ?>/phim-le" class="hover:text-primary transition-colors">Phim lẻ</a></li>
+                    <li><a href="<?php echo _HOST_URL; ?>/phim-bo" class="hover:text-primary transition-colors">Phim bộ</a></li>
+                    <li><a href="<?php echo _HOST_URL; ?>/phim-chieu-rap" class="hover:text-primary transition-colors">Phim chiếu rạp</a></li>
+                    <li><a href="<?php echo _HOST_URL; ?>/dien-vien" class="hover:text-primary transition-colors">Diễn viên</a></li>
                 </ul>
             </div>
 

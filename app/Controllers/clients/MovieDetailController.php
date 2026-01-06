@@ -35,12 +35,19 @@ class MovieDetailController extends baseController
         return $branch;
     }
 
-    public function showDetail()
+    public function showDetail($slug)
     {
+
         $filter = filterData();
-        $idMovie = $filter['id'];
         $idEpisode = $filter['episode_id'] ?? null;
 
+        //Tìm phim dựa trên Slug
+        $movie = $this->moviesModel->findBySlug($slug);
+        if (!$movie) {
+            echo "Phim không tồn tại!";
+            return;
+        }
+        $idMovie = $movie['id'];
         // Lấy ID user
         if (isset($_SESSION['auth']['id'])) {
             $currentUserId = $_SESSION['auth']['id'];
@@ -83,6 +90,8 @@ class MovieDetailController extends baseController
                     'id' => $sourceInfo['episode_id'],
                     'name' => $sourceInfo['voice_type'] ?? 'Vietsub',
                     'link' => $sourceInfo['source_url'],
+                    'source_name' => $sourceInfo['source_name'] ?? 'Server 1',
+                    'voice_type' => $sourceInfo['voice_type'] ?? 'Vietsub',
                 ];
             } else {
                 // Trường hợp dự phòng: Nếu chưa crawl được link
@@ -107,6 +116,17 @@ class MovieDetailController extends baseController
 
         $countAllCommentsByMovie = $this->commentsModel->countCommentsByMovie($idMovie);
 
+        // SEO Data
+        $genreNames = !empty($movieDetail['genre_name']) ? $movieDetail['genre_name'] : '';
+        $seoTitle = $movieDetail['tittle'] . ' - Xem phim ' . $movieDetail['original_tittle'] . ' | Phê Phim';
+        $seoDescription = 'Xem phim ' . $movieDetail['tittle'] . ' (' . $movieDetail['original_tittle'] . ') vietsub HD. ' .
+            (!empty($movieDetail['description']) ? mb_substr(strip_tags($movieDetail['description']), 0, 150) . '...' :
+                'Phim ' . $genreNames . ' hay nhất tại Phê Phim.');
+        $seoKeywords = $movieDetail['tittle'] . ', ' . $movieDetail['original_tittle'] . ', xem phim ' . $movieDetail['tittle'] .
+            ', ' . $genreNames . ', phim hd, phim vietsub';
+        $seoImage = $movieDetail['poster_url'] ?? '';
+        $seoCanonical = _HOST_URL . '/phim/' . $slug;
+
         $data = [
             'idMovie' => $idMovie,
             'idEpisode' => $idEpisode,
@@ -114,13 +134,20 @@ class MovieDetailController extends baseController
             'seasonDetail' => $seasonDetail,
             'episodeDetail' => $episodeDetail,
             'currentSeasonId' => $currentSeasonId,
+            'currentSeasonNumber' => (!empty($seasonDetail)) ? 1 : null, // Season đầu tiên = 1
             'getCastByMovieId' => $getCastByMovieId,
             'comments' => $comments,
             'listComments' => $commentsTree,
             'totalComments' => $totalComments,
             'countAllCommentsByMovie' => $countAllCommentsByMovie[0]['total'],
             'similarMovies' => $similarMovies,
-            'movieIsFavorited' => $movieIsFavorited
+            'movieIsFavorited' => $movieIsFavorited,
+            // SEO
+            'seoTitle' => $seoTitle,
+            'seoDescription' => $seoDescription,
+            'seoKeywords' => $seoKeywords,
+            'seoImage' => $seoImage,
+            'seoCanonical' => $seoCanonical
         ];
 
         $this->renderView('layout-part/client/detail', $data);

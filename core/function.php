@@ -442,23 +442,34 @@ function getSiteSettings()
 }
 
 /**
- * Hàm lấy tất cả filter data có cache (Genres, Countries, Types, etc.)
- * Cache được lưu trong SESSION với TTL 10 phút để giảm tải database
+ * Hàm lấy tất cả filter data có cache (FILE-BASED)
+ * Cache được lưu vào FILE vật lý, TẤT CẢ user dùng chung
  * 
  * @return array Mảng chứa tất cả filter data
  */
 function getCachedFilterData()
 {
-    $cacheKey = 'cached_filter_data';
-    $cacheTTL = 600; // 10 phút (tính bằng giây)
+    $cacheDir = './core/cache/';
+    $cacheFile = $cacheDir . 'filter_cache.json';
+    $cacheTTL = 600; // 10 phút
 
-    // Kiểm tra cache trong SESSION
-    if (isset($_SESSION[$cacheKey]) && isset($_SESSION[$cacheKey . '_time'])) {
-        $cacheTime = $_SESSION[$cacheKey . '_time'];
+    // Tạo thư mục cache nếu chưa tồn tại
+    if (!file_exists($cacheDir)) {
+        mkdir($cacheDir, 0755, true);
+    }
 
-        // Nếu cache chưa hết hạn, trả về data từ cache
+    // Kiểm tra file cache có tồn tại và còn hạn không
+    if (file_exists($cacheFile)) {
+        $cacheTime = filemtime($cacheFile);
+
+        // Nếu cache chưa hết hạn, đọc từ file
         if ((time() - $cacheTime) < $cacheTTL) {
-            return $_SESSION[$cacheKey];
+            $jsonData = file_get_contents($cacheFile);
+            $filterData = json_decode($jsonData, true);
+
+            if ($filterData !== null) {
+                return $filterData;
+            }
         }
     }
 
@@ -476,40 +487,56 @@ function getCachedFilterData()
         'getAllReleaseYear' => $moviesModel->getReleaseYear(),
     ];
 
-    // Lưu vào cache
-    $_SESSION[$cacheKey] = $filterData;
-    $_SESSION[$cacheKey . '_time'] = time();
+    // Ghi vào file cache
+    file_put_contents($cacheFile, json_encode($filterData), LOCK_EX);
 
     return $filterData;
 }
 
 /**
- * Xóa cache filter data (gọi khi admin thêm/sửa/xóa genres, countries,...)
+ * Xóa cache filter data (xóa file cache)
  */
 function clearFilterDataCache()
 {
-    unset($_SESSION['cached_filter_data']);
-    unset($_SESSION['cached_filter_data_time']);
+    $cacheFile = './core/cache/filter_cache.json';
+
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
 }
 
-/**
- * Hàm lấy dữ liệu Dashboard có cache (các section phim)
- * Cache được lưu trong SESSION với TTL 5 phút
- * 
- * @return array Mảng chứa tất cả movie sections cho dashboard
- */
+
+// Hàm lấy dữ liệu Dashboard có cache (FILE-BASED)
 function getCachedDashboardData()
 {
-    $cacheKey = 'cached_dashboard_data';
-    $cacheTTL = 300; // 5 phút (tính bằng giây)
+    $cacheDir = './core/cache/';
+    $cacheFile = $cacheDir . 'dashboard_cache.json';
+    $cacheTTL = 300; // 5 phút
 
-    // Kiểm tra cache trong SESSION
-    if (isset($_SESSION[$cacheKey]) && isset($_SESSION[$cacheKey . '_time'])) {
-        $cacheTime = $_SESSION[$cacheKey . '_time'];
+    // Tạo thư mục cache nếu chưa tồn tại
+    if (!file_exists($cacheDir)) {
+        mkdir($cacheDir, 0755, true);
+    }
 
-        // Nếu cache chưa hết hạn, trả về data từ cache
+    // Force clear cache nếu có tham số ?clear_cache=1
+    if (isset($_GET['clear_cache']) && $_GET['clear_cache'] == '1') {
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+    }
+
+    // Kiểm tra file cache có tồn tại và còn hạn không
+    if (file_exists($cacheFile)) {
+        $cacheTime = filemtime($cacheFile);
+
+        // Nếu cache chưa hết hạn, đọc từ file
         if ((time() - $cacheTime) < $cacheTTL) {
-            return $_SESSION[$cacheKey];
+            $jsonData = file_get_contents($cacheFile);
+            $dashboardData = json_decode($jsonData, true);
+
+            if ($dashboardData !== null) {
+                return $dashboardData;
+            }
         }
     }
 
@@ -531,18 +558,18 @@ function getCachedDashboardData()
         'getHorrorMovies'      => $moviesModel->getHorrorMovies(),
     ];
 
-    // Lưu vào cache
-    $_SESSION[$cacheKey] = $dashboardData;
-    $_SESSION[$cacheKey . '_time'] = time();
+    // Ghi vào file cache
+    file_put_contents($cacheFile, json_encode($dashboardData), LOCK_EX);
 
     return $dashboardData;
 }
 
-/**
- * Xóa cache dashboard data (gọi khi admin thêm/sửa phim)
- */
+// Xóa cache dashboard data (xóa file cache)
 function clearDashboardCache()
 {
-    unset($_SESSION['cached_dashboard_data']);
-    unset($_SESSION['cached_dashboard_data_time']);
+    $cacheFile = './core/cache/dashboard_cache.json';
+
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
 }

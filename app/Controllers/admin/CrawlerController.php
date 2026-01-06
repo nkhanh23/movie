@@ -309,6 +309,7 @@ class CrawlerController extends baseController
         // BƯỚC 1: MOVIES
         $countryId = $this->getCountryId($m['country']);
         $typeId    = $this->getTypeId($m['type']);
+        $releaseYearId = $this->getReleaseYearId($m['year']); // Lấy ID từ bảng release_year
 
         // Kiểm tra nếu đang crawl từ danh sách phim chiếu rạp
         if ($this->currentListType === 'phim-chieu-rap') {
@@ -326,7 +327,7 @@ class CrawlerController extends baseController
             }
         }
 
-        $status_id = ($m['status'] == 'completed') ? 1 : 2;
+        $status_id = 1; // Luôn Published
         $duration = (int)filter_var($m['time'], FILTER_SANITIZE_NUMBER_INT);
 
         // Lấy thêm các trường mới từ API
@@ -389,14 +390,14 @@ class CrawlerController extends baseController
         $movieId = 0;
         if ($exists) {
             $movieId = $exists['id'];
-            $sql = "UPDATE movies SET original_tittle=:orig, description=:desc, poster_url=:poster, thumbnail=:thumb, release_year=:year, imdb_rating=:tmdb, age=:age, quality_id=:quality, status_id=:st, country_id=:ct, type_id=:tp, updated_at=NOW() WHERE id=:id";
+            $sql = "UPDATE movies SET original_tittle=:orig, description=:desc, poster_url=:poster, thumbnail=:thumb, release_year=:year_id, imdb_rating=:tmdb, age=:age, quality_id=:quality, status_id=:st, country_id=:ct, type_id=:tp, updated_at=NOW() WHERE id=:id";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':orig' => $m['origin_name'], ':desc' => $m['content'], ':poster' => $posterUrl, ':thumb' => $thumbUrl, ':year' => $m['year'], ':tmdb' => $tmdbRating, ':age' => $ageId, ':quality' => $qualityId, ':st' => $status_id, ':ct' => $countryId, ':tp' => $typeId, ':id' => $movieId]);
+            $stmt->execute([':orig' => $m['origin_name'], ':desc' => $m['content'], ':poster' => $posterUrl, ':thumb' => $thumbUrl, ':year_id' => $releaseYearId, ':tmdb' => $tmdbRating, ':age' => $ageId, ':quality' => $qualityId, ':st' => $status_id, ':ct' => $countryId, ':tp' => $typeId, ':id' => $movieId]);
             echo "<span style='color:blue'>[UPDATE]</span>";
         } else {
-            $sql = "INSERT INTO movies (tittle, original_tittle, slug, description, poster_url, thumbnail, release_year, duration, imdb_rating, age, quality_id, is_api, status_id, country_id, type_id, created_at, updated_at) VALUES (:name, :orig, :slug, :desc, :poster, :thumb, :year, :dur, :tmdb, :age, :quality, 1, :st, :ct, :tp, NOW(), NOW())";
+            $sql = "INSERT INTO movies (tittle, original_tittle, slug, description, poster_url, thumbnail, release_year, duration, imdb_rating, age, quality_id, is_api, status_id, country_id, type_id, created_at, updated_at) VALUES (:name, :orig, :slug, :desc, :poster, :thumb, :year_id, :dur, :tmdb, :age, :quality, 1, :st, :ct, :tp, NOW(), NOW())";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':name' => $baseName, ':orig' => $m['origin_name'], ':slug' => $baseSlug, ':desc' => $m['content'], ':poster' => $posterUrl, ':thumb' => $thumbUrl, ':year' => $m['year'], ':dur' => $duration, ':tmdb' => $tmdbRating, ':age' => $ageId, ':quality' => $qualityId, ':st' => $status_id, ':ct' => $countryId, ':tp' => $typeId]);
+            $stmt->execute([':name' => $baseName, ':orig' => $m['origin_name'], ':slug' => $baseSlug, ':desc' => $m['content'], ':poster' => $posterUrl, ':thumb' => $thumbUrl, ':year_id' => $releaseYearId, ':dur' => $duration, ':tmdb' => $tmdbRating, ':age' => $ageId, ':quality' => $qualityId, ':st' => $status_id, ':ct' => $countryId, ':tp' => $typeId]);
             $movieId = $this->conn->lastInsertId();
             echo "<span style='color:green'>[NEW]</span>";
         }
@@ -718,6 +719,32 @@ class CrawlerController extends baseController
         return $this->conn->lastInsertId();
     }
 
+    /**
+     * Lấy ID của năm phát hành từ bảng release_year
+     * Nếu năm chưa tồn tại, tự động tạo mới
+     */
+    private function getReleaseYearId($year)
+    {
+        if (empty($year)) return null;
+
+        // Đảm bảo year là số nguyên
+        $year = (int) $year;
+        if ($year < 1900 || $year > 2100) return null;
+
+        // Tìm trong bảng release_year
+        $stmt = $this->conn->prepare("SELECT id FROM release_year WHERE year = ?");
+        $stmt->execute([$year]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return $row['id'];
+        }
+
+        // Nếu chưa có, tạo mới
+        $this->conn->prepare("INSERT INTO release_year (year) VALUES (?)")->execute([$year]);
+        return $this->conn->lastInsertId();
+    }
+
     private function processGenres($movieId, $categories)
     {
         $this->conn->prepare("DELETE FROM movie_genres WHERE movie_id = ?")->execute([$movieId]);
@@ -753,6 +780,11 @@ class CrawlerController extends baseController
         foreach ($namesArray as $name) {
             $name = trim($name);
             if (empty($name)) continue;
+
+            // Bỏ qua các tên không hợp lệ
+            $invalidNames = ['Đang cập nhật', 'Đang Cập Nhật', 'dang cap nhat', 'Updating', 'N/A', 'Unknown', 'TBA', 'To Be Announced'];
+            if (in_array($name, $invalidNames) || mb_strlen($name) < 2) continue;
+
             $personSlug = $this->createSlug($name);
 
             $stmtP = $this->conn->prepare("SELECT id FROM persons WHERE slug = :slug LIMIT 1");

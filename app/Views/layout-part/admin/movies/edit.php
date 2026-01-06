@@ -68,17 +68,27 @@ $errors = getSessionFlash('errors');
             </div>
 
             <div class="form-group">
-                <label for="release_year">Năm phát hành (release_year)</label>
-                <input type="number" name="release_year" id="release_year" value="<?php
-                                                                                    if (!empty($oldData)) {
-                                                                                        echo oldData($oldData, 'release_year');
-                                                                                    } ?>" placeholder="2023" min="1900"
-                    max="2100">
-                <?php
-                if (!empty($errors)) {
-                    echo formError($errors, 'release_year');
-                }
-                ?>
+                <label for="release_year">Năm phát hành</label>
+                <select name="release_year" id="release_year">
+                    <option value="">-- Chọn năm --</option>
+                    <?php foreach ($getAllYears as $item): ?>
+                        <option value="<?php echo $item['id']; ?>"
+                            <?php echo ($oldData['release_year'] == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['year']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Tuổi</label>
+                <select name="age" id="age">
+                    <option value="">-- Chọn tuổi --</option>
+                    <?php foreach ($getAllAge as $item): ?>
+                        <option value="<?php echo $item['id']; ?>"
+                            <?php echo ($oldData['age'] == $item['id']) ? 'selected' : '' ?>>
+                            <?php echo $item['age']; ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="form-group">

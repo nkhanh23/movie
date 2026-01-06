@@ -83,6 +83,11 @@ const initHero = () => {
 
         // 1. Background + Title + Subtitle + Desc
         bgEl.style.backgroundImage = `url('${data.bg}')`;
+        bgEl.style.backgroundSize = 'cover';
+        bgEl.style.backgroundPosition = 'center';
+        bgEl.style.backgroundRepeat = 'no-repeat';
+        bgEl.style.width = '100%';
+        bgEl.style.height = '100%';
         if (titleEl) titleEl.textContent = data.title || '';
         if (subtitleEl) subtitleEl.textContent = data.subtitle || '';
         if (descEl) descEl.textContent = data.desc || '';

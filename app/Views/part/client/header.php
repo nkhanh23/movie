@@ -24,7 +24,43 @@ $siteSettings = getSiteSettings();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer">
-  <title><?php echo htmlspecialchars($siteSettings['site_name']); ?></title>
+
+  <?php
+  // SEO Meta Tags - Dynamic based on page
+  $pageTitle = isset($seoTitle) ? $seoTitle : $siteSettings['site_name'];
+  $pageDescription = isset($seoDescription) ? $seoDescription : ($siteSettings['site_description'] ?? 'Xem phim online chất lượng cao, phim mới nhất, phim bộ, phim lẻ, phim chiếu rạp miễn phí tại ' . $siteSettings['site_name']);
+  $pageKeywords = isset($seoKeywords) ? $seoKeywords : 'xem phim, phim online, phim mới, phim bộ, phim lẻ, phim chiếu rạp, phim hd, phim vietsub';
+  $pageImage = isset($seoImage) ? $seoImage : (_HOST_URL . '/public/img/logo/og-image.jpg');
+  $canonicalUrl = isset($seoCanonical) ? $seoCanonical : _HOST_URL . $_SERVER['REQUEST_URI'];
+  // Remove query string from canonical if needed
+  $canonicalUrl = strtok($canonicalUrl, '?');
+  ?>
+
+  <title><?php echo htmlspecialchars($pageTitle); ?></title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+  <meta name="keywords" content="<?php echo htmlspecialchars($pageKeywords); ?>">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="<?php echo htmlspecialchars($siteSettings['site_name']); ?>">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl); ?>">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl); ?>">
+  <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+  <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+  <meta property="og:image" content="<?php echo htmlspecialchars($pageImage); ?>">
+  <meta property="og:site_name" content="<?php echo htmlspecialchars($siteSettings['site_name']); ?>">
+  <meta property="og:locale" content="vi_VN">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+  <meta name="twitter:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
+  <meta name="twitter:image" content="<?php echo htmlspecialchars($pageImage); ?>">
 
   <link rel="manifest" href="/manifest.php?v=<?php echo time(); ?>">
   <meta name="theme-color" content="#FFD875">
@@ -136,7 +172,7 @@ $siteSettings = getSiteSettings();
 <body>
   <nav class="fixed top-0 inset-x-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-3 sm:px-4 md:px-12 py-4 transition-all duration-300">
 
-    <!-- ================= MOBILE NAV (FIX TRÀN ICON 100%) ================= -->
+    <!-- ================= MOBILE NAV ================= -->
     <div class="relative md:hidden w-full">
       <!-- Right icons: absolute (không bị ảnh hưởng bởi logo) -->
       <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -176,7 +212,7 @@ $siteSettings = getSiteSettings();
       </div>
     </div>
 
-    <!-- ================= DESKTOP NAV (GIỮ NGUYÊN) ================= -->
+    <!-- ================= DESKTOP NAV ================= -->
     <div class="hidden md:flex items-center justify-between w-full">
 
       <!-- Desktop LEFT -->
@@ -185,9 +221,9 @@ $siteSettings = getSiteSettings();
 
         <div class="flex items-center gap-6 text-sm font-medium text-gray-300 ml-4">
           <a href="<?php echo _HOST_URL ?>" class="text-white font-bold">Trang chủ</a>
-          <a href="<?php echo _HOST_URL ?>/phim_le">Phim lẻ</a>
-          <a href="<?php echo _HOST_URL ?>/phim_bo">Phim bộ</a>
-          <a href="<?php echo _HOST_URL ?>/phim_chieu_rap">Phim chiếu rạp</a>
+          <a href="<?php echo _HOST_URL ?>/phim-le">Phim lẻ</a>
+          <a href="<?php echo _HOST_URL ?>/phim-bo">Phim bộ</a>
+          <a href="<?php echo _HOST_URL ?>/phim-chieu-rap">Phim chiếu rạp</a>
 
           <!-- Genres -->
           <div class="relative group">
@@ -197,7 +233,7 @@ $siteSettings = getSiteSettings();
             <div class="absolute left-0 top-full pt-2 hidden group-hover:block w-[800px] glass-panel p-4 rounded-xl">
               <div class="grid grid-cols-6 gap-2">
                 <?php foreach ($allGenres as $genre): ?>
-                  <a href="<?php echo _HOST_URL ?>/the_loai?id=<?php echo $genre['id'] ?>"
+                  <a href="<?php echo _HOST_URL ?>/the-loai/<?php echo $genre['slug'] ?>"
                     class="px-3 py-2 text-xs rounded-lg hover:bg-primary/20">
                     <?php echo $genre['name'] ?>
                   </a>
@@ -214,7 +250,7 @@ $siteSettings = getSiteSettings();
             <div class="absolute left-0 top-full pt-2 hidden group-hover:block w-[650px] glass-panel p-4 rounded-xl">
               <div class="grid grid-cols-4 gap-2">
                 <?php foreach ($allCountries as $country): ?>
-                  <a href="<?php echo _HOST_URL ?>/quoc_gia?id=<?php echo $country['id'] ?>"
+                  <a href="<?php echo _HOST_URL ?>/quoc-gia/<?php echo $country['slug'] ?>"
                     class="px-3 py-2 text-xs rounded-lg hover:bg-primary/20">
                     <?php echo $country['name'] ?>
                   </a>
@@ -223,14 +259,14 @@ $siteSettings = getSiteSettings();
             </div>
           </div>
 
-          <a href="<?php echo _HOST_URL ?>/dien_vien">Diễn viên</a>
+          <a href="<?php echo _HOST_URL ?>/dien-vien">Diễn viên</a>
         </div>
       </div>
 
-      <!-- Desktop RIGHT (giữ nguyên phần của bạn) -->
+      <!-- Desktop RIGHT -->
       <div class="hidden md:flex items-center gap-6 text-white">
         <!-- Desktop Expandable Search Bar -->
-        <form action="<?php echo _HOST_URL; ?>/tim_kiem" method="GET">
+        <form action="<?php echo _HOST_URL; ?>/tim-kiem" method="GET">
           <div class="flex items-center relative">
             <div id="searchContainer" class="flex items-center relative transition-all duration-300 ease-out">
               <button id="searchIcon" type="button" class="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
@@ -260,7 +296,7 @@ $siteSettings = getSiteSettings();
               <div class="px-4 py-3 border-b border-white/10 bg-white/5">
                 <div class="flex items-center justify-between">
                   <h3 class="text-white font-semibold text-sm">Thông báo</h3>
-                  <a href="<?php echo _HOST_URL; ?>/thong_bao" class="text-primary text-xs hover:text-secondary transition-colors">
+                  <a href="<?php echo _HOST_URL; ?>/thong-bao" class="text-primary text-xs hover:text-secondary transition-colors">
                     Xem tất cả
                   </a>
                 </div>
@@ -338,7 +374,7 @@ $siteSettings = getSiteSettings();
           </div>
         <?php endif; ?>
 
-        <!-- User Avatar / Login Button (GIỮ NGUYÊN phần của bạn) -->
+        <!-- User Avatar / Login Button -->
         <?php if (!empty($_SESSION['auth'])): ?>
           <div class="relative hidden sm:block" id="userDropdownContainer">
             <div class="flex items-center gap-2 cursor-pointer" id="userAvatarBtn">
@@ -361,17 +397,17 @@ $siteSettings = getSiteSettings();
                     <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Trang admin</span>
                   </a>
                 <?php endif; ?>
-                <a href="<?php echo _HOST_URL; ?>/yeu_thich" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <a href="<?php echo _HOST_URL; ?>/yeu-thich" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
                   <i data-lucide="heart" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
                   <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Yêu thích</span>
                 </a>
 
-                <a href="<?php echo _HOST_URL; ?>/tai_khoan" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <a href="<?php echo _HOST_URL; ?>/tai-khoan" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
                   <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
                   <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Tài khoản</span>
                 </a>
 
-                <a href="<?php echo _HOST_URL; ?>/thong_bao" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                <a href="<?php echo _HOST_URL; ?>/thong-bao" class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
                   <i data-lucide="bell" class="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors"></i>
                   <span class="text-gray-300 text-sm group-hover:text-white transition-colors">Thông báo</span>
                 </a>
@@ -410,7 +446,7 @@ $siteSettings = getSiteSettings();
 
       <!-- Mobile Search Bar -->
       <div class="px-4 pb-4 xs:hidden">
-        <form action="<?php echo _HOST_URL; ?>/tim_kiem" method="GET" class="relative">
+        <form action="<?php echo _HOST_URL; ?>/tim-kiem" method="GET" class="relative">
           <input type="text" name="tu_khoa" placeholder="Tìm kiếm phim..."
             class="w-full px-4 py-2.5 pl-10 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-gray-400 focus:outline-none focus:border-primary/50">
           <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
@@ -428,7 +464,7 @@ $siteSettings = getSiteSettings();
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <a href="<?php echo _HOST_URL; ?>/tai_khoan" class="px-3 py-2 rounded-lg bg-white/5 text-gray-300 text-xs text-center hover:bg-primary/20 hover:text-primary transition-all">
+            <a href="<?php echo _HOST_URL; ?>/tai-khoan" class="px-3 py-2 rounded-lg bg-white/5 text-gray-300 text-xs text-center hover:bg-primary/20 hover:text-primary transition-all">
               Tài khoản
             </a>
             <a href="<?php echo _HOST_URL; ?>/logout" class="px-3 py-2 rounded-lg bg-red-500/10 text-red-400 text-xs text-center hover:bg-red-500/20 transition-all">
@@ -449,16 +485,16 @@ $siteSettings = getSiteSettings();
         <a href="<?php echo _HOST_URL ?>" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-white font-medium transition-all">
           Trang chủ
         </a>
-        <a href="<?php echo _HOST_URL ?>/phim_le" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
+        <a href="<?php echo _HOST_URL ?>/phim-le" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
           Phim lẻ
         </a>
-        <a href="<?php echo _HOST_URL ?>/phim_bo" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
+        <a href="<?php echo _HOST_URL ?>/phim-bo" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
           Phim bộ
         </a>
-        <a href="<?php echo _HOST_URL ?>/phim_chieu_rap" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
+        <a href="<?php echo _HOST_URL ?>/phim-chieu-rap" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
           Phim chiếu rạp
         </a>
-        <a href="<?php echo _HOST_URL ?>/dien_vien" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
+        <a href="<?php echo _HOST_URL ?>/dien-vien" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-all">
           Diễn viên
         </a>
       </div>
@@ -475,7 +511,7 @@ $siteSettings = getSiteSettings();
         <div id="mobileGenresContent" class="hidden px-4 pb-4">
           <div class="grid grid-cols-2 gap-2">
             <?php foreach (array_slice($allGenres, 0, 12) as $genre): ?>
-              <a href="<?php echo _HOST_URL ?>/the_loai?id=<?php echo $genre['id'] ?>"
+              <a href="<?php echo _HOST_URL ?>/the-loai/<?php echo $genre['slug'] ?>"
                 class="px-3 py-2 rounded-lg text-xs text-gray-300 hover:bg-primary/20 hover:text-primary transition-all border border-transparent hover:border-primary/30">
                 <?php echo $genre['name'] ?>
               </a>
@@ -496,7 +532,7 @@ $siteSettings = getSiteSettings();
         <div id="mobileCountriesContent" class="hidden px-4 pb-4">
           <div class="grid grid-cols-2 gap-2">
             <?php foreach (array_slice($allCountries, 0, 8) as $country): ?>
-              <a href="<?php echo _HOST_URL ?>/quoc_gia?id=<?php echo $country['id'] ?>"
+              <a href="<?php echo _HOST_URL ?>/quoc-gia/<?php echo $country['slug'] ?>"
                 class="px-3 py-2 rounded-lg text-xs text-gray-300 hover:bg-primary/20 hover:text-primary transition-all border border-transparent hover:border-primary/30">
                 <?php echo $country['name'] ?>
               </a>
@@ -518,7 +554,7 @@ $siteSettings = getSiteSettings();
         </button>
       </div>
       <!-- Search Form -->
-      <form action="<?php echo _HOST_URL; ?>/tim_kiem" method="GET" class="relative mb-4">
+      <form action="<?php echo _HOST_URL; ?>/tim-kiem" method="GET" class="relative mb-4">
         <input type="text" name="tu_khoa" id="mobileSearchInput" placeholder="Tìm kiếm phim, diễn viên..."
           class="w-full px-5 py-4 pl-12 bg-white/10 border border-white/20 rounded-xl text-white text-base placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20">
         <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
@@ -528,10 +564,10 @@ $siteSettings = getSiteSettings();
       </form>
       <!-- Quick Links -->
       <div class="flex flex-wrap gap-2 mb-6">
-        <a href="<?php echo _HOST_URL; ?>/phim_le" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim lẻ</a>
-        <a href="<?php echo _HOST_URL; ?>/phim_bo" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim bộ</a>
-        <a href="<?php echo _HOST_URL; ?>/phim_chieu_rap" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim chiếu rạp</a>
-        <a href="<?php echo _HOST_URL; ?>/dien_vien" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Diễn viên</a>
+        <a href="<?php echo _HOST_URL; ?>/phim-le" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim lẻ</a>
+        <a href="<?php echo _HOST_URL; ?>/phim-bo" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim bộ</a>
+        <a href="<?php echo _HOST_URL; ?>/phim-chieu-rap" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Phim chiếu rạp</a>
+        <a href="<?php echo _HOST_URL; ?>/dien-vien" class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs hover:bg-primary/20 hover:text-primary transition-all">Diễn viên</a>
       </div>
       <p class="text-gray-500 text-xs text-center">Nhập tên phim hoặc diễn viên để tìm kiếm</p>
     </div>
@@ -544,7 +580,7 @@ $siteSettings = getSiteSettings();
       <div class="px-4 py-3 border-b border-white/10 bg-white/5">
         <div class="flex items-center justify-between">
           <h3 class="text-white font-semibold text-sm">Thông báo</h3>
-          <a href="<?php echo _HOST_URL; ?>/thong_bao" class="text-primary text-xs hover:text-secondary transition-colors">
+          <a href="<?php echo _HOST_URL; ?>/thong-bao" class="text-primary text-xs hover:text-secondary transition-colors">
             Xem tất cả
           </a>
         </div>

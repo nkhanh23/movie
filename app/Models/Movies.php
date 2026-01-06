@@ -11,13 +11,27 @@ class Movies extends CoreModel
         if (!empty($sql)) {
             return $this->getAll($sql);
         } else {
-            return $this->getAll("SELECT * FROM movies");
+            return $this->getAll("SELECT m.*, ry.year as release_year_name 
+            FROM movies m
+            LEFT JOIN release_year ry ON m.release_year = ry.id");
         }
     }
 
     public function getOneMovie($condition)
     {
-        return $this->getOne("SELECT * FROM movies WHERE $condition");
+        return $this->getOne("SELECT * 
+        FROM movies 
+        WHERE $condition");
+    }
+
+    public function getAllAge()
+    {
+        return $this->getAll("SELECT * FROM age");
+    }
+
+    public function getAllYears()
+    {
+        return $this->getAll("SELECT * FROM release_year");
     }
 
     public function getAllStatus()
@@ -58,6 +72,11 @@ class Movies extends CoreModel
     public function getAllCountries()
     {
         return $this->getAll("SELECT * FROM countries");
+    }
+
+    public function getCountryBySlug($slug)
+    {
+        return $this->getOne("SELECT * FROM countries WHERE slug = ?", [$slug]);
     }
 
     public function getAllType()
@@ -219,7 +238,10 @@ class Movies extends CoreModel
         $chuoiWhere = $whereData['sql'];
         $params = $whereData['params']; // Mảng chứa giá trị để bind vào dấu ?
 
-        $sql = "SELECT m.*, c.name as country_name, ms.name as status_name
+        $sql = "SELECT m.id, m.tittle,m.original_tittle, m.slug, m.poster_url, m.imdb_rating, m.duration,
+                c.name as country_name, 
+                ms.name as status_name,
+                ry.year as release_year_name
                 FROM movies m
                 LEFT JOIN countries c ON m.country_id = c.id
                 LEFT JOIN movie_status ms ON m.status_id = ms.id
@@ -310,10 +332,14 @@ class Movies extends CoreModel
         //Auto seeding: Nếu chưa có view hôm nay thì tạo giả
         $this->seedFakeViewsIfEmpty();
 
-        $sql = "SELECT m.id, m.tittle, m.slug, m.thumbnail, m.poster_url, m.original_tittle,m.release_year,
-                       d.views as daily_views
+        $sql = "SELECT m.id, m.tittle, m.slug, m.thumbnail, m.poster_url, m.original_tittle,
+                       ry.year as release_year_name,
+                       d.views as daily_views,
+                       a.age as age_name
                 FROM movies m
                 JOIN movie_views_daily d ON m.id = d.movie_id
+                LEFT JOIN age a ON m.age = a.id
+                LEFT JOIN release_year ry ON m.release_year = ry.id
                 WHERE d.view_date = CURDATE() 
                 AND m.type_id = :type_id
                 ORDER BY d.views DESC
@@ -348,120 +374,184 @@ class Movies extends CoreModel
 
     private function seedFakeViewsIfEmpty()
     {
-        $checkSql = "SELECT * FROM movie_views_daily WHERE view_date = CURDATE() LIMIT 1";
-        $result = $this->getRows($checkSql);
-        if ($result) {
-            return;
+        // Kiểm tra số lượng phim BỘ đã có views hôm nay
+        $countType2Sql = "SELECT COUNT(DISTINCT d.movie_id) as cnt 
+                          FROM movie_views_daily d
+                          JOIN movies m ON d.movie_id = m.id
+                          WHERE d.view_date = CURDATE() AND m.type_id = 2";
+        $resultType2 = $this->getOne($countType2Sql);
+        $countType2 = $resultType2['cnt'] ?? 0;
+
+        // Kiểm tra số lượng phim LẺ đã có views hôm nay  
+        $countType1Sql = "SELECT COUNT(DISTINCT d.movie_id) as cnt 
+                          FROM movie_views_daily d
+                          JOIN movies m ON d.movie_id = m.id
+                          WHERE d.view_date = CURDATE() AND m.type_id = 1";
+        $resultType1 = $this->getOne($countType1Sql);
+        $countType1 = $resultType1['cnt'] ?? 0;
+
+        $insertSql = "INSERT IGNORE INTO movie_views_daily (movie_id, view_date, views) VALUES (:movie_id, CURDATE(), :views)";
+
+        // Seed thêm phim BỘ nếu chưa đủ 10
+        if ($countType2 < 10) {
+            $needMore = 10 - $countType2;
+            $sqlMoviesType2 = "SELECT id FROM movies WHERE type_id = 2 
+                               AND id NOT IN (SELECT movie_id FROM movie_views_daily WHERE view_date = CURDATE())
+                               ORDER BY RAND() LIMIT " . $needMore;
+            $moviesType2 = $this->getAll($sqlMoviesType2);
+            foreach ($moviesType2 as $movie) {
+                $this->execute($insertSql, ['movie_id' => $movie['id'], 'views' => rand(100, 5000)]);
+            }
         }
 
-        // Lấy 10 phim lẻ (type_id = 1) để đảm bảo Top 10 Phim Lẻ có đủ dữ liệu
-        $sqlMoviesType1 = "SELECT id FROM movies WHERE type_id = 1 ORDER BY RAND() LIMIT 10";
-        // Lấy 10 phim bộ (type_id = 2) để đảm bảo Top 10 Phim Bộ có đủ dữ liệu
-        $sqlMoviesType2 = "SELECT id FROM movies WHERE type_id = 2 ORDER BY RAND() LIMIT 10";
-
-        $moviesType1 = $this->getAll($sqlMoviesType1);
-        $moviesType2 = $this->getAll($sqlMoviesType2);
-        $movies = array_merge($moviesType1, $moviesType2);
-
-        $countMovies = count($movies);
-        if ($countMovies > 0) {
-            $insertSql = "INSERT IGNORE INTO movie_views_daily (movie_id, view_date, views) VALUES (:movie_id, CURDATE(), :views)";
-            foreach ($movies as $movie) {
-                $fakeViews = rand(100, 5000);
-                $movieId = $movie['id'];
-                $this->execute($insertSql, [
-                    'movie_id' => $movieId,
-                    'views' => $fakeViews
-                ]);
+        // Seed thêm phim LẺ nếu chưa đủ 10
+        if ($countType1 < 10) {
+            $needMore = 10 - $countType1;
+            $sqlMoviesType1 = "SELECT id FROM movies WHERE type_id = 1 
+                               AND id NOT IN (SELECT movie_id FROM movie_views_daily WHERE view_date = CURDATE())
+                               ORDER BY RAND() LIMIT " . $needMore;
+            $moviesType1 = $this->getAll($sqlMoviesType1);
+            foreach ($moviesType1 as $movie) {
+                $this->execute($insertSql, ['movie_id' => $movie['id'], 'views' => rand(100, 5000)]);
             }
         }
     }
+    //--------------------------------------------------------------------------------------------------------------------------------------
     // CLIENT
+    //--------------------------------------------------------------------------------------------------------------------------------------
 
+    public function findBySlug($slug)
+    {
+        // Tìm phim theo slug
+        $sql = "SELECT m.*,
+        GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
+        mt.name as type_name,
+        q.name as quality_name,
+        c.name as country_name,
+        a.age as age_name,
+        ry.year as release_year_name
+        FROM movies m
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.id
+        LEFT JOIN movie_types mt ON m.type_id = mt.id
+        LEFT JOIN qualities q ON m.quality_id = q.id
+        LEFT JOIN countries c ON m.country_id = c.id
+        LEFT JOIN age a ON m.age = a.id
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        WHERE m.slug = ? AND m.status_id = 1 LIMIT 1";
+        return $this->getOne($sql, [$slug]);
+    }
     // Dashboard
     public function getMoviesHeroSection()
     {
-        return $this->getAll("SELECT m.*,
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle,
+        m.imdb_rating, m.slug, m.duration,m.thumbnail, m.poster_url, 
+        ry.year as release_year_name, 
+        a.age as age_name,
+        m.description,
         GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
         mt.name as type_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id 
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        LEFT JOIN age a ON m.age = a.id
         GROUP BY m.id
-        ORDER BY id 
+        ORDER BY m.id 
         DESC LIMIT 6");
     }
 
     // Lấy phim Hàn Quốc
     public function getMoviesKorean()
     {
-        return $this->getAll("SELECT * FROM movies WHERE country_id = 2 ORDER BY created_at DESC LIMIT 10");
+        return $this->getAll("SELECT m.*, ry.year as release_year_name
+        FROM movies m
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        WHERE country_id = 2 
+        ORDER BY created_at DESC 
+        LIMIT 10");
     }
 
     // Lấy phim Hoa Kỳ
     public function getMoviesUSUK()
     {
-        return $this->getAll("SELECT * FROM movies WHERE country_id = 45 ORDER BY created_at DESC LIMIT 10");
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle, m.slug, m.duration,  ry.year as release_year_name, m.poster_url 
+        FROM movies m
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        WHERE country_id = 45 ORDER BY created_at DESC LIMIT 10");
     }
 
     // Lấy phim Trung Quốc
     public function getMoviesChinese()
     {
-        return $this->getAll("SELECT * FROM movies WHERE country_id = 4 ORDER BY created_at DESC LIMIT 10");
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle, m.slug, m.duration,  ry.year as release_year_name, m.poster_url
+        FROM movies m
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        WHERE country_id = 4 ORDER BY created_at DESC LIMIT 10");
     }
 
     // Lấy phim chiếu rạp
     public function getCinemaMovie()
     {
-        return $this->getAll("SELECT * FROM movies WHERE type_id = 3 ORDER BY created_at DESC LIMIT 10");
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle, m.slug, m.duration,  ry.year as release_year_name, m.poster_url 
+        FROM movies m
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        WHERE type_id = 3 ORDER BY created_at DESC LIMIT 10");
     }
 
     // Lấy phim anime
     public function getAnimeMovies()
     {
-        return $this->getAll("SELECT m.*,
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle, m.slug, m.duration, m.poster_url, m.thumbnail as thumbnail, m.imdb_rating as imdb_rating, m.description,
+        ry.year as release_year_name,
+        a.age as age_name,
         GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
         mt.name as type_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        LEFT JOIN age a ON m.age = a.id
         WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 76)
         GROUP BY m.id
-        ORDER BY id 
+        ORDER BY m.id 
         DESC LIMIT 12");
     }
 
     // Lấy phim lãng mạn
     public function getLoveMovies()
     {
-        return $this->getAll("SELECT m.*,
-        q.name as quality_name
+        return $this->getAll("SELECT m.id, m.tittle, m.original_tittle, m.slug, m.duration,  ry.year as release_year_name, m.poster_url,
+        q.name as quality_name,
+        ry.year as release_year_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
         LEFT JOIN qualities q ON m.quality_id = q.id
+        LEFT JOIN release_year ry ON m.release_year = ry.id
         WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 57)
         GROUP BY m.id
-        ORDER BY id 
+        ORDER BY m.id 
         DESC LIMIT 12");
     }
 
     // Lấy phim kinh dị
     public function getHorrorMovies()
     {
-        return $this->getAll("SELECT m.*,
+        return $this->getAll("SELECT m.id,m.tittle, m.original_tittle, m.slug, m.duration,  ry.year as release_year_name, m.poster_url,
         q.name as quality_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
         LEFT JOIN movie_types mt ON m.id = mt.id
         LEFT JOIN qualities q ON m.quality_id = q.id
+        LEFT JOIN release_year ry ON m.release_year = ry.id
         WHERE m.id IN (SELECT movie_id FROM movie_genres WHERE genre_id = 62)
         GROUP BY m.id
-        ORDER BY id 
+        ORDER BY m.id 
         DESC LIMIT 12");
     }
 
@@ -472,6 +562,8 @@ class Movies extends CoreModel
                 GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
                 q.name as quality_name,
                 c.name as country_name,
+                a.age as age_name,
+                ry.year as release_year_name,
                 mt.name as type_name
                 FROM movies m
                 LEFT JOIN movie_genres mg ON m.id = mg.movie_id
@@ -479,6 +571,8 @@ class Movies extends CoreModel
                 LEFT JOIN movie_types mt ON m.type_id = mt.id
                 LEFT JOIN qualities q ON m.quality_id = q.id
                 LEFT JOIN countries c ON m.country_id = c.id
+                LEFT JOIN age a ON m.age = a.id
+                LEFT JOIN release_year ry ON m.release_year = ry.id
                 WHERE $condition
                 GROUP BY m.id";
 
@@ -488,8 +582,7 @@ class Movies extends CoreModel
     // Hàm lấy link từ bảng episodes và video_sources
     public function getSingleMovieSource($movieId)
     {
-        // Logic mới: Phim lẻ -> Tìm trong bảng episodes -> Tìm trong video_sources
-        $sql = "SELECT vs.id, vs.source_url, vs.voice_type, e.id as episode_id
+        $sql = "SELECT vs.id, vs.source_url, vs.source_name, vs.voice_type, e.id as episode_id
                 FROM episodes e
                 JOIN video_sources vs ON e.id = vs.episode_id
                 WHERE e.movie_id = $movieId
@@ -500,20 +593,20 @@ class Movies extends CoreModel
     // Lấy thông tin season
     public function getSeasonDetail($condition)
     {
-        // ORDER BY s.id ASC để đảm bảo Phần 1 luôn được lấy trước
         return $this->getAll("SELECT s.*,
         m.tittle as movie_name
         FROM seasons s
         LEFT JOIN movies m ON s.movie_id = m.id
         WHERE s.$condition
-        ORDER BY s.id ASC");
+        -- +0 de ep chuoi sang so
+        ORDER BY (s.name + 0) ASC, s.name ASC");
     }
 
     // Lấy thông tin episode
     public function getEpisodeDetail($condition)
     {
         // GROUP BY e.id để mỗi tập chỉ hiện 1 lần (khi có nhiều video sources)
-        return $this->getAll("SELECT e.*, vs.source_url, vs.voice_type
+        return $this->getAll("SELECT e.*, vs.source_url, vs.voice_type, vs.source_name
                 FROM episodes e
                 LEFT JOIN video_sources vs ON e.id = vs.episode_id
                 WHERE e.$condition 
@@ -540,11 +633,13 @@ class Movies extends CoreModel
 
         $sql = "SELECT m.*, 
                 GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') as genre_name,
-                mt.name as type_name
+                mt.name as type_name,
+                ry.year as release_year_name
                 FROM movies m
                 JOIN movie_genres mg ON m.id = mg.movie_id
                 LEFT JOIN genres g ON mg.genre_id = g.id
                 LEFT JOIN movie_types mt ON m.id = mt.id
+                LEFT JOIN release_year ry ON m.release_year = ry.id
                 WHERE m.id != $currentMovieId 
                 AND m.id IN (
                     SELECT DISTINCT sub_mg.movie_id 
@@ -606,5 +701,99 @@ class Movies extends CoreModel
     {
         $sql = "SELECT user_id FROM favorites WHERE movie_id = :movie_id";
         return $this->getAll($sql, ['movie_id' => $movieId]);
+    }
+
+
+    //Lấy tất cả season của một phim (theo movie_id)
+    public function getSeasonsByMovieId($movieId)
+    {
+        // Sắp xếp theo số trong tên để lấy đúng thứ tự: Phần 1, Phần 2, ...
+        // Dùng name+0 để MySQL trích xuất số từ chuỗi
+        $sql = "SELECT * FROM seasons WHERE movie_id = ? ORDER BY (name + 0) ASC, name ASC";
+        return $this->getAll($sql, [$movieId]);
+    }
+
+    //Lấy season theo số thứ tự (vị trí trong danh sách)
+    public function getSeasonByNumber($movieId, $seasonNumber)
+    {
+        $seasons = $this->getSeasonsByMovieId($movieId);
+        $index = $seasonNumber - 1; // Convert to 0-indexed
+        return isset($seasons[$index]) ? $seasons[$index] : null;
+    }
+
+    //Lấy tất cả episodes của một season
+    public function getEpisodesBySeasonId($seasonId)
+    {
+        $sql = "SELECT e.*, vs.source_url, vs.voice_type, vs.source_name
+                FROM episodes e
+                LEFT JOIN video_sources vs ON e.id = vs.episode_id
+                WHERE e.season_id = ?
+                GROUP BY e.id
+                ORDER BY e.id ASC";
+        return $this->getAll($sql, [$seasonId]);
+    }
+
+    //Lấy tất cả episodes của một phim (không có season)
+    public function getEpisodesByMovieId($movieId)
+    {
+        $sql = "SELECT e.*, vs.source_url, vs.voice_type, vs.source_name
+                FROM episodes e
+                LEFT JOIN video_sources vs ON e.id = vs.episode_id
+                WHERE e.movie_id = ? AND (e.season_id IS NULL OR e.season_id = 0)
+                GROUP BY e.id
+                ORDER BY e.id ASC";
+        return $this->getAll($sql, [$movieId]);
+    }
+
+    //Lấy episode theo số thứ tự trong season
+    public function getEpisodeBySeasonAndNumber($seasonId, $episodeNumber)
+    {
+        $episodes = $this->getEpisodesBySeasonId($seasonId);
+        $index = $episodeNumber - 1; // Convert to 0-indexed
+        return isset($episodes[$index]) ? $episodes[$index] : null;
+    }
+
+    //Lấy episode theo số thứ tự (phim không có season)
+    public function getEpisodeByMovieAndNumber($movieId, $episodeNumber)
+    {
+        $episodes = $this->getEpisodesByMovieId($movieId);
+        $index = $episodeNumber - 1; // Convert to 0-indexed
+        return isset($episodes[$index]) ? $episodes[$index] : null;
+    }
+
+    //Lấy số thứ tự của season trong danh sách
+    public function getSeasonNumber($movieId, $seasonId)
+    {
+        $seasons = $this->getSeasonsByMovieId($movieId);
+        foreach ($seasons as $index => $season) {
+            if ($season['id'] == $seasonId) {
+                return $index + 1; // Convert to 1-indexed
+            }
+        }
+        return 1;
+    }
+
+    //Lấy số thứ tự của episode trong season
+    public function getEpisodeNumber($seasonId, $episodeId)
+    {
+        $episodes = $this->getEpisodesBySeasonId($seasonId);
+        foreach ($episodes as $index => $episode) {
+            if ($episode['id'] == $episodeId) {
+                return $index + 1; // Convert to 1-indexed
+            }
+        }
+        return 1;
+    }
+
+    //Lấy số thứ tự của episode trong phim (không có season)
+    public function getEpisodeNumberByMovie($movieId, $episodeId)
+    {
+        $episodes = $this->getEpisodesByMovieId($movieId);
+        foreach ($episodes as $index => $episode) {
+            if ($episode['id'] == $episodeId) {
+                return $index + 1; // Convert to 1-indexed
+            }
+        }
+        return 1;
     }
 }

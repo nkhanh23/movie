@@ -42,7 +42,7 @@ layout('client/header');
             <?php if (!empty($getAllPerson) && is_array($getAllPerson)) : ?>
 
                 <?php foreach ($getAllPerson as $person) : ?>
-                    <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/dien_vien/chi_tiet?id=<?php echo $person['id'] ?>';" class="glass-panel p-4 rounded-xl flex flex-col items-center gap-3 hover:bg-white/5 transition-colors group cursor-pointer border-transparent hover:border-primary/30 actor-card">
+                    <div onclick="window.location.href='<?php echo _HOST_URL; ?>/dien-vien/<?php echo $person['slug'] ?>';" class="glass-panel p-4 rounded-xl flex flex-col items-center gap-3 hover:bg-white/5 transition-colors group cursor-pointer border-transparent hover:border-primary/30 actor-card">
                         <div class="w-20 h-20 rounded-full p-[2px] bg-gradient-to-br from-primary/50 to-transparent group-hover:from-primary group-hover:to-primary/50 transition-all shadow-[0_0_15px_rgba(217,108,22,0.15)] group-hover:shadow-[0_0_20px_rgba(217,108,22,0.4)]">
                             <img
                                 alt="<?= htmlspecialchars($person['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
@@ -77,7 +77,7 @@ layout('client/header');
             <?php if (!empty($getAllMovies) && is_array($getAllMovies)) : ?>
 
                 <?php foreach ($getAllMovies as $movie) : ?>
-                    <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px]">
+                    <div onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="movie-card glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px]">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90 z-10"></div>
 
                         <img
@@ -103,7 +103,7 @@ layout('client/header');
                             </h3>
                             <div class="flex items-center justify-between text-xs text-gray-300">
                                 <div class="flex items-center gap-2">
-                                    <span><?= $movie['release_year'] ?></span>
+                                    <span><?= $movie['release_year_name'] ?></span>
                                     <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
                                     <span><?= isset($movie['duration']) ? convertMinutesToHours((int)$movie['duration']) : '' ?></span>
                                 </div>

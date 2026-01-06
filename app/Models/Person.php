@@ -95,6 +95,7 @@ class Person extends CoreModel
 
     public function deletePerson($condition)
     {
+        // ON DELETE CASCADE đã được set trong DB nên không cần xóa bảng phụ
         return $this->delete('persons', $condition);
     }
 
@@ -128,6 +129,16 @@ class Person extends CoreModel
         WHERE p.id = $id");
     }
 
+    // Hàm tìm diễn viên theo slug
+    public function findBySlug($slug)
+    {
+        return $this->getOne("SELECT p.*, COUNT(mp.movie_id) as count_movies, GROUP_CONCAT( DISTINCT pr.name SEPARATOR ', ') as role_name
+        FROM persons p
+        LEFT JOIN movie_person mp ON p.id = mp.person_id
+        LEFT JOIN person_roles pr ON pr.id = mp.role_id
+        WHERE p.slug = ?", [$slug]);
+    }
+
     // Hàm lấy số lượng phim của một diễn viên
     public function countPersonMovies($id)
     {
@@ -137,7 +148,7 @@ class Person extends CoreModel
         WHERE mp.person_id = $id");
     }
 
-    // Hàm lấy danh sách phim của một diễn viên
+    // Hàm lấy danh sách phim dựa tên slug của một diễn viên
     public function getPersonMovies($id, $offset = 0, $perPage = 10)
     {
         $sql = "SELECT m.*

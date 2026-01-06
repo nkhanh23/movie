@@ -4,13 +4,13 @@ $current_page = $_SERVER['REQUEST_URI'];
 $current_path = parse_url($current_page, PHP_URL_PATH);
 
 // Xác định trang nào đang active
-$is_gioi_thieu = strpos($current_path, '/gioi_thieu') !== false;
-$is_lien_he = strpos($current_path, '/lien_he') !== false;
-$is_xem_tiep = strpos($current_path, '/xem_tiep') !== false;
-$is_yeu_thich_dien_vien = strpos($current_path, '/dien_vien/yeu_thich') !== false;
-$is_yeu_thich = strpos($current_path, '/yeu_thich') !== false && !$is_yeu_thich_dien_vien;
-$is_tai_khoan = strpos($current_path, '/tai_khoan') !== false;
-$is_thong_bao = strpos($current_path, '/thong_bao') !== false;
+$is_gioi_thieu = strpos($current_path, '/gioi-thieu') !== false;
+$is_lien_he = strpos($current_path, '/lien-he') !== false;
+$is_xem_tiep = strpos($current_path, '/xem-tiep') !== false;
+$is_yeu_thich_dien_vien = strpos($current_path, '/dien-vien/yeu-thich') !== false;
+$is_yeu_thich = strpos($current_path, '/yeu-thich') !== false && !$is_yeu_thich_dien_vien;
+$is_tai_khoan = strpos($current_path, '/tai-khoan') !== false;
+$is_thong_bao = strpos($current_path, '/thong-bao') !== false;
 ?>
 <!-- Mobile Menu Toggle Button (visible on small screens) -->
 <button id="mobileMenuToggle" class="lg:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-110 transition-all duration-300">
@@ -31,7 +31,13 @@ $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
         <div class="flex flex-col gap-8 relative z-10">
             <div class="flex items-center gap-4 pb-6 border-b border-white/5 sidebar-user-info relative">
                 <div class="relative sidebar-avatar">
-                    <img src="<?php echo _HOST_URL_PUBLIC; ?>/img/avatar/default-avatar.jpg" alt="User Avatar" class="w-14 h-14 rounded-full border-2 border-primary/30 shadow-[0_0_15px_rgba(217,108,22,0.3)]">
+                    <?php
+                    $userAvatar = !empty($_SESSION['auth']['avatar']) ? $_SESSION['auth']['avatar'] : _HOST_URL_PUBLIC . '/img/avatar/default-avatar.jpg';
+                    ?>
+                    <img src="<?php echo $userAvatar; ?>"
+                        alt="User Avatar"
+                        class="w-14 h-14 rounded-full border-2 border-primary/30 shadow-[0_0_15px_rgba(217,108,22,0.3)] object-cover"
+                        onerror="this.src='<?php echo _HOST_URL_PUBLIC; ?>/img/avatar/default-avatar.jpg'">
                     <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900"></div>
                 </div>
                 <div class="sidebar-user-text flex-1">
@@ -45,43 +51,43 @@ $is_thong_bao = strpos($current_path, '/thong_bao') !== false;
             </div>
             <div class="flex flex-col gap-2">
                 <!-- Giới thiệu -->
-                <a href="<?= _HOST_URL ?>/gioi_thieu" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_gioi_thieu ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/gioi-thieu" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_gioi_thieu ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_gioi_thieu ? 'group-hover:text-primary' : ''; ?> sidebar-icon">info</span>
                     <p class="text-sm font-medium sidebar-text">Giới thiệu</p>
                 </a>
 
                 <!-- Liên hệ -->
-                <a href="<?= _HOST_URL ?>/lien_he" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_lien_he ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/lien-he" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_lien_he ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_lien_he ? 'group-hover:text-primary' : ''; ?> sidebar-icon">contact_support</span>
                     <p class="text-sm font-medium sidebar-text">Liên hệ</p>
                 </a>
 
                 <!-- Xem tiếp phim -->
-                <a href="<?= _HOST_URL ?>/xem_tiep" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_xem_tiep ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/xem-tiep" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_xem_tiep ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_xem_tiep ? 'group-hover:text-primary' : ''; ?> sidebar-icon">play_arrow</span>
                     <p class="text-sm font-medium sidebar-text">Xem tiếp phim</p>
                 </a>
 
                 <!-- Yêu thích diễn viên -->
-                <a href="<?= _HOST_URL ?>/dien_vien/yeu_thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich_dien_vien ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/dien-vien/yeu-thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich_dien_vien ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_yeu_thich_dien_vien ? 'group-hover:text-primary' : ''; ?> sidebar-icon" <?php echo $is_yeu_thich_dien_vien ? 'style="font-variation-settings: \'FILL\' 1;"' : ''; ?>>stars</span>
                     <p class="text-sm font-medium sidebar-text">Diễn viên yêu thích</p>
                 </a>
 
                 <!-- Yêu thích -->
-                <a href="<?= _HOST_URL ?>/yeu_thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/yeu-thich" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_yeu_thich ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_yeu_thich ? 'group-hover:text-primary' : ''; ?> sidebar-icon" <?php echo $is_yeu_thich ? 'style="font-variation-settings: \'FILL\' 1;"' : ''; ?>>favorite</span>
                     <p class="text-sm font-medium sidebar-text">Yêu thích</p>
                 </a>
 
                 <!-- Tài khoản -->
-                <a href="<?= _HOST_URL ?>/tai_khoan" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_tai_khoan ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/tai-khoan" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_tai_khoan ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_tai_khoan ? 'group-hover:text-primary' : ''; ?> sidebar-icon">person</span>
                     <p class="text-sm font-medium sidebar-text">Tài khoản</p>
                 </a>
 
                 <!-- Thông báo -->
-                <a href="<?= _HOST_URL ?>/thong_bao" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_thong_bao ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
+                <a href="<?= _HOST_URL ?>/thong-bao" class="sidebar-menu-item group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 <?php echo $is_thong_bao ? 'sidebar-item-active' : 'text-slate-400 hover:text-white hover:bg-white/5'; ?>">
                     <span class="material-symbols-outlined transition-transform group-hover:scale-110 <?php echo !$is_thong_bao ? 'group-hover:text-primary' : ''; ?> sidebar-icon">notifications</span>
                     <p class="text-sm font-medium sidebar-text">Thông báo</p>
                 </a>

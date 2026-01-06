@@ -86,17 +86,17 @@ layout('client/header');
                     </div>
                     <div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center text-center group">
                         <span class="material-symbols-outlined text-primary/70 text-3xl mb-2 group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(217,108,22,0.8)] transition-all">trophy</span>
-                        <p class="text-3xl font-bold text-white"><?php echo $personDetail['awards'] ?></p>
+                        <p class="text-3xl font-bold text-white"><?php echo isset($personDetail['awards']) ? $personDetail['awards'] : 'Đang cập nhật' ?></p>
                         <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Giải thưởng</p>
                     </div>
                     <div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center text-center group">
                         <span class="material-symbols-outlined text-primary/70 text-3xl mb-2 group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(217,108,22,0.8)] transition-all">stars</span>
-                        <p class="text-3xl font-bold text-white"><?php echo $personDetail['nominations'] ?></p>
+                        <p class="text-3xl font-bold text-white"><?php echo isset($personDetail['nominations']) ? $personDetail['nominations'] : 'Đang cập nhật' ?></p>
                         <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Đề cử</p>
                     </div>
                     <div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center text-center group">
                         <span class="material-symbols-outlined text-primary/70 text-3xl mb-2 group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(217,108,22,0.8)] transition-all">history</span>
-                        <p class="text-3xl font-bold text-white"><?php echo $personDetail['start_year'] ?></p>
+                        <p class="text-3xl font-bold text-white"><?php echo isset($personDetail['start_year']) ? $personDetail['start_year'] : 'Đang cập nhật' ?></p>
                         <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Năm hoạt động</p>
                     </div>
                 </section>
@@ -114,7 +114,7 @@ layout('client/header');
                             $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';
                         ?>
                             <div class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">
-                                <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
+                                <div onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60"></div>
                                     <div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="<?php echo $movie['tittle']; ?>" style='background-image: url("<?php echo $movie['poster_url']; ?>");'></div>
                                     <div class="absolute top-2 right-2 z-20 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/10 flex items-center gap-1">
@@ -123,9 +123,9 @@ layout('client/header');
                                     </div>
                                 </div>
                                 <div class="px-1">
-                                    <h3 onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-white font-medium truncate group-hover:text-primary transition-colors cursor-pointer"><?php echo $movie['tittle'] ?></h3>
+                                    <h3 onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="text-white font-medium truncate group-hover:text-primary transition-colors cursor-pointer"><?php echo $movie['tittle'] ?></h3>
                                     <div class="flex items-center justify-between mt-1">
-                                        <p onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-gray-500 text-xs truncate flex-1 cursor-pointer"><?php echo $movie['original_tittle'] ?></p>
+                                        <p onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="text-gray-500 text-xs truncate flex-1 cursor-pointer"><?php echo $movie['original_tittle'] ?></p>
                                         <button
                                             class="js-favorite-btn ml-2 flex-shrink-0 p-2 rounded-full hover:bg-white/10 transition-all duration-300 <?= $favClass ?>"
                                             data-movie-id="<?php echo $movie['id']; ?>">
@@ -144,7 +144,7 @@ layout('client/header');
             <div class="flex items-center gap-2">
                 <!-- Previous -->
                 <?php if ($page > 1): ?>
-                    <button onclick="window.location.href='dien_vien?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'"
+                    <button onclick="window.location.href='dien-vien?<?php echo $queryString ?>&page=<?php echo $page - 1 ?>'"
                         class="group w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-primary hover:border-primary text-gray-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-primary/30">
                         <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                     </button>
@@ -168,7 +168,7 @@ layout('client/header');
                             ? 'bg-primary text-white shadow-lg shadow-primary/40 scale-110 font-bold border-primary'
                             : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/5 border-transparent';
                     ?>
-                        <button onclick="window.location.href='dien_vien?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
+                        <button onclick="window.location.href='dien-vien?<?php echo $queryString ?>&page=<?php echo $i; ?>'"
                             class="w-10 h-10 flex items-center justify-center rounded-xl text-sm border transition-all duration-300 <?php echo $btnClass ?>">
                             <?php echo $i ?>
                         </button>
@@ -177,7 +177,7 @@ layout('client/header');
 
                 <!-- Next -->
                 <?php if ($page < $maxPage): ?>
-                    <button onclick="window.location.href='dien_vien?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'"
+                    <button onclick="window.location.href='dien-vien?<?php echo $queryString ?>&page=<?php echo $page + 1 ?>'"
                         class="group w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-primary hover:border-primary text-gray-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-primary/30">
                         <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                     </button>

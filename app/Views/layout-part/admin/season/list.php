@@ -16,14 +16,14 @@ $msg_type = getSessionFlash('msg_type');
 
 <section id="episodes-view" class="content-section active" style="padding: 30px;">
     <div class="page-header">
-        <h2>Quản lý Tập Phim</h2>
+        <h2>Quản lý Mùa Phim</h2>
         <?php if (!empty($filterGet['filter-movie-id'])): ?>
             <button
                 onclick="window.location.href='<?php echo _HOST_URL; ?>/admin/season/add?id=<?php echo $filterGet['filter-movie-id'] ?>'"
-                id="btn-add-episode" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Tập Mới</button>
+                id="btn-add-episode" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Mùa Phim Mới</button>
         <?php else: ?>
             <button onclick="alert('Vui lòng chọn và lọc một bộ phim trước khi thêm tập mới!');" class="btn btn-primary"><i
-                    class="fa-solid fa-plus"></i> Thêm Tập Mới</button>
+                    class="fa-solid fa-plus"></i> Thêm Mùa Phim Mới</button>
         <?php endif; ?>
     </div>
     <?php
@@ -34,14 +34,14 @@ $msg_type = getSessionFlash('msg_type');
     <form action="">
         <div class="toolbar">
             <div class="filters-group">
-                <!-- REPLACED: Native Select -> Custom Searchable Select -->
+                <!-- Custom Searchable Select -->
                 <div class="searchable-select" id="filter-movie-select-container">
                     <?php
-                    // 1. Khởi tạo giá trị mặc định
+                    // Khởi tạo giá trị mặc định
                     $displayMovieName = '-- Chọn Phim (Tìm kiếm) --';
                     $selectedMovieTypeId = ''; // Biến này sẽ dùng để truyền xuống JS logic
 
-                    // 2. Nếu có dữ liệu cũ (đã lọc), tìm tên phim để hiển thị
+                    // Nếu có dữ liệu cũ (đã lọc), tìm tên phim để hiển thị
                     if (!empty($oldData['filter-movie-id'])) {
                         foreach ($getAllMovies as $m) {
                             if ($m['id'] == $oldData['filter-movie-id']) {
@@ -78,6 +78,10 @@ $msg_type = getSessionFlash('msg_type');
                     </div>
                 </div>
 
+                <!-- Season Select (chỉ hiện khi chọn phim bộ) -->
+                <select id="filter-season-select" name="season_id" class="form-select" disabled>
+                    <option value="">-- Chọn Mùa --</option>
+                </select>
 
                 <button class="btn btn-primary"><i class="fa-solid fa-filter"></i> Lọc</button>
             </div>
@@ -172,7 +176,7 @@ $msg_type = getSessionFlash('msg_type');
 <!-- Khi click chọn phim -> Lấy data-type-id -> Kiểm tra -> Mở/Khóa ô Season. -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- 1. KHAI BÁO ---
+        // --- KHAI BÁO ---
         const selectContainer = document.getElementById('filter-movie-select-container');
         const trigger = selectContainer.querySelector('.select-trigger');
         const triggerText = trigger;
@@ -189,10 +193,10 @@ $msg_type = getSessionFlash('msg_type');
         const oldSeasonId = "<?php echo !empty($oldData['season_id']) ? $oldData['season_id'] : ''; ?>";
         const currentMovieTypeId = "<?php echo $selectedMovieTypeId; ?>";
 
-        // --- 2. SETUP PORTAL (Chuyển menu ra body) ---
+        // SETUP PORTAL (Chuyển menu ra body)
         // Thêm class portal để nhận CSS mới
         dropdown.classList.add('global-dropdown-portal');
-        // Xóa class cũ để tránh xung đột CSS (QUAN TRỌNG)
+        // Xóa class cũ để tránh xung đột CSS
         dropdown.classList.remove('select-dropdown');
 
         // Di chuyển ra body
@@ -217,7 +221,7 @@ $msg_type = getSessionFlash('msg_type');
             dropdown.style.width = rect.width + 'px';
         }
 
-        // --- 3. SỰ KIỆN CLICK MỞ MENU ---
+        // SỰ KIỆN CLICK MỞ MENU
         trigger.addEventListener('click', function(e) {
             e.stopPropagation();
 
@@ -245,7 +249,7 @@ $msg_type = getSessionFlash('msg_type');
             }
         });
 
-        // --- 4. LOGIC SEARCH ---
+        // LOGIC SEARCH
         searchInput.addEventListener('input', function(e) {
             const keyword = e.target.value.toLowerCase();
             movieOptions.forEach(option => {
@@ -258,7 +262,7 @@ $msg_type = getSessionFlash('msg_type');
             });
         });
 
-        // --- 5. LOGIC LOAD SEASON ---
+        // LOGIC LOAD SEASON
         function loadSeasonsForMovie(movieId, typeId) {
             seasonSelect.innerHTML = '<option value="">-- Chọn Mùa --</option>';
             seasonSelect.value = "";

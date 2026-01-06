@@ -16,8 +16,7 @@ $router->post('/reset', 'AuthController@reset');
 // ADMIN POST 
 $router->get('/admin/film/list', 'MoviesController@list');
 
-$router->get('/watch', 'WatchDetailController@showWatch');
-$router->post('/watch', 'WatchDetailController@watch');
+// Route cũ /watch đã được thay thế bằng /xem-phim/{slug} (dòng 178)
 
 $router->get('/admin/film/edit', 'MoviesController@showEdit');
 $router->post('/admin/film/edit', 'MoviesController@edit');
@@ -164,8 +163,8 @@ $router->post('/admin/settings/email', 'SettingController@updateEmail');
 // -----------------------------------------------------------------
 
 // PAGE DETAIL
-$router->get('/detail', 'MovieDetailController@showDetail');
-$router->post('/detail', 'MovieDetailController@detail');
+$router->get('/phim/{slug}', 'MovieDetailController@showDetail');
+$router->post('/phim/{slug}', 'MovieDetailController@detail');
 
 $router->get('/api/get-episodes', 'MovieDetailController@getEpisodesApi');
 
@@ -175,62 +174,61 @@ $router->post('/api/reply-comment', 'CommentUserController@replyCommentApi');
 $router->post('/api/like-comment', 'CommentUserController@likeCommentApi');
 
 // PAGE WATCH
-$router->get('/watch', 'WatchDetailController@showWatch');
-$router->post('/watch', 'WatchDetailController@watch');
+$router->get('/xem-phim/{slug}', 'WatchDetailController@showWatch');
 $router->post('/api/save-history', 'WatchDetailController@saveHistory');
 
 // PAGE PERSON
-$router->get('/dien_vien/chi_tiet', 'PersonDetailController@showPerson');
+$router->get('/dien-vien/{slug}', 'PersonDetailController@showPerson');
 
 //PAGE SEARCH
-$router->get('/tim_kiem', 'HomeController@search');
+$router->get('/tim-kiem', 'HomeController@search');
 
 //PAGE PHIM LE
-$router->get('/phim_le', 'HomeController@phimLe');
+$router->get('/phim-le', 'HomeController@phimLe');
 
 //PAGE PHIM BO
-$router->get('/phim_bo', 'HomeController@phimBo');
+$router->get('/phim-bo', 'HomeController@phimBo');
 
 //PAGE PHIM CHIEU RAP
-$router->get('/phim_chieu_rap', 'HomeController@phimChieuRap');
+$router->get('/phim-chieu-rap', 'HomeController@phimChieuRap');
 
 //PAGE THE LOAI
-$router->get('/the_loai', 'HomeController@theLoai');
+$router->get('/the-loai/{slug}', 'HomeController@theLoai');
 
 //PAGE QUOC GIA
-$router->get('/quoc_gia', 'HomeController@quocGia');
+$router->get('/quoc-gia/{slug}', 'HomeController@quocGia');
 
 //PAGE DIEN VIEN
-$router->get('/dien_vien', 'HomeController@dienVien');
-$router->get('/dien_vien/yeu_thich', 'AccountController@showFavoriteActor');
+$router->get('/dien-vien', 'HomeController@dienVien');
+$router->get('/dien-vien/yeu-thich', 'AccountController@showFavoriteActor');
 
 
 //PAGE LIEN HE
-$router->get('/lien_he', 'AccountController@showContact');
-$router->post('/lien_he', 'AccountController@contact');
+$router->get('/lien-he', 'AccountController@showContact');
+$router->post('/lien-he', 'AccountController@contact');
 
 //PAGE GIOI THIEU
-$router->get('/gioi_thieu', 'AccountController@showIntroduce');
+$router->get('/gioi-thieu', 'AccountController@showIntroduce');
 
 //PAGE THONG BAO
-$router->get('/thong_bao', 'AccountController@showNotice');
+$router->get('/thong-bao', 'AccountController@showNotice');
 
 //PAGE TAI KHOAN
-$router->get('/tai_khoan', 'AccountController@showAccount');
+$router->get('/tai-khoan', 'AccountController@showAccount');
 
 //PAGE YEU THICH
-$router->get('/yeu_thich', 'AccountController@showFavorite');
+$router->get('/yeu-thich', 'AccountController@showFavorite');
 $router->post('/api/toggle-favorite', 'AccountController@toggleFavoriteApi');
 $router->post('/api/toggle-favorite-actor', 'AccountController@toggleFavoriteActorApi');
 
 
 //PAGE EDIT
-$router->get('/tai_khoan/chinh_sua', 'AccountController@showEdit');
-$router->post('/tai_khoan/chinh_sua', 'AccountController@edit');
-$router->get('/tai_khoan/bao_mat', 'AccountController@showSecurity');
-$router->post('/tai_khoan/bao_mat', 'AccountController@security');
+$router->get('/tai-khoan/chinh-sua', 'AccountController@showEdit');
+$router->post('/tai-khoan/chinh-sua', 'AccountController@edit');
+$router->get('/tai-khoan/bao-mat', 'AccountController@showSecurity');
+$router->post('/tai-khoan/bao-mat', 'AccountController@security');
 
 //PAGE XEM TIEP
-$router->get('/xem_tiep', 'AccountController@showNextWatch');
+$router->get('/xem-tiep', 'AccountController@showNextWatch');
 $router->get('/delete-history-dashboard', 'AccountController@deleteHistoryDashboard');
 $router->get('/delete-history-continue-page', 'AccountController@deleteHistoryContinuePage');

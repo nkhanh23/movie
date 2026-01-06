@@ -8,7 +8,10 @@ class Source extends CoreModel
 
     public function getOneSource($condition)
     {
-        return $this->getOne("SELECT * FROM video_sources WHERE $condition");
+        return $this->getOne("SELECT vs.*, e.movie_id, e.season_id 
+                FROM video_sources vs
+                LEFT JOIN episodes e ON vs.episode_id = e.id
+                WHERE $condition");
     }
 
     public function insertVideoSource($data)

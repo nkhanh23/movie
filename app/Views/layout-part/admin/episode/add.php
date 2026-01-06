@@ -81,19 +81,6 @@ if (isset($_GET['filter-movie-id'])) {
             </div>
 
             <div class="form-group">
-                <label for="video_source_id">Nguồn Video (Chọn sau cũng được)</label>
-                <select name="video_source_id" id="video_source_id">
-                    <option value="">-- Chọn nguồn video (hoặc để trống) --</option>
-                    <?php foreach ($getAllVideoSource as $item): ?>
-                        <option value="<?php echo $item['id']; ?>"
-                            <?php echo (!empty($oldData['video_source_id']) && $oldData['video_source_id'] == $item['id']) ? 'selected' : ''; ?>>
-                            <?php echo $item['source_name']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="duration">Thời lượng (phút)</label>
                 <input type="number" name="duration" id="duration" placeholder="45"
                     value="<?php echo !empty($oldData) ? oldData($oldData, 'duration') : ''; ?>">

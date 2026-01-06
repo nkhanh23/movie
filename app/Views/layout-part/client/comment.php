@@ -101,13 +101,13 @@
                                                     <span class="text-white/40 text-[10px]"><?php echo $item['created_at']; ?></span>
                                                 </div>
 
-                                                <div class="<?php echo ($item['content'] === 'Bình luận này đã bị Admin xóa do vi phạm quy tắc cộng đồng.') ? 'text-red-500 italic' : 'text-white/80'; ?> text-sm leading-relaxed">
+                                                <div class="<?php echo ($item['content'] === 'Bình luận này đã bị Admin xóa do vi phạm quy tắc cộng đồng.') ? 'text-red-500 italic' : 'text-white/80'; ?> text-sm leading-relaxed whitespace-pre-line">
                                                     <?php if ($level > 0 && $parentName): ?>
                                                         <span class="inline-flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 px-2 py-0.5 rounded text-white font-bold text-xs mr-1 transition-colors cursor-pointer">
                                                             @<?php echo htmlspecialchars($parentName); ?>
                                                         </span>
                                                     <?php endif; ?>
-                                                    <?php echo nl2br(htmlspecialchars($item['content'])); ?>
+                                                    <?php echo htmlspecialchars(trim($item['content'])); ?>
                                                 </div>
                                                 <?php
                                                 $isLiked = !empty($item['is_liked']) && $item['is_liked'] > 0;

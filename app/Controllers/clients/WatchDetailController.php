@@ -7,6 +7,7 @@ class WatchDetailController extends baseController
     private $personModel;
     private $commentsModel;
     private $watchHistoryModel;
+
     public function __construct()
     {
         $this->moviesModel = new Movies();
@@ -36,51 +37,108 @@ class WatchDetailController extends baseController
         return $branch;
     }
 
-    public function showWatch()
+    public function showWatch($slug = null)
     {
         $filter = filterData();
-        $idMovie = $filter['id'];
-        $idEpisode = $filter['episode_id'] ?? null;
-        $idSeason = $filter['season_id'] ?? null;
+
+        $ssNumber = isset($filter['ss']) ? (int)$filter['ss'] : null;
+        $epNumber = isset($filter['ep']) ? (int)$filter['ep'] : null;
+
+        // Kiểm tra slug
+        if (empty($slug)) {
+            reload('/');
+        }
+
+        // Lấy thông tin phim theo slug
+        $movieDetail = $this->moviesModel->findBySlug($slug);
+
+        if (!$movieDetail) {
+            reload('/');
+        }
+
+        $idMovie = $movieDetail['id'];
+        $isSeries = ($movieDetail['type_id'] == 2);
+
         // Tang view phim
         $this->moviesModel->incrementMovieView($idMovie);
 
-
-        // Lấy thông tin phim chi tiết
-        $condition = 'm.id=' . $idMovie;
-        $movieDetail = $this->moviesModel->getMovieDetail($condition);
-
         // Lấy ID user đang đăng nhập
-        if (isset($_SESSION['auth']['id'])) {
-            $currentUserId = $_SESSION['auth']['id'];
-        } else {
-            $currentUserId = 0;
-        }
+        $currentUserId = isset($_SESSION['auth']['id']) ? $_SESSION['auth']['id'] : 0;
 
-        // Lấy thông tin tập phim
+        // Khởi tạo biến
         $episodeDetail = [];
+        $seasonDetail = [];
         $currentSeasonId = 0;
+        $currentEpisodeId = null;
+        $currentSeasonNumber = 1;
+        $currentEpisodeNumber = 1;
 
-        // Lấy thông tin season
-        $conditionSeason = 'movie_id=' . $idMovie;
-        $seasonDetail = $this->moviesModel->getSeasonDetail($conditionSeason);
+        // =====================================================================
+        //  XỬ LÝ PHIM BỘ (type_id = 2)
+        // =====================================================================
+        if ($isSeries) {
+            // Lấy danh sách season của phim
+            $seasonDetail = $this->moviesModel->getSeasonsByMovieId($idMovie);
 
-        //Phim bo
-        if ($movieDetail['type_id'] == 2) {
-            if (!empty($seasonDetail) && is_array($seasonDetail)) {
+            if (!empty($seasonDetail)) {
+                // Có season - xử lý theo ss và ep
+                $currentSeasonNumber = $ssNumber ?: 1;
 
-                $firstSeason = $seasonDetail[0];
+                // Lấy season theo số thứ tự
+                $currentSeason = $this->moviesModel->getSeasonByNumber($idMovie, $currentSeasonNumber);
 
-                $currentSeasonId = $firstSeason['id'];
+                if ($currentSeason) {
+                    $currentSeasonId = $currentSeason['id'];
 
-                $conditionEpisode = 'season_id=' . $currentSeasonId;
-                $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
+                    // Lấy danh sách tập của season
+                    $episodeDetail = $this->moviesModel->getEpisodesBySeasonId($currentSeasonId);
+
+                    // Xác định tập hiện tại
+                    $currentEpisodeNumber = $epNumber ?: 1;
+                    $currentEpisode = $this->moviesModel->getEpisodeBySeasonAndNumber($currentSeasonId, $currentEpisodeNumber);
+
+                    if ($currentEpisode) {
+                        $currentEpisodeId = $currentEpisode['id'];
+                    } elseif (!empty($episodeDetail)) {
+                        // Nếu không tìm thấy tập, lấy tập đầu tiên
+                        $currentEpisodeId = $episodeDetail[0]['id'];
+                        $currentEpisodeNumber = 1;
+                    }
+                } else {
+                    // Season không tồn tại, redirect về ss=1
+                    reload('/xem-phim/' . $slug . '?ss=1&ep=1');
+                }
             } else {
+                // Phim bộ nhưng không có season - lấy episodes trực tiếp
                 $conditionEpisode = 'movie_id=' . $idMovie;
                 $episodeDetail = $this->moviesModel->getEpisodeDetail($conditionEpisode);
+
+                $currentEpisodeNumber = $epNumber ?: 1;
+                if (!empty($episodeDetail)) {
+                    $index = $currentEpisodeNumber - 1;
+                    if (isset($episodeDetail[$index])) {
+                        $currentEpisodeId = $episodeDetail[$index]['id'];
+                    } else {
+                        $currentEpisodeId = $episodeDetail[0]['id'];
+                        $currentEpisodeNumber = 1;
+                    }
+                }
             }
-        } else {
-            //Phim le
+
+            // Nếu URL không có ss/ep, redirect sang tập đầu tiên
+            if ($ssNumber === null && $epNumber === null && !empty($episodeDetail)) {
+                if (!empty($seasonDetail)) {
+                    reload('/xem-phim/' . $slug . '?ss=1&ep=1');
+                } else {
+                    reload('/xem-phim/' . $slug . '?ep=1');
+                }
+            }
+        }
+        // =====================================================================
+        //  XỬ LÝ PHIM LẺ (type_id != 2)
+        // =====================================================================
+        else {
+            // Phim lẻ - lấy video source
             $sourceInfo = $this->moviesModel->getVideoSources($idMovie);
 
             if (!empty($sourceInfo)) {
@@ -89,36 +147,21 @@ class WatchDetailController extends baseController
                     'name' => $sourceInfo['voice_type'],
                     'link' => $sourceInfo['source_url'],
                 ];
+                $currentEpisodeId = $sourceInfo['episode_id'];
             }
         }
 
-        // =====================================================================
-        // AUTO-REDIRECT: Nếu URL không có episode_id, redirect sang tập đầu tiên
-        // =====================================================================
-        if (empty($idEpisode) && !empty($episodeDetail)) {
-            // Lấy ID tập đầu tiên
-            $firstEpisodeId = $episodeDetail[0]['id'];
-
-            // Tạo URL mới với episode_id
-            $redirectUrl = _HOST_URL . '/watch?id=' . $idMovie . '&episode_id=' . $firstEpisodeId;
-
-            // Redirect
-            header("Location: $redirectUrl");
-            exit;
-        }
         //--------------------------------------------------------------------------------------
-        // LAY LICH SU XEM PHIM
+        // LẤY LỊCH SỬ XEM PHIM
         //-------------------------------------------------------------------------------------
         $startTime = 0;
-        //Chi lay lich su neu user da dang nhap va co ID tap phim
-        if ($currentUserId > 0 && !empty($idEpisode)) {
-            $startTime = $this->watchHistoryModel->getProgress($currentUserId, $idMovie, $idEpisode, $idSeason);
+        if ($currentUserId > 0 && !empty($currentEpisodeId)) {
+            $startTime = $this->watchHistoryModel->getProgress($currentUserId, $idMovie, $currentEpisodeId, $currentSeasonId ?: null);
         }
+
         // Lấy danh sách bình luận
-        $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId, $idEpisode);
-        // Xử lý Phân cấp Cha - Con (Tree Structure)
+        $comments = $this->commentsModel->getCommentsByMovie($idMovie, $currentUserId, $currentEpisodeId);
         $commentsTree = $this->buildTree($comments, 0);
-        // ĐẾM SỐ LƯỢNG COMMENT CHA 
         $totalComments = count($commentsTree);
 
         // Lấy phim tương tự
@@ -127,23 +170,25 @@ class WatchDetailController extends baseController
         // Lấy thông tin diễn viên
         $getCastByMovieId = $this->personModel->getCastByMovieId($idMovie);
 
-        $countAllCommentsByMovie = $this->commentsModel->countCommentsByMovie($idMovie, $idEpisode);
+        $countAllCommentsByMovie = $this->commentsModel->countCommentsByMovie($idMovie, $currentEpisodeId);
 
         $data = [
             'idMovie' => $idMovie,
-            'idEpisode' => $idEpisode,
+            'idEpisode' => $currentEpisodeId,
             'movieDetail' => $movieDetail,
             'seasonDetail' => $seasonDetail,
             'episodeDetail' => $episodeDetail,
             'currentSeasonId' => $currentSeasonId,
+            'currentSeasonNumber' => $currentSeasonNumber,
+            'currentEpisodeNumber' => $currentEpisodeNumber,
             'getCastByMovieId' => $getCastByMovieId,
             'comments' => $comments,
             'listComments' => $commentsTree,
             'totalComments' => $totalComments,
-            'countAllCommentsByMovie' => $countAllCommentsByMovie[0]['total'],
+            'countAllCommentsByMovie' => $countAllCommentsByMovie[0]['total'] ?? 0,
             'similarMovies' => $similarMovies,
-            'startTime' => $startTime
-
+            'startTime' => $startTime,
+            'isSeries' => $isSeries
         ];
         $this->renderView('layout-part/client/watch', $data);
     }

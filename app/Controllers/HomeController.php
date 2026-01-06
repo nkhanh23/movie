@@ -78,7 +78,12 @@ class HomeController extends baseController
             'getLoveMovies'        => $cachedData['getLoveMovies'],
             'getHorrorMovies'      => $cachedData['getHorrorMovies'],
             'heroIsFavorited'      => $heroIsFavorited,
-            'getContinueWatching'  => $getContinueWatching
+            'getContinueWatching'  => $getContinueWatching,
+            // SEO for Homepage
+            'seoTitle'       => 'Phê Phim - Xem Phim Online Miễn Phí Chất Lượng Cao HD Vietsub',
+            'seoDescription' => 'Phê Phim - Website xem phim online miễn phí, phim mới nhất 2024, phim bộ, phim lẻ, phim chiếu rạp vietsub thuyết minh chất lượng cao HD.',
+            'seoKeywords'    => 'xem phim, phim online, phim mới, phim hay, phim vietsub, phim thuyết minh, phim hd, phê phim',
+            'seoCanonical'   => _HOST_URL
         ];
         $this->renderView('/layout-part/client/dashboard', $data);
     }
@@ -115,8 +120,11 @@ class HomeController extends baseController
             }
         }
 
-        $getAllPerson = $this->personModel->getAllPerson("SELECT * FROM persons $chuoiWherePerson");
-        $getAllMovies = $this->moviesModel->getAllMovies("SELECT * FROM movies $chuoiWhereMovies");
+        $getAllPerson = $this->personModel->getAllPerson("SELECT id, slug, name, avatar FROM persons $chuoiWherePerson");
+        $getAllMovies = $this->moviesModel->getAllMovies("SELECT m.id, m.slug, m.tittle, m.poster_url, m.imdb_rating, m.duration, ry.year as release_year_name 
+        FROM movies m
+        LEFT JOIN release_year ry ON m.release_year = ry.id
+        $chuoiWhereMovies");
 
 
         $data = [
@@ -127,7 +135,7 @@ class HomeController extends baseController
         $this->renderView('/layout-part/client/search', $data);
     }
 
-    private function renderMoviesByType($typeId, $viewPath, $genresId = null, $countriesId = null)
+    private function renderMoviesByType($typeId, $viewPath, $genresId = null, $countriesId = null, $seoData = [])
     {
         $filter = filterData('get');
         $filterParams = [
@@ -162,6 +170,11 @@ class HomeController extends baseController
             'getAllQuality'     => $cachedFilterData['getAllQuality'],
             'getAllAge'         => $cachedFilterData['getAllAge'],
             'getAllReleaseYear' => $cachedFilterData['getAllReleaseYear'],
+            // SEO Data
+            'seoTitle'          => $seoData['title'] ?? null,
+            'seoDescription'    => $seoData['description'] ?? null,
+            'seoKeywords'       => $seoData['keywords'] ?? null,
+            'seoCanonical'      => $seoData['canonical'] ?? null,
         ];
 
         $this->renderView($viewPath, $data);
@@ -169,32 +182,88 @@ class HomeController extends baseController
 
     public function phimLe()
     {
-        $this->renderMoviesByType(1, '/layout-part/client/phim-le');
+        $seoData = [
+            'title' => 'Phim Lẻ - Xem Phim Lẻ Mới Nhất Vietsub HD | Phê Phim',
+            'description' => 'Xem phim lẻ mới nhất 2024, phim lẻ hay nhất, phim lẻ vietsub, thuyết minh chất lượng cao HD miễn phí tại Phê Phim.',
+            'keywords' => 'phim lẻ, phim lẻ mới, phim lẻ hay, phim lẻ vietsub, phim lẻ hd, xem phim lẻ',
+            'canonical' => _HOST_URL . '/phim-le'
+        ];
+        $this->renderMoviesByType(1, '/layout-part/client/phim-le', null, null, $seoData);
     }
 
     public function phimBo()
     {
-        $this->renderMoviesByType(2, '/layout-part/client/phim-bo');
+        $seoData = [
+            'title' => 'Phim Bộ - Xem Phim Bộ Mới Nhất Vietsub HD | Phê Phim',
+            'description' => 'Xem phim bộ mới nhất 2024, phim bộ Hàn Quốc, Trung Quốc, Mỹ vietsub, thuyết minh chất lượng cao HD miễn phí.',
+            'keywords' => 'phim bộ, phim bộ mới, phim bộ hay, phim bộ hàn quốc, phim bộ trung quốc, xem phim bộ',
+            'canonical' => _HOST_URL . '/phim-bo'
+        ];
+        $this->renderMoviesByType(2, '/layout-part/client/phim-bo', null, null, $seoData);
     }
 
     public function phimChieuRap()
     {
-        $this->renderMoviesByType(3, '/layout-part/client/phim-chieu-rap');
+        $seoData = [
+            'title' => 'Phim Chiếu Rạp - Phim Rạp Mới Nhất 2024 | Phê Phim',
+            'description' => 'Xem phim chiếu rạp mới nhất 2024, phim rạp hay, phim bom tấn Hollywood vietsub HD miễn phí tại Phê Phim.',
+            'keywords' => 'phim chiếu rạp, phim rạp mới, phim bom tấn, phim hollywood, xem phim rạp',
+            'canonical' => _HOST_URL . '/phim-chieu-rap'
+        ];
+        $this->renderMoviesByType(3, '/layout-part/client/phim-chieu-rap', null, null, $seoData);
     }
 
 
-    public function theLoai()
+    public function theLoai($slug = null)
     {
-        $filter = filterData();
-        $genresId = $filter['id'];
-        $this->renderMoviesByType(1, '/layout-part/client/the_loai', $genresId);
+        if (empty($slug)) {
+            reload("/");
+        }
+
+        // Tìm thể loại theo slug
+        $genre = $this->genresModel->getGenreBySlug($slug);
+
+        if (!$genre) {
+            reload("/");
+        }
+
+        $genresId = $genre['id'];
+        $genreName = $genre['name'];
+
+        $seoData = [
+            'title' => 'Phim ' . $genreName . ' - Xem Phim ' . $genreName . ' Hay Nhất | Phê Phim',
+            'description' => 'Xem phim ' . $genreName . ' mới nhất 2025, tuyển tập phim ' . $genreName . ' hay nhất, phim ' . $genreName . ' vietsub HD miễn phí tại Phê Phim.',
+            'keywords' => 'phim ' . $genreName . ', phim ' . strtolower($genreName) . ' hay, xem phim ' . strtolower($genreName) . ', phim ' . strtolower($genreName) . ' vietsub',
+            'canonical' => _HOST_URL . '/the-loai/' . $slug
+        ];
+
+        $this->renderMoviesByType(1, '/layout-part/client/the_loai', $genresId, null, $seoData);
     }
 
-    public function quocGia()
+    public function quocGia($slug = null)
     {
-        $filter = filterData();
-        $countriesId = $filter['id'];
-        $this->renderMoviesByType(1, '/layout-part/client/quoc_gia', null, $countriesId);
+        if (empty($slug)) {
+            reload("/");
+        }
+
+        // Tìm quốc gia theo slug
+        $country = $this->moviesModel->getCountryBySlug($slug);
+
+        if (!$country) {
+            reload("/");
+        }
+
+        $countriesId = $country['id'];
+        $countryName = $country['name'];
+
+        $seoData = [
+            'title' => 'Phim ' . $countryName . ' - Xem Phim ' . $countryName . ' Hay Nhất | Phê Phim',
+            'description' => 'Xem phim ' . $countryName . ' mới nhất 2025, tuyển tập phim ' . $countryName . ' hay nhất, phim ' . $countryName . ' vietsub HD miễn phí tại Phê Phim.',
+            'keywords' => 'phim ' . $countryName . ', phim ' . strtolower($countryName) . ' hay, xem phim ' . strtolower($countryName),
+            'canonical' => _HOST_URL . '/quoc-gia/' . $slug
+        ];
+
+        $this->renderMoviesByType(1, '/layout-part/client/quoc_gia', null, $countriesId, $seoData);
     }
 
     public function dienVien()

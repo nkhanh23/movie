@@ -206,7 +206,7 @@ class AccountController extends baseController
                 if ($insertSupport) {
                     setSessionFlash('msg', 'Gửi tin nhắn thành công');
                     setSessionFlash('msg_type', 'success');
-                    reload('/lien_he');
+                    reload('/lien-he');
                 }
             }
         }
@@ -445,17 +445,17 @@ class AccountController extends baseController
                     }
                     setSessionFlash('msg', 'Cập nhật thông tin thành công');
                     setSessionFlash('msg_type', 'success');
-                    reload('/tai_khoan');
+                    reload('/tai-khoan');
                 } else {
                     setSessionFlash('msg', 'Cập nhật thông tin thất bại');
                     setSessionFlash('msg_type', 'danger');
-                    reload('/tai_khoan/chinh_sua');
+                    reload('/tai-khoan/chinh-sua');
                 }
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra dữ liệu nhập vào');
                 setSessionFlash('msg_type', 'danger');
                 setSessionFlash('errors', $errors);
-                reload('/tai_khoan/chinh_sua');
+                reload('/tai-khoan/chinh-sua');
             }
         }
     }
@@ -514,17 +514,17 @@ class AccountController extends baseController
                 if ($checkUpdate) {
                     setSessionFlash('msg', 'Cập nhật mật khẩu thành công');
                     setSessionFlash('msg_type', 'success');
-                    reload('/tai_khoan/bao_mat');
+                    reload('/tai-khoan/bao-mat');
                 } else {
                     setSessionFlash('msg', 'Cập nhật mật khẩu thất bại. Vui lòng thử lại');
                     setSessionFlash('msg_type', 'danger');
-                    reload('/tai_khoan/bao_mat');
+                    reload('/tai-khoan/bao-mat');
                 }
             } else {
                 setSessionFlash('msg', 'Vui lòng kiểm tra lại thông tin nhập vào');
                 setSessionFlash('msg_type', 'danger');
                 setSessionFlash('errors', $errors);
-                reload('/tai_khoan/bao_mat');
+                reload('/tai-khoan/bao-mat');
             }
         }
     }
@@ -560,9 +560,9 @@ class AccountController extends baseController
         if (!empty($filter['id'])) {
             $conditionDelete = 'id=' . $filter['id'];
             $checkDelete = $this->watchHistoryModel->deleteHistory($conditionDelete);
-            reload(_HOST_URL . '/xem_tiep');
+            reload(_HOST_URL . '/xem-tiep');
         } else {
-            reload(_HOST_URL . '/xem_tiep');
+            reload(_HOST_URL . '/xem-tiep');
         }
     }
 }

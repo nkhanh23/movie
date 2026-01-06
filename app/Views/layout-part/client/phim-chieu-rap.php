@@ -36,6 +36,11 @@ layout('client/header');
         <div class="absolute top-20 -left-40 w-80 h-80 bg-highlight/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
         <!-- Scrollable Grid Container -->
         <div class="mb-8">
+            <!-- Page Title H1 for SEO -->
+            <h1 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary">theaters</span>
+                Phim Chiếu Rạp Mới Nhất
+            </h1>
             <!-- Skeleton Loading (hiển thị ngay khi trang load, ẩn khi có data) -->
             <div id="skeletonGrid" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2 md:gap-4">
                 <?php for ($i = 0; $i < 14; $i++): ?>
@@ -56,7 +61,7 @@ layout('client/header');
                     $favClass = (!empty($movie['is_favorited'])) ? 'is-favorited' : '';
                 ?>
                     <div class="glass-card rounded-xl p-3 flex flex-col gap-3 group cursor-pointer relative overflow-hidden">
-                        <div onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
+                        <div onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60"></div>
                             <img loading="lazy"
                                 src="<?php echo $movie['poster_url']; ?>"
@@ -68,9 +73,9 @@ layout('client/header');
                             </div>
                         </div>
                         <div class="px-1">
-                            <h3 onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-white font-medium truncate group-hover:text-primary transition-colors cursor-pointer"><?php echo $movie['tittle'] ?></h3>
+                            <h3 onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="text-white font-medium truncate group-hover:text-primary transition-colors cursor-pointer"><?php echo $movie['tittle'] ?></h3>
                             <div class="flex items-center justify-between mt-1">
-                                <p onclick="window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="text-gray-500 text-xs truncate flex-1 cursor-pointer"><?php echo $movie['original_tittle'] ?></p>
+                                <p onclick="window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="text-gray-500 text-xs truncate flex-1 cursor-pointer"><?php echo $movie['original_tittle'] ?></p>
                                 <button
                                     class="js-favorite-btn ml-2 flex-shrink-0 p-2 rounded-full hover:bg-white/10 transition-all duration-300 <?= $favClass ?>"
                                     data-movie-id="<?php echo $movie['id']; ?>">

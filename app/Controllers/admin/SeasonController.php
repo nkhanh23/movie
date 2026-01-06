@@ -17,6 +17,7 @@ class SeasonController extends baseController
 
         $filter = filterData();
         $movieId = '';
+        $seasonId = '';
         $keyword = '';
         $chuoiWhere = '';
         if (isGet()) {
@@ -26,6 +27,9 @@ class SeasonController extends baseController
             if (isset($filter['filter-movie-id'])) {
                 $movieId = $filter['filter-movie-id'];
             }
+            if (isset($filter['season_id'])) {
+                $seasonId = $filter['season_id'];
+            }
 
             if (!empty($movieId)) {
                 if (strpos($chuoiWhere, 'WHERE') == false) {
@@ -34,6 +38,15 @@ class SeasonController extends baseController
                     $chuoiWhere .= ' AND ';
                 }
                 $chuoiWhere .= "s.movie_id = '$movieId'";
+            }
+
+            if (!empty($seasonId)) {
+                if (strpos($chuoiWhere, 'WHERE') == false) {
+                    $chuoiWhere .= ' WHERE ';
+                } else {
+                    $chuoiWhere .= ' AND ';
+                }
+                $chuoiWhere .= "s.id = '$seasonId'";
             }
 
             $cleanKeyword = addslashes($keyword);

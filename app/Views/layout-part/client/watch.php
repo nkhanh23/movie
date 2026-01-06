@@ -49,11 +49,12 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                         // LOGIC LẤY LINK
                         if (!empty($episodeDetail) && is_array($episodeDetail)) {
 
-                            // 1. Lấy ID tập đang xem từ URL (nếu có)
-                            $currentEpisodeId = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
+                            // Lấy ID tập hiện tại từ controller
+                            $currentEpisodeId = isset($idEpisode) ? $idEpisode : null;
 
-                            // Biến tạm để lưu tập đầu tiên
+                            // Biến để track
                             $firstEpLink = '';
+                            $episodeFound = false; // Đánh dấu có tìm thấy tập không
 
                             foreach ($episodeDetail as $index => $ep) {
                                 // Lấy link từ các key có thể có (source_url hoặc link)
@@ -64,21 +65,23 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                     $firstEpLink = $link;
                                 }
 
-                                // Nếu ID trùng với URL -> Lấy link này và dừng vòng lặp
+                                // Nếu ID trùng với tập hiện tại
                                 if ($currentEpisodeId && $ep['id'] == $currentEpisodeId) {
+                                    $episodeFound = true;
                                     $movieUrl = $link;
                                     break;
                                 }
                             }
 
-                            // 2. Nếu không tìm thấy link theo ID (hoặc mới vào trang chưa chọn tập)
-                            // -> Lấy link của tập đầu tiên
-                            if (empty($movieUrl)) {
+                            // LOGIC FALLBACK:
+                            // - Nếu KHÔNG tìm thấy tập (episode not in array) → Dùng tập đầu tiên
+                            // - Nếu TÌM THẤY tập NHƯNG không có URL → Giữ empty (hiển thị lỗi)
+                            if (!$episodeFound && !empty($firstEpLink)) {
                                 $movieUrl = $firstEpLink;
                             }
                         }
 
-                        // 3. Render Player
+                        // Render Player
                         echo renderMoviePlayer($movieUrl);
                         ?>
                     </div>
@@ -94,22 +97,17 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                 <div class="flex items-center gap-2 shrink-0">
                                     <?php
                                     // Nút Tập tiếp theo - chỉ hiển thị cho phim bộ
-                                    $isSeries = ($movieDetail['type_id'] == 2);
                                     if ($isSeries && !empty($episodeDetail)):
-                                        // Tìm tập tiếp theo
-                                        $currentEpId = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
+                                        // Tính số tập tiếp theo
+                                        $nextEpNumber = $currentEpisodeNumber + 1;
                                         $nextEpisodeUrl = null;
 
-                                        // Nếu không có episode_id, tập tiếp theo là tập thứ 2 (nếu có)
-                                        if (!$currentEpId && count($episodeDetail) > 1) {
-                                            $nextEpisodeUrl = "?mod=client&act=watch&id={$idMovie}&episode_id=" . $episodeDetail[1]['id'];
-                                        } else {
-                                            // Tìm vị trí tập hiện tại và lấy tập tiếp theo
-                                            foreach ($episodeDetail as $index => $ep) {
-                                                if ($ep['id'] == $currentEpId && isset($episodeDetail[$index + 1])) {
-                                                    $nextEpisodeUrl = "?mod=client&act=watch&id={$idMovie}&episode_id=" . $episodeDetail[$index + 1]['id'];
-                                                    break;
-                                                }
+                                        // Kiểm tra xem có tập tiếp theo không
+                                        if ($nextEpNumber <= count($episodeDetail)) {
+                                            if (!empty($seasonDetail)) {
+                                                $nextEpisodeUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ss=' . $currentSeasonNumber . '&ep=' . $nextEpNumber;
+                                            } else {
+                                                $nextEpisodeUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ep=' . $nextEpNumber;
                                             }
                                         }
 
@@ -167,7 +165,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                     <div class="flex flex-col gap-3 mt-2 text-white/80">
                                         <div class="flex items-center gap-3 text-sm"><span
                                                 class="material-symbols-outlined text-xl text-primary">calendar_today</span>
-                                            <?php echo $movieDetail['release_year']; ?></div>
+                                            <?php echo $movieDetail['release_year_name']; ?></div>
                                         <div class="flex items-center gap-3 text-sm"><span
                                                 class="material-symbols-outlined text-xl text-primary">schedule</span>
                                             <?php echo convertMinutesToHours($movieDetail['duration']); ?></div>
@@ -252,22 +250,22 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                                         <?php if (!empty($episodeDetail)): ?>
 
                                             <?php if ($isSeries): ?>
-                                                <?php
-                                                // Lấy episode_id từ URL để xác định tập đang xem
-                                                $currentEpisodeIdForHighlight = isset($_GET['episode_id']) ? $_GET['episode_id'] : null;
-                                                // Nếu không có episode_id trong URL, mặc định là tập đầu tiên
-                                                if (!$currentEpisodeIdForHighlight && !empty($episodeDetail)) {
-                                                    $currentEpisodeIdForHighlight = $episodeDetail[0]['id'];
-                                                }
-                                                ?>
-                                                <?php foreach ($episodeDetail as $item): ?>
+                                                <?php foreach ($episodeDetail as $epIndex => $item): ?>
                                                     <?php
-                                                    $isActiveEpisode = ($item['id'] == $currentEpisodeIdForHighlight);
+                                                    $epNum = $epIndex + 1;
+                                                    $isActiveEpisode = ($epNum == $currentEpisodeNumber);
                                                     $activeClass = $isActiveEpisode
                                                         ? 'bg-primary border-primary text-[#191B24] shadow-[0_0_15px_rgba(255,216,117,0.3)]'
                                                         : 'bg-[#282B3A] border border-white/5 hover:bg-primary hover:border-primary hover:text-[#191B24] transition-all duration-300 text-gray-300 hover:shadow-[0_0_15px_rgba(255,216,117,0.3)]';
+
+                                                    // Tạo URL đẹp cho từng tập
+                                                    if (!empty($seasonDetail)) {
+                                                        $epUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ss=' . $currentSeasonNumber . '&ep=' . $epNum;
+                                                    } else {
+                                                        $epUrl = _HOST_URL . '/xem-phim/' . $movieDetail['slug'] . '?ep=' . $epNum;
+                                                    }
                                                     ?>
-                                                    <a href="?mod=client&act=watch&id=<?php echo $idMovie; ?>&episode_id=<?php echo $item['id']; ?>"
+                                                    <a href="<?php echo $epUrl; ?>"
                                                         class="group relative flex items-center justify-center py-2.5 px-2 rounded-lg <?php echo $activeClass; ?>">
 
                                                         <span class="text-sm font-semibold truncate">
@@ -279,7 +277,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
 
                                             <?php else: ?>
                                                 <?php foreach ($episodeDetail as $item): ?>
-                                                    <a href="?mod=client&act=watch&id=<?php echo $idMovie; ?>&episode_id=<?php echo $item['id']; ?>"
+                                                    <a href="<?php echo _HOST_URL . '/xem-phim/' . $movieDetail['slug']; ?>"
                                                         class="group relative flex items-center gap-3 p-2 rounded-xl bg-[#282B3A] border border-white/5 hover:bg-[#2F3346] hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
                                                         <div
@@ -380,7 +378,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
                         <h3 class="font-bold mb-4">Phim liên quan</h3>
                         <div class="flex flex-col gap-4">
                             <?php foreach ($similarMovies as $movie): ?>
-                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/detail?id=<?php echo $movie['id'] ?>';" class="flex gap-4 group cursor-pointer">
+                                <div onclick="event.preventDefault(); window.location.href='<?php echo _HOST_URL; ?>/phim/<?php echo $movie['slug'] ?>';" class="flex gap-4 group cursor-pointer">
                                     <img class="w-16 h-24 object-cover rounded-md"
                                         data-alt="Poster for movie 'Quantum Echo'"
                                         src="<?= $movie['poster_url'] ?>" />

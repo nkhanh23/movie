@@ -130,6 +130,10 @@ class GenresController extends baseController
                         null,
                         $logData
                     );
+
+                    // Clear filter cache khi thêm thể loại mới
+                    clearFilterDataCache();
+
                     setSessionFlash('msg', 'Thêm thể loại mới thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/genres');
@@ -212,6 +216,10 @@ class GenresController extends baseController
                             $data
                         );
                     }
+
+                    // Clear filter cache khi cập nhật thể loại
+                    clearFilterDataCache();
+
                     setSessionFlash('msg', 'Cập nhật thể loại thành công');
                     setSessionFlash('msg_type', 'success');
                     reload('/admin/genres');
@@ -253,6 +261,10 @@ class GenresController extends baseController
                             $checkID, // Lưu data cũ để audit
                             null
                         );
+
+                        // Clear filter cache khi xóa thể loại
+                        clearFilterDataCache();
+
                         setSessionFlash('msg', 'Xoá thể loại thành công.');
                         setSessionFlash('msg_type', 'success');
                         reload('/admin/genres');

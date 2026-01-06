@@ -47,6 +47,11 @@ class Genres extends CoreModel
         return $this->getOne("SELECT * FROM genres WHERE $condition");
     }
 
+    public function getGenreBySlug($slug)
+    {
+        return $this->getOne("SELECT * FROM genres WHERE slug = ?", [$slug]);
+    }
+
     public function updateGenres($data, $condition)
     {
         return $this->update("genres", $data, $condition);

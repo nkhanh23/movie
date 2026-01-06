@@ -1,10 +1,12 @@
 <?php
 class UserController extends baseController
 {
+    private $coreModel;
     private $userModel;
     private $activityModel;
     public function __construct()
     {
+        $this->coreModel = new CoreModel;
         $this->userModel = new User;
         $this->activityModel = new Activity;
     }
@@ -61,7 +63,7 @@ class UserController extends baseController
         LEFT JOIN user_status us ON us.id = u.status
         $chuoiWhere");
         $maxData = $countAllUser;
-        $perPage = 5;
+        $perPage = 20;
         $maxPage = ceil($maxData / $perPage);
         $offset = 0;
         $page = 1;
@@ -297,6 +299,10 @@ class UserController extends baseController
             $condition = 'id=' . $user_id;
             $checkId = $this->userModel->getOneUser($condition);
             if (!empty($checkId)) {
+                // XÓA TOKEN LOGIN TRƯỚC (foreign key constraint)
+                $this->coreModel->delete('token_login', 'user_id=' . $user_id);
+
+                // SAU ĐÓ MỚI XÓA USER
                 $conditionDeleteUser = 'id=' . $user_id;
                 $deleteUser = $this->userModel->deleteUser($conditionDeleteUser);
                 if ($deleteUser) {

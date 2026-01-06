@@ -16,12 +16,12 @@ class Activity extends CoreModel
 
         $data = [
             'user_id'     => $userId,
-            'action'      => $action,
-            'entity_type' => $entityType,
-            'entity_id'   => $entityId,
+            'action'      => $action, // create, update, delete, login
+            'entity_type' => $entityType, // movies, episodes, seasons, genres, comments, persons, video_source
+            'entity_id'   => $entityId, // id cua doi tuong
             // JSON_UNESCAPED_UNICODE để sử dụng được Tiếng Việt
-            'old_values'  => !empty($oldData) ? json_encode($oldData, JSON_UNESCAPED_UNICODE) : null,
-            'new_values'  => !empty($newData) ? json_encode($newData, JSON_UNESCAPED_UNICODE) : null,
+            'old_values'  => !empty($oldData) ? json_encode($oldData, JSON_UNESCAPED_UNICODE) : null, // du lieu cu
+            'new_values'  => !empty($newData) ? json_encode($newData, JSON_UNESCAPED_UNICODE) : null, // du lieu moi
             'ip_address'  => $ip,
             'user_agent'  => $userAgent,
             'created_at'  => date('Y:m:d H:i:s')
