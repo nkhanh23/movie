@@ -445,19 +445,19 @@ class Movies extends CoreModel
     public function getMoviesHeroSection()
     {
         return $this->getAll("SELECT m.id, m.tittle, m.original_tittle,
-        m.imdb_rating, m.slug, m.duration,m.thumbnail, m.poster_url, 
-        ry.year as release_year_name, 
-        a.age as age_name,
-        m.description,
+        m.imdb_rating, m.slug, m.duration, m.thumbnail, m.poster_url, 
+        m.release_year, m.age, m.description,
+        MAX(ry.year) as release_year_name, 
+        MAX(a.age) as age_name,
         GROUP_CONCAT(g.name SEPARATOR ', ') as genre_name,
-        mt.name as type_name
+        MAX(mt.name) as type_name
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id
-        LEFT JOIN movie_types mt ON m.id = mt.id 
+        LEFT JOIN movie_types mt ON m.type_id = mt.id
         LEFT JOIN release_year ry ON m.release_year = ry.id
         LEFT JOIN age a ON m.age = a.id
-        GROUP BY m.id
+        GROUP BY m.id, m.tittle, m.original_tittle, m.imdb_rating, m.slug, m.duration, m.thumbnail, m.poster_url, m.release_year, m.age, m.description
         ORDER BY m.id 
         DESC LIMIT 6");
     }

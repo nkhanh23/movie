@@ -449,13 +449,31 @@ function getSiteSettings()
  */
 function getCachedFilterData()
 {
-    $cacheDir = './core/cache/';
+    // Vercel là read-only filesystem, bỏ qua file cache
+    $isVercel = isset($_SERVER['VERCEL']) || getenv('VERCEL');
+
+    $cacheDir = __DIR__ . '/../core/cache/';
     $cacheFile = $cacheDir . 'filter_cache.json';
     $cacheTTL = 600; // 10 phút
 
-    // Tạo thư mục cache nếu chưa tồn tại
+    // Nếu là Vercel, lấy data trực tiếp từ DB (không cache file)
+    if ($isVercel) {
+        $moviesModel = new Movies();
+        $genresModel = new Genres();
+        return [
+            'getAllGenres'      => $genresModel->getAllGenres(),
+            'getAllCountries'   => $moviesModel->getAllCountries(),
+            'getAllTypes'       => $moviesModel->getAllType(),
+            'getAllVoiceType'   => $moviesModel->getVoiceType(),
+            'getAllQuality'     => $moviesModel->getQuality(),
+            'getAllAge'         => $moviesModel->getAge(),
+            'getAllReleaseYear' => $moviesModel->getReleaseYear(),
+        ];
+    }
+
+    // Tạo thư mục cache nếu chưa tồn tại (chỉ trên localhost)
     if (!file_exists($cacheDir)) {
-        mkdir($cacheDir, 0755, true);
+        @mkdir($cacheDir, 0755, true);
     }
 
     // Kiểm tra file cache có tồn tại và còn hạn không
@@ -509,13 +527,35 @@ function clearFilterDataCache()
 // Hàm lấy dữ liệu Dashboard có cache (FILE-BASED)
 function getCachedDashboardData()
 {
-    $cacheDir = './core/cache/';
+    // Vercel là read-only filesystem, bỏ qua file cache
+    $isVercel = isset($_SERVER['VERCEL']) || getenv('VERCEL');
+
+    $cacheDir = __DIR__ . '/../core/cache/';
     $cacheFile = $cacheDir . 'dashboard_cache.json';
     $cacheTTL = 300; // 5 phút
 
-    // Tạo thư mục cache nếu chưa tồn tại
+    // Nếu là Vercel, lấy data trực tiếp từ DB (không cache file)
+    if ($isVercel) {
+        $moviesModel = new Movies();
+        $genresModel = new Genres();
+        return [
+            'getMoviesHeroSection' => $moviesModel->getMoviesHeroSection(),
+            'getGenresGrid'        => $genresModel->getGenresGrid(),
+            'getMoviesKorean'      => $moviesModel->getMoviesKorean(),
+            'getMoviesUSUK'        => $moviesModel->getMoviesUSUK(),
+            'getMoviesChinese'     => $moviesModel->getMoviesChinese(),
+            'getTopDailyByType1'   => $moviesModel->getTopTrendingToday(1),
+            'getTopDailyByType2'   => $moviesModel->getTopTrendingToday(2),
+            'getCinemaMovie'       => $moviesModel->getCinemaMovie(),
+            'getAnimeMovies'       => $moviesModel->getAnimeMovies(),
+            'getLoveMovies'        => $moviesModel->getLoveMovies(),
+            'getHorrorMovies'      => $moviesModel->getHorrorMovies(),
+        ];
+    }
+
+    // Tạo thư mục cache nếu chưa tồn tại (chỉ trên localhost)
     if (!file_exists($cacheDir)) {
-        mkdir($cacheDir, 0755, true);
+        @mkdir($cacheDir, 0755, true);
     }
 
     // Force clear cache nếu có tham số ?clear_cache=1
