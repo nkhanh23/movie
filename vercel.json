@@ -3,21 +3,12 @@
     "name": "movie-website",
     "builds": [
         {
-            "src": "*.php",
+            "src": "index.php",
             "use": "vercel-php@0.7.0"
-        },
-        {
-            "src": "public/**",
-            "use": "@vercel/static"
         }
     ],
     "functions": {
-        "api/**/*.php": {
-            "runtime": "vercel-php@0.7.0",
-            "maxDuration": 30,
-            "memory": 1024
-        },
-        "*.php": {
+        "index.php": {
             "runtime": "vercel-php@0.7.0",
             "maxDuration": 30,
             "memory": 1024
