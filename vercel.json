@@ -1,28 +1,11 @@
 {
-    "functions": {
-        "index.php": {
-            "runtime": "vercel-php@0.7.0"
-        },
-        "robots.php": {
-            "runtime": "vercel-php@0.7.0"
-        },
-        "manifest.php": {
-            "runtime": "vercel-php@0.7.0"
+    "builds": [
+        {
+            "src": "**/*.php",
+            "use": "@vercel/php"
         }
-    },
+    ],
     "routes": [
-        {
-            "src": "/public/(.*)",
-            "dest": "/public/$1"
-        },
-        {
-            "src": "/robots.txt",
-            "dest": "/robots.php"
-        },
-        {
-            "src": "/manifest.json",
-            "dest": "/manifest.php"
-        },
         {
             "src": "/(.*)",
             "dest": "/index.php"
