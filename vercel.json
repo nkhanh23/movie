@@ -1,24 +1,173 @@
 {
+    "version": 2,
+    "name": "movie-website",
+    "builds": [
+        {
+            "src": "*.php",
+            "use": "vercel-php@0.7.0"
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
     "functions": {
         "api/**/*.php": {
-            "runtime": "vercel-php@0.7.0"
+            "runtime": "vercel-php@0.7.0",
+            "maxDuration": 30,
+            "memory": 1024
         },
         "*.php": {
-            "runtime": "vercel-php@0.7.0"
+            "runtime": "vercel-php@0.7.0",
+            "maxDuration": 30,
+            "memory": 1024
         }
     },
     "routes": [
         {
-            "src": "/xem-phim/(.*)",
-            "dest": "/index.php"
+            "src": "/robots\\.txt",
+            "dest": "/robots.php"
+        },
+        {
+            "src": "/manifest\\.json",
+            "dest": "/manifest.php"
+        },
+        {
+            "src": "/sw\\.js",
+            "dest": "/sw.js",
+            "headers": {
+                "Cache-Control": "public, max-age=0, must-revalidate",
+                "Service-Worker-Allowed": "/"
+            }
+        },
+        {
+            "src": "/public/(.*)",
+            "dest": "/public/$1",
+            "headers": {
+                "Cache-Control": "public, max-age=31536000, immutable"
+            }
+        },
+        {
+            "src": "/favicon\\.ico",
+            "dest": "/public/favicon.ico"
+        },
+        {
+            "src": "/sitemap\\.xml",
+            "dest": "/sitemap.php"
         },
         {
             "src": "/api/(.*)",
             "dest": "/index.php"
         },
         {
+            "src": "/admin(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/xem-phim/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/phim-le(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/phim-bo(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/phim-chieu-rap(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/the-loai/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/quoc-gia/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/tim-kiem(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/dien-vien/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/dao-dien/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/auth/(.*)",
+            "dest": "/index.php"
+        },
+        {
+            "src": "/tai-khoan(.*)",
+            "dest": "/index.php"
+        },
+        {
             "src": "/(.*)",
             "dest": "/index.php"
         }
-    ]
+    ],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "X-Frame-Options",
+                    "value": "DENY"
+                },
+                {
+                    "key": "X-XSS-Protection",
+                    "value": "1; mode=block"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+                },
+                {
+                    "key": "Permissions-Policy",
+                    "value": "camera=(), microphone=(), geolocation=()"
+                }
+            ]
+        },
+        {
+            "source": "/public/(css|js|images|fonts)/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        },
+        {
+            "source": "/public/uploads/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000"
+                }
+            ]
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.php"
+        }
+    ],
+    "env": {
+        "APP_ENV": "production",
+        "APP_DEBUG": "false"
+    },
+    "github": {
+        "silent": true
+    }
 }

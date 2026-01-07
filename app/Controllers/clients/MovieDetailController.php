@@ -16,7 +16,6 @@ class MovieDetailController extends baseController
         $this->commentsModel = new Comments();
     }
 
-    // Hàm đệ quy để tạo cây thư mục comment
     private function buildTree(array $elements, $parentId = 0)
     {
         $branch = array();

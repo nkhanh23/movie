@@ -132,11 +132,10 @@ class Comments extends CoreModel
     // Xóa đệ quy: Xóa hết con cháu trước rồi mới xóa cha
     public function deleteRecursive($id)
     {
-        // 1. Tìm tất cả con trực tiếp
+        //Tìm tất cả con trực tiếp
         $sqlChildren = "SELECT id FROM comments WHERE parent_id = $id";
         $children = $this->query($sqlChildren);
 
-        // 2. Xóa đệ quy từng con
         if (!empty($children)) {
             foreach ($children as $child) {
                 $this->deleteRecursive($child['id']);

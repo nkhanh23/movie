@@ -168,9 +168,9 @@ class CommentUserController extends baseController
     // API Xóa bình luận
     public function deleteCommentApi()
     {
-        // 1. Tắt báo lỗi PHP để tránh làm hỏng JSON (Hack fix cho localhost)
+        // Tắt báo lỗi PHP để tránh làm hỏng JSON (Hack fix cho localhost)
         error_reporting(0);
-        // 2. Bắt đầu bộ đệm
+        // Bắt đầu bộ đệm
         ob_start();
 
         try {

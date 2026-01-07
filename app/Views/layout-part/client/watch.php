@@ -537,10 +537,10 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
     });
 </script>
 
-<!-- MODULE 2: WATCH HISTORY -->
+<!-- WATCH HISTORY -->
 <script>
     // ========================================================================
-    // MODULE 2: WATCH HISTORY 
+    // WATCH HISTORY 
     // ========================================================================
     const MOVIE_ID = <?php echo isset($idMovie) ? (int)$idMovie : 0; ?>;
     const EPISODE_ID = <?php echo isset($idEpisode) && $idEpisode ? (int)$idEpisode : 0; ?>;
@@ -561,10 +561,10 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
             return;
         }
 
-        console.log("✓ Player found:", player.id);
+        console.log("Player found:", player.id);
 
         // ====================================================================
-        // 2. WATCH HISTORY - RESUME PLAYBACK
+        // WATCH HISTORY - RESUME PLAYBACK
         // ====================================================================
         player.addEventListener('loadedmetadata', function() {
             console.log(" Video duration:", player.duration);
@@ -588,7 +588,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 1) {
         });
 
         // ====================================================================
-        // 3. WATCH HISTORY - SYNC TO SERVER
+        // WATCH HISTORY - SYNC TO SERVER
         // ====================================================================
         let lastSyncTime = 0;
 
