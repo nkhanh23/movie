@@ -10,15 +10,18 @@ class Database
         for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
             try {
                 $OPTION = array(
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_TIMEOUT => 10, // Timeout 10 giây cho free hosting
-                    PDO::ATTR_PERSISTENT => false, // Tắt persistent connection trên free hosting
+                    PDO::ATTR_TIMEOUT => 30,
+                    PDO::ATTR_PERSISTENT => false,
                     PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+                    PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+                    PDO::MYSQL_ATTR_SSL_CA => true
                 );
 
-                $dsn = _DRIVER . ':host=' . _HOST . ';dbname=' . _DB;
+                $port = defined('_PORT') ? _PORT : '3306';
+                $dsn = _DRIVER . ':host=' . _HOST . ';port=' . $port . ';dbname=' . _DB;
                 self::$connect = new PDO($dsn, _USER, _PASS, $OPTION);
 
                 // Kết nối thành công
