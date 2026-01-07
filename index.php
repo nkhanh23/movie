@@ -1,4 +1,5 @@
 <?php
+// Update config Vercel fix error
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 session_start();
 ob_start(); // tranh loi tu cac ham header, cooke
