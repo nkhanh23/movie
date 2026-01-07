@@ -12,10 +12,28 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 
+// foreach (glob(__DIR__ . '/configs/*.php') as $filename) {
+//     if (strpos($filename, '.example.php') !== false) {
+//         continue;
+//     }
+//     require_once $filename;
+// }
+
+// 1. Kiểm tra xem có file cấu hình gốc (configs.php) không?
+$hasRealConfig = file_exists(__DIR__ . '/configs/configs.php');
+
 foreach (glob(__DIR__ . '/configs/*.php') as $filename) {
+    // Nếu gặp file example (configs.example.php)
     if (strpos($filename, '.example.php') !== false) {
-        continue;
+        // Chỉ nạp file example NẾU KHÔNG CÓ file thật
+        // (Tức là đang chạy trên Vercel)
+        if (!$hasRealConfig) {
+            require_once $filename;
+        }
+        continue; // Xử lý xong thì bỏ qua để không nạp trùng
     }
+
+    // Các file config khác (nếu có) thì nạp bình thường
     require_once $filename;
 }
 
