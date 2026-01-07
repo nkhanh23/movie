@@ -42,9 +42,9 @@ foreach (glob(__DIR__ . '/core/*php') as $filename) {
     require_once $filename;
 }
 
-require_once './core/mailer/Exception.php';
-require_once './core/mailer/PHPMailer.php';
-require_once './core/mailer/SMTP.php';
+require_once __DIR__ . '/core/mailer/Exception.php';
+require_once __DIR__ . '/core/mailer/PHPMailer.php';
+require_once __DIR__ . '/core/mailer/SMTP.php';
 
 // chế độ bảo trì (Maintenance Mode)
 
